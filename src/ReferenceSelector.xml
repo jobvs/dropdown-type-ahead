@@ -12,5 +12,87 @@
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
+        <property key="selectorType" type="enumeration" defaultValue="page">
+            <caption>Selecting using</caption>
+            <category>Appearance</category>
+            <description/>
+            <enumerationValues>
+                <enumerationValue key="page">Page</enumerationValue>
+                <enumerationValue key="dropdown">Drop down</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="goToPage" type="form" required="false" >
+            <caption>Select page</caption>
+            <category>Appearance</category>
+            <description>Page to navigate to select items</description>
+        </property>
+        <property key="emptyOptionCaption" type="string" required="false" >
+            <caption>Caption</caption>
+            <category>Appearance</category>
+            <description>Text displayed before selection</description>
+        </property>
+        <property key="showLabel" type="enumeration" defaultValue="yes">
+            <caption>Show caption</caption>
+            <category>Appearance</category>
+            <description/>
+            <enumerationValues>
+                <enumerationValue key="yes">Yes</enumerationValue>
+                <enumerationValue key="no">No</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="labelCaption" type="string" required="false" >
+            <caption>Label caption</caption>
+            <category>Appearance</category>
+            <description/>
+        </property>
+        <property key="source" type="enumeration" defaultValue="xpath">
+            <caption>Source</caption>
+            <category>Selectable objects</category>
+            <description/>
+            <enumerationValues>
+                <enumerationValue key="xpath">Xpath</enumerationValue>
+                <enumerationValue key="microflow">Microflow</enumerationValue>
+                <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="dataEntity" type="entity" allowNonPersistableEntities="true">
+            <caption>Entity</caption>
+            <category>Selectable objects</category>
+            <description>The entity from which selectable values will be retrieved</description>
+        </property>
+        <property  key="selectableAttribute" type="attribute" entityProperty="dataEntity">
+            <caption>Attribute</caption>
+            <category>Selectable objects</category>
+            <description>The attribute from which selectable values will be retrieved</description>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <property  key="entityConstraint" type="entityConstraint" entityProperty="dataEntity" required="false" >
+            <caption>Xpath constraint</caption>
+            <category>Selectable objects</category>
+            <description/>
+        </property>
+        <property key="sortOrder" type="enumeration" defaultValue="asc">
+            <caption>Sort order</caption>
+            <category>Selectable objects</category>
+            <description/>
+            <enumerationValues>
+                <enumerationValue key="asc">Ascending</enumerationValue>
+                <enumerationValue key="desc">Descending</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="microflow" type="microflow" required="false">
+            <caption>Microflow</caption>
+            <category>Selectable objects</category>
+            <description>Returns a list of data values</description>
+            <returnType type="Object" entityProperty="dataEntity" isList="true"/>
+        </property>
+        <property key="nanoflow" type="nanoflow" required="false">
+            <caption>Nanoflow</caption>
+            <category>Selectable objects</category>
+            <description>Returns a list of data values</description>
+            <returnType type="Object" entityProperty="dataEntity" isList="true"/>
+        </property>
     </properties>
 </widget>
