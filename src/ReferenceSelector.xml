@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="com.mendix.widget.custom.referenceselector.ReferenceSelector" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
+    <name>ReferenceSelector</name>
+    <description>Allows users to take and save pictures on their mendix desktop applications</description>
+    <icon>iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfhCgwJFhuIhoIqAAABhUlEQVRIx+3UP2sUURQF8N9kXVgLG5EQUxjShZDCKSRgwE+wyhb5BEkXkm3sxDKN1YKdlWAjdkFMb2WCSwgZ0TJlAlqJsNGw2bHRdf68iQPbifc2dw7nnvPmvjvD/4gy9Q1PNOx5hlXtEvfMlmERvJKpr7qt4TNanroZsHvveb1zbUmDeZwzHL9CxwOzOfSO6xXS+76O6xOv7bBZ4VYvNzmcSOAwMsrdRDbOvdKXmBG7bxF88Ng9D8ecVKX2gSXM6VjW0rRtKLWGyJcMr7K9acH+r6eBrsi61I5r2jlmsP2HJQsGOayHXanzAjco8IKx++8cWRGXuVPB8fXNWS5tzKrEoEgNCyTiABq7kNQTmHEaQE8pbGylQOzIWQndM+1WmRwa4kdN3QL2SctGgFuxB9siPaNM+6J53+oLDK1jRc9bL3W1zDsIMi/5UHbFGmDaRtA9lUZSl8VAYjY0uj/rcVFxE/ViNKU/QTv9hu86lX+Ev/p7FOGudnnDasSJN95NdP5/JH4CyctNHfjcPXwAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTctMTAtMTJUMDk6MjI6MjcrMDI6MDCMRiaFAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE3LTEwLTEyVDA5OjIyOjI3KzAyOjAw/RueOQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAASUVORK5CYII=</icon>
+    <properties>
+        <property key="attribute" type="attribute" isPath="yes" pathType="reference" >
+            <caption>Attribute (path)</caption>
+            <category>Data source</category>
+            <description/>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+    </properties>
+</widget>
