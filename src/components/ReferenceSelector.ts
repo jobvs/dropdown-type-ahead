@@ -32,7 +32,7 @@ export class ReferenceSelector extends Component<ReferenceSelectorProps> {
 
     private showLabel() {
         return this.props.showLabel ?
-        createElement("div", { className: "div-wrapper" },
+        createElement("div", { className: "div-wrapper-label" },
         createElement("label", { className: "control-label" }, this.props.label)) :
             null;
     }

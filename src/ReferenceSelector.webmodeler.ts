@@ -31,14 +31,11 @@ export class preview extends Component<ReferenceSelectorContainerProps, {}> {
 }
 
 export function getPreviewCss() {
-    return (
-        require("./ui/ReferenceSelector.scss") + require("./ui/react-select.css")
-    );
+    return require("./ui/ReferenceSelector.scss");
 }
 
 export function getVisibleProperties(valueMap: ReferenceSelectorContainerProps, visibilityMap: VisibilityMap) {
     visibilityMap.source = valueMap.microflow === "microflow";
-    // visibilityMap.source = valueMap.nanoflow.nanoflow === "nanoflow";
 
     return visibilityMap;
 }
