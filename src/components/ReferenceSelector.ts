@@ -15,14 +15,13 @@ export interface ReferenceSelectorProps {
     handleClick: () => void;
     id?: string;
 }
+
 // tslint:disable-next-line:interface-over-type-literal
 export type referenceOption = { value: string, label: string };
 
 export type selector = "page" | "dropdown";
 
 export class ReferenceSelector extends Component<ReferenceSelectorProps> {
-    // private selectNode?: HTMLElement;
-
     render() {
         return createElement("div", { className: "widget-reference-selector-wrapper" },
             this.showLabel(),
@@ -33,7 +32,7 @@ export class ReferenceSelector extends Component<ReferenceSelectorProps> {
     private showLabel() {
         return this.props.showLabel ?
         createElement("div", { className: "div-wrapper-label" },
-        createElement("label", { className: "control-label" }, this.props.label)) :
+        createElement("label", { className: "mx-control-label" }, this.props.label)) :
             null;
     }
 
@@ -42,7 +41,6 @@ export class ReferenceSelector extends Component<ReferenceSelectorProps> {
             return createElement("div", { className: "div-wrapper" }, createElement(Select, {
                 onChange: this.props.handleOnchange,
                 options: this.props.data,
-                ref: "list",
                 value: this.props.selectedValue
             }));
         } else if (this.props.selectorType === "page") {

@@ -30,8 +30,7 @@ export interface ReferenceSelectorContainerProps extends WrapperProps {
 export interface ReferenceSelectorState {
     options: referenceOption[];
     selected: referenceOption;
-    mxobject: mendix.lib.MxMetaObject | {};
-    index: number;
+    showOverlay: boolean;
 }
 
 export interface Nanoflow {
@@ -46,13 +45,11 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         super(props);
 
         this.state = {
-            index: 0,
-            mxobject: {},
             options: [],
-            selected: { value: "select" , label: this.props.emptyOptionCaption }
+            selected: { value: "select" , label: this.props.emptyOptionCaption },
+            showOverlay: false
         };
 
-        // readonly state: TranscriptState = { value: Value.create() };
         this.onChange = this.onChange.bind(this);
     }
 
@@ -75,6 +72,8 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         this.retrieveOptions(newProps);
         this.resetSubscriptions(newProps.mxObject);
         }
+        // tslint:disable-next-line:no-console
+        // console.log(this.props.attribute);
     }
 
     componentWillUnmount() {
@@ -90,13 +89,9 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
             if (this.props.selectableAttribute && mx) {
                 for (const mxObject of mx) {
                     dataOptions.push({ label: mxObject.get(this.props.selectableAttribute) as string, value: mxObject.getGuid() });
-                    this.subscriptionHandles.push(window.mx.data.subscribe({
-                        attr: this.props.selectableAttribute,
-                        callback: this.handleSubscriptions,
-                        guid: mxObject.getGuid()
-                    }));
                 }
             }
+
             this.setState({ options: dataOptions });
         });
     }
@@ -115,34 +110,39 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
         this.subscriptionHandles = [];
-
+        // mxObject.addReference("MyFirstModule.MendixUser_City", mxObject.getGuid());
         if (mxObject) {
+            this.subscriptionHandles.push(window.mx.data.subscribe({
+                callback: this.handleSubscriptions,
+                guid: mxObject.getGuid()
+            }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
                 attr: this.props.selectableAttribute,
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
-            this.subscriptionHandles.push(window.mx.data.subscribe({
-                callback: this.handleSubscriptions,
-                guid: mxObject.getGuid()
-            }));
         }
     }
 
-    private onChange = (newValue: referenceOption) => {
+    private onChange(newValue: referenceOption) {
         if (!this.props.mxObject) {
             return;
         }
-        this.props.mxObject.set(this.props.selectableAttribute, newValue.label);
+        this.props.mxObject.addReference(this.props.attribute.split("/")[0], newValue.value);
+        // this.props.mxObject.set(this.props.selectableAttribute, newValue.label);
+        this.setState({ selected: newValue });
     }
 
     private onClick = () => {
+        this.setState({ showOverlay: true });
+        document.body.appendChild(this.createOverlay());
         window.mx.ui.openForm(this.props.goToPage, {
             callback: (form: mxui.lib.form._FormBase) => {
             form.listen("submit", () => {
                     const label = (form.domNode.getElementsByClassName("selected")[0].lastChild as any).title;
                     this.props.mxObject.set(this.props.selectableAttribute, label);
                     form.close();
+                    document.body.removeChild(document.body.childNodes[document.body.childNodes.length - 2]);
                 });
             },
             error: (error: Error) => window.mx.ui.error(`Error while opening page ${this.props.goToPage}: ${error.message}`),
@@ -151,10 +151,16 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
     }
 
     private retrieveOptions(props: ReferenceSelectorContainerProps) {
-        const { dataEntity, entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
+        // const reference = this.props.attribute.split("/")[0]
+        // "MyFirstModule.MendixUser_City"
+        const selectEntity = this.props.attribute.split("/")[1];
+        // "MyFirstModule.City"
+        // const attributes = this.props.attribute.split("/")[2]
+        // "CityName"
+        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
         const options = {
             constraint: entityConstraint,
-            entity: dataEntity,
+            entity: selectEntity,
             guid: mxObject.getGuid(),
             microflow,
             mxform: this.props.mxform,
@@ -162,6 +168,16 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
             sortOrder,
             source
         };
+
         this.setOptions(fetchData(options as FetchDataOptions));
+    }
+
+    private createOverlay(): Node {
+        const overlay = document.createElement("div");
+
+        overlay.className = "widget-overlay";
+        overlay.id = "widget-overlay-id";
+
+        return overlay;
     }
 }
