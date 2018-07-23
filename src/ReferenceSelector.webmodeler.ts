@@ -19,11 +19,10 @@ export class preview extends Component<ReferenceSelectorContainerProps, {}> {
 
     render() {
         return createElement(ReferenceSelector as any, {
-            attribute: this.props.selectableAttribute,
+            attribute: this.props.attribute,
             // data: this.state.options,
             label: this.props.labelCaption,
             selectedValue: this.selected.label,
-            selectorType: this.props.selectorType,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });

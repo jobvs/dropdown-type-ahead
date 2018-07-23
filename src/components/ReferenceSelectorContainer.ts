@@ -1,7 +1,7 @@
-import { Component, createElement } from "react";
+import { ChangeEvent, Component, createElement } from "react";
 import { parseStyle } from "../utils/ContainerUtils";
 import { FetchDataOptions, FetchedData, fetchData } from "../utils/data";
-import { ReferenceSelector, referenceOption, selector } from "./ReferenceSelector";
+import { ReferenceSelector, referenceOption } from "./ReferenceSelector";
 
 interface WrapperProps {
     mxObject: mendix.lib.MxObject;
@@ -12,25 +12,24 @@ interface WrapperProps {
 }
 
 export interface ReferenceSelectorContainerProps extends WrapperProps {
-    emptyOptionCaption: string;
     attribute: string;
-    selectorType: selector;
-    goToPage: string;
-    source: "xpath"| "microflow" | "nanoflow";
+    entityPath: string;
     entityConstraint: string;
-    sortOrder: "asc" | "des";
-    dataEntity: string;
-    microflow: string;
-    nanoflow: Nanoflow;
-    selectableAttribute: string;
+    emptyOptionCaption: string;
     labelCaption: string;
+    source: "xpath"| "microflow" | "nanoflow";
+    sortOrder: "asc" | "des";
     showLabel: string;
+    nanoflow: Nanoflow;
+    microflow: string;
+    onChangeNanoflow: Nanoflow;
+    onChangeMicroflow: string;
+    onChangeEvent: "callMicroflow" | "callNanoflow";
 }
 
 export interface ReferenceSelectorState {
     options: referenceOption[];
     selected: referenceOption;
-    showOverlay: boolean;
 }
 
 export interface Nanoflow {
@@ -40,28 +39,19 @@ export interface Nanoflow {
 
 export default class ReferenceSelectorContainer extends Component<ReferenceSelectorContainerProps, ReferenceSelectorState> {
     private subscriptionHandles: number[] = [];
-
-    constructor(props: ReferenceSelectorContainerProps) {
-        super(props);
-
-        this.state = {
-            options: [],
-            selected: { value: "select" , label: this.props.emptyOptionCaption },
-            showOverlay: false
-        };
-
-        this.onChange = this.onChange.bind(this);
-    }
+    readonly state: ReferenceSelectorState = {
+        options: [],
+        selected: {}
+    };
+    private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
     render() {
         return createElement(ReferenceSelector as any, {
-            attribute: this.props.selectableAttribute,
+            attribute: this.props.attribute,
             data: this.state.options,
-            handleClick: this.onClick,
-            handleOnchange: this.onChange,
+            handleOnchange: this.handleOnClick,
             label: this.props.labelCaption,
             selectedValue: this.state.selected,
-            selectorType: this.props.selectorType,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
@@ -72,95 +62,122 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         this.retrieveOptions(newProps);
         this.resetSubscriptions(newProps.mxObject);
         }
-        // tslint:disable-next-line:no-console
-        // console.log(this.props.attribute);
     }
 
     componentWillUnmount() {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
     }
 
-    private setOptions = (item: Promise<FetchedData>) => {
+    private setOptions = (Data: Promise<FetchedData>) => {
         const dataOptions: referenceOption[] = [];
+        let selected: referenceOption = {};
 
-        Promise.all([ item ])
-        .then((values) => {
-            const mx = values[0].mxObjects;
-            if (this.props.selectableAttribute && mx) {
-                for (const mxObject of mx) {
-                    dataOptions.push({ label: mxObject.get(this.props.selectableAttribute) as string, value: mxObject.getGuid() });
+        Promise.all([ Data ])
+        .then((value) => {
+            const mendixObjects = value[0].mxObjects;
+            if (this.props.attribute && mendixObjects) {
+                for (const mxObject of mendixObjects) {
+                    dataOptions.push({ label: mxObject.get(this.props.attribute) as string, guid: mxObject.getGuid() });
                 }
             }
-
-            this.setState({ options: dataOptions });
+            if (this.props.emptyOptionCaption.trim() === "") {
+                Promise.all([ this.fetchDataByreference() ])
+                .then((defaultvalue) => {
+                    const MendixObject = defaultvalue[0];
+                    // this.setState({ selected: this.getValue(MendixObject) });
+                    selected = this.getValue(MendixObject);
+                })
+                .catch(message => mx.ui.error(message));
+            } else {
+                selected = { guid: "default" , label: this.props.emptyOptionCaption };
+            }
+            this.setState({ options: dataOptions, selected });
         });
     }
 
     private handleSubscriptions = () => {
-        this.setState({ selected: this.getValue(this.props.mxObject) });
+        Promise.all([ this.fetchDataByreference() ])
+            .then((values) => {
+                const MendixObject = values[0];
+                this.setState({ selected: this.getValue(MendixObject) });
+            })
+            .catch(message => mx.ui.error(message));
+    }
+
+    private fetchDataByreference(): Promise<mendix.lib.MxObject> {
+        return new Promise((resolve) => {
+            this.props.mxObject.fetch(this.props.entityPath,
+                (value) => {
+                resolve(value as any);
+            });
+        });
     }
 
     private getValue(mxObject: mendix.lib.MxObject) {
         return {
-            label: mxObject.get(this.props.selectableAttribute) as string,
-            value: mxObject.getGuid()
+            guid: mxObject.getGuid(),
+            label: mxObject.get(this.props.attribute) as string
         };
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
         this.subscriptionHandles = [];
-        // mxObject.addReference("MyFirstModule.MendixUser_City", mxObject.getGuid());
+        const attr = this.props.entityPath.split("/")[0];
+
         if (mxObject) {
             this.subscriptionHandles.push(window.mx.data.subscribe({
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
-                attr: this.props.selectableAttribute,
+                attr,
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
         }
     }
 
-    private onChange(newValue: referenceOption) {
+    private onChange(recentSelection: referenceOption) {
         if (!this.props.mxObject) {
             return;
         }
-        this.props.mxObject.addReference(this.props.attribute.split("/")[0], newValue.value);
-        // this.props.mxObject.set(this.props.selectableAttribute, newValue.label);
-        this.setState({ selected: newValue });
+
+        if (recentSelection.guid) {
+        this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.guid);
+        }
+        this.executeOnChangeEvent();
     }
 
-    private onClick = () => {
-        this.setState({ showOverlay: true });
-        document.body.appendChild(this.createOverlay());
-        window.mx.ui.openForm(this.props.goToPage, {
-            callback: (form: mxui.lib.form._FormBase) => {
-            form.listen("submit", () => {
-                    const label = (form.domNode.getElementsByClassName("selected")[0].lastChild as any).title;
-                    this.props.mxObject.set(this.props.selectableAttribute, label);
-                    form.close();
-                    document.body.removeChild(document.body.childNodes[document.body.childNodes.length - 2]);
-                });
-            },
-            error: (error: Error) => window.mx.ui.error(`Error while opening page ${this.props.goToPage}: ${error.message}`),
-            location: "popup"
-        });
+    private executeOnChangeEvent = () => {
+        const { mxform, mxObject, onChangeEvent, onChangeMicroflow, onChangeNanoflow } = this.props;
+        const context = new mendix.lib.MxContext();
+        context.setContext(mxObject.getEntity(), mxObject.getGuid());
+        if (onChangeEvent === "callMicroflow" && onChangeMicroflow) {
+            window.mx.ui.action(onChangeMicroflow, {
+                error: error => window.mx.ui.error(`Error while executing microflow ${onChangeMicroflow}: ${error.message}`), // tslint:disable-line max-line-length
+                origin: mxform,
+                params: {
+                    applyto: "selection",
+                    guids: [ mxObject.getGuid() ]
+                }
+            });
+        } else if (onChangeEvent === "callNanoflow" && onChangeNanoflow.nanoflow) {
+            window.mx.data.callNanoflow({
+                context,
+                error: error => window.mx.ui.error(`Error while executing the onchange nanoflow: ${error.message}`),
+                nanoflow: onChangeNanoflow,
+                origin: mxform
+            });
+        }
     }
 
     private retrieveOptions(props: ReferenceSelectorContainerProps) {
-        // const reference = this.props.attribute.split("/")[0]
-        // "MyFirstModule.MendixUser_City"
-        const selectEntity = this.props.attribute.split("/")[1];
-        // "MyFirstModule.City"
-        // const attributes = this.props.attribute.split("/")[2]
-        // "CityName"
+        const entity = this.props.entityPath.split("/")[1];
         const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
         const options = {
             constraint: entityConstraint,
-            entity: selectEntity,
+            entity,
             guid: mxObject.getGuid(),
             microflow,
             mxform: this.props.mxform,
@@ -170,14 +187,5 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         };
 
         this.setOptions(fetchData(options as FetchDataOptions));
-    }
-
-    private createOverlay(): Node {
-        const overlay = document.createElement("div");
-
-        overlay.className = "widget-overlay";
-        overlay.id = "widget-overlay-id";
-
-        return overlay;
     }
 }
