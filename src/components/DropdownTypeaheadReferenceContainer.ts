@@ -1,7 +1,7 @@
 import { ChangeEvent, Component, createElement } from "react";
 import { parseStyle } from "../utils/ContainerUtils";
 import { FetchDataOptions, FetchedData, fetchData } from "../utils/data";
-import { ReferenceSelector, referenceOption } from "./ReferenceSelector";
+import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
     mxObject: mendix.lib.MxObject;
@@ -11,7 +11,7 @@ interface WrapperProps {
     class?: string;
 }
 
-export interface ReferenceSelectorContainerProps extends WrapperProps {
+export interface DropdownTypeaheadReferenceContainerProps extends WrapperProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
@@ -37,16 +37,17 @@ export interface Nanoflow {
     paramsSpec: { Progress: string };
 }
 
-export default class ReferenceSelectorContainer extends Component<ReferenceSelectorContainerProps, ReferenceSelectorState> {
+export default class ReferenceSelectorContainer extends Component<DropdownTypeaheadReferenceContainerProps, ReferenceSelectorState> {
     private subscriptionHandles: number[] = [];
     readonly state: ReferenceSelectorState = {
         options: [],
         selected: {}
     };
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
+    // private readonly executeOnChangeEvent: Event<string> = this.OnChangeEvent.bind(this);
 
     render() {
-        return createElement(ReferenceSelector as any, {
+        return createElement(DropdownTypeaheadReference as any, {
             attribute: this.props.attribute,
             data: this.state.options,
             handleOnchange: this.handleOnClick,
@@ -57,7 +58,7 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         });
     }
 
-    componentWillReceiveProps(newProps: ReferenceSelectorContainerProps) {
+    componentWillReceiveProps(newProps: DropdownTypeaheadReferenceContainerProps) {
         if (newProps.mxObject !== this.props.mxObject) {
         this.retrieveOptions(newProps);
         this.resetSubscriptions(newProps.mxObject);
@@ -172,7 +173,7 @@ export default class ReferenceSelectorContainer extends Component<ReferenceSelec
         }
     }
 
-    private retrieveOptions(props: ReferenceSelectorContainerProps) {
+    private retrieveOptions(props: DropdownTypeaheadReferenceContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
         const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
         const options = {

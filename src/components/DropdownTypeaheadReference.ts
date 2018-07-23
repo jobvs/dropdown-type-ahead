@@ -1,9 +1,9 @@
 import { Component, createElement } from "react";
 import Select from "react-select";
 
-import "../ui/ReferenceSelector.scss";
+import "../ui/DropdownTypeaheadReference.scss";
 
-export interface ReferenceSelectorProps {
+export interface DropdownTypeaheadReferenceProps {
     style?: object;
     readOnly: boolean;
     data: any;
@@ -18,7 +18,7 @@ export interface ReferenceSelectorProps {
 // tslint:disable-next-line:interface-over-type-literal
 export type referenceOption = { guid?: string, label?: string };
 
-export class ReferenceSelector extends Component<ReferenceSelectorProps> {
+export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     render() {
         return createElement("div", { className: "widget-reference-selector-wrapper" },
             this.renderLabel(),

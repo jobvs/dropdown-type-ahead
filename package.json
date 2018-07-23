@@ -1,6 +1,6 @@
 {
-  "name": "referenceselector",
-  "widgetName": "ReferenceSelector",
+  "name": "dropdowntypeaheadreference",
+  "widgetName": "DropdownTypeaheadReference",
   "version": "1.0.0",
   "description": "An input widget that can be used to display and edit associations",
   "scripts": {

@@ -1,24 +1,24 @@
 import { Component, createElement } from "react";
 
 import { parseStyle } from "./utils/ContainerUtils";
-import { ReferenceSelector } from "./components/ReferenceSelector";
-import { ReferenceSelectorContainerProps } from "./components/ReferenceSelectorContainer";
+import { DropdownTypeaheadReference } from "./components/DropdownTypeaheadReference";
+import { DropdownTypeaheadReferenceContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
 
 declare function require(name: string): string;
 
 type VisibilityMap = {
-    [P in keyof ReferenceSelectorContainerProps]: boolean;
+    [P in keyof DropdownTypeaheadReferenceContainerProps]: boolean;
 };
 
 // tslint:disable-next-line class-name
-export class preview extends Component<ReferenceSelectorContainerProps, {}> {
+export class preview extends Component<DropdownTypeaheadReferenceContainerProps, {}> {
     private selected = {
         label: this.props.emptyOptionCaption,
         value: "noGuid"
     };
 
     render() {
-        return createElement(ReferenceSelector as any, {
+        return createElement(DropdownTypeaheadReference as any, {
             attribute: this.props.attribute,
             // data: this.state.options,
             label: this.props.labelCaption,
@@ -30,10 +30,10 @@ export class preview extends Component<ReferenceSelectorContainerProps, {}> {
 }
 
 export function getPreviewCss() {
-    return require("./ui/ReferenceSelector.scss");
+    return require("./ui/DropdownTypeaheadReference.scss");
 }
 
-export function getVisibleProperties(valueMap: ReferenceSelectorContainerProps, visibilityMap: VisibilityMap) {
+export function getVisibleProperties(valueMap: DropdownTypeaheadReferenceContainerProps, visibilityMap: VisibilityMap) {
     visibilityMap.source = valueMap.microflow === "microflow";
 
     return visibilityMap;
