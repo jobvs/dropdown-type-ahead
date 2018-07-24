@@ -4,53 +4,59 @@ import { FetchDataOptions, FetchedData, fetchData } from "../utils/data";
 import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
+    class: string;
     mxObject: mendix.lib.MxObject;
     mxform: mxui.lib.form._FormBase;
-    mxContext: mendix.lib.MxContext;
-    style?: string;
-    class?: string;
+    style: string;
+    readOnly: boolean;
+    friendlyId: string;
 }
 
-export interface DropdownTypeaheadReferenceContainerProps extends WrapperProps {
+export interface ContainerProps extends WrapperProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
     emptyOptionCaption: string;
     labelCaption: string;
     source: "xpath"| "microflow" | "nanoflow";
-    sortOrder: "asc" | "des";
-    showLabel: string;
+    sortOrder: "asc" | "desc";
+    showLabel: boolean;
     nanoflow: Nanoflow;
     microflow: string;
     onChangeNanoflow: Nanoflow;
     onChangeMicroflow: string;
     onChangeEvent: "callMicroflow" | "callNanoflow";
+    editable: "default" | "never";
 }
 
-export interface ReferenceSelectorState {
+export interface ContainerState {
     options: referenceOption[];
     selected: referenceOption;
 }
 
+// TODO: Move to data typings
 export interface Nanoflow {
     nanoflow: object[];
     paramsSpec: { Progress: string };
 }
 
-export default class ReferenceSelectorContainer extends Component<DropdownTypeaheadReferenceContainerProps, ReferenceSelectorState> {
+// TODO: Names of Props is too long
+export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     private subscriptionHandles: number[] = [];
-    readonly state: ReferenceSelectorState = {
+    readonly state: ContainerState = {
         options: [],
         selected: {}
     };
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
-    // private readonly executeOnChangeEvent: Event<string> = this.OnChangeEvent.bind(this);
+    // private readonly executeOnChangeEvent:  = this.executeOnChangeEvent.bind(this);
 
     render() {
         return createElement(DropdownTypeaheadReference as any, {
             attribute: this.props.attribute,
             data: this.state.options,
+            emptyCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
+            isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
             selectedValue: this.state.selected,
             showLabel: this.props.showLabel,
@@ -58,10 +64,10 @@ export default class ReferenceSelectorContainer extends Component<DropdownTypeah
         });
     }
 
-    componentWillReceiveProps(newProps: DropdownTypeaheadReferenceContainerProps) {
-        if (newProps.mxObject !== this.props.mxObject) {
-        this.retrieveOptions(newProps);
-        this.resetSubscriptions(newProps.mxObject);
+    componentWillReceiveProps(newProps: ContainerProps) {
+        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
+            this.retrieveOptions(newProps);
+            this.resetSubscriptions(newProps.mxObject);
         }
     }
 
@@ -71,47 +77,32 @@ export default class ReferenceSelectorContainer extends Component<DropdownTypeah
 
     private setOptions = (Data: Promise<FetchedData>) => {
         const dataOptions: referenceOption[] = [];
-        let selected: referenceOption = {};
 
         Promise.all([ Data ])
-        .then((value) => {
+        .then((value: FetchedData[]) => {
             const mendixObjects = value[0].mxObjects;
             if (this.props.attribute && mendixObjects) {
                 for (const mxObject of mendixObjects) {
                     dataOptions.push({ label: mxObject.get(this.props.attribute) as string, guid: mxObject.getGuid() });
                 }
             }
-            if (this.props.emptyOptionCaption.trim() === "") {
-                Promise.all([ this.fetchDataByreference() ])
-                .then((defaultvalue) => {
-                    const MendixObject = defaultvalue[0];
-                    // this.setState({ selected: this.getValue(MendixObject) });
-                    selected = this.getValue(MendixObject);
-                })
-                .catch(message => mx.ui.error(message));
-            } else {
-                selected = { guid: "default" , label: this.props.emptyOptionCaption };
-            }
-            this.setState({ options: dataOptions, selected });
+            this.setState({ options: dataOptions });
         });
     }
+
+    private isReadOnly = (): boolean => this.props.editable !== "default";
 
     private handleSubscriptions = () => {
         Promise.all([ this.fetchDataByreference() ])
-            .then((values) => {
+            .then((values: mendix.lib.MxObject[]) => {
                 const MendixObject = values[0];
                 this.setState({ selected: this.getValue(MendixObject) });
             })
-            .catch(message => mx.ui.error(message));
+            .catch(mx.ui.error);
     }
 
     private fetchDataByreference(): Promise<mendix.lib.MxObject> {
-        return new Promise((resolve) => {
-            this.props.mxObject.fetch(this.props.entityPath,
-                (value) => {
-                resolve(value as any);
-            });
-        });
+        return new Promise((resolve) => this.props.mxObject.fetch(this.props.entityPath, resolve));
     }
 
     private getValue(mxObject: mendix.lib.MxObject) {
@@ -173,10 +164,12 @@ export default class ReferenceSelectorContainer extends Component<DropdownTypeah
         }
     }
 
-    private retrieveOptions(props: DropdownTypeaheadReferenceContainerProps) {
+    private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
         const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
-        const options = {
+        const attributeReference = `${props.entityPath}${props.attribute}`;
+        const options: FetchDataOptions = {
+            attributes: [ attributeReference ],
             constraint: entityConstraint,
             entity,
             guid: mxObject.getGuid(),
@@ -187,6 +180,6 @@ export default class ReferenceSelectorContainer extends Component<DropdownTypeah
             source
         };
 
-        this.setOptions(fetchData(options as FetchDataOptions));
+        this.setOptions(fetchData(options));
     }
 }

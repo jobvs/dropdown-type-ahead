@@ -6,12 +6,14 @@ import "../ui/DropdownTypeaheadReference.scss";
 export interface DropdownTypeaheadReferenceProps {
     style?: object;
     readOnly: boolean;
-    data: any;
+    data: referenceOption[];
     value: string;
     label: string;
-    showLabel: "yes" | "no";
+    showLabel: boolean;
+    emptyCaption: string;
+    isReadOnly: boolean;
     selectedValue: referenceOption;
-    handleOnchange: (selectedOption: any) => void;
+    handleOnchange: (selectedOption: referenceOption) => void;
     handleClick: () => void;
 }
 
@@ -38,9 +40,11 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
 
     private renderSelector() {
         return createElement("div", { className: "div-wrapper" },
-            createElement(Select, {
+            createElement(Select as any, {
+                isDisabled: this.props.isReadOnly,
                 onChange: this.props.handleOnchange,
                 options: this.props.data,
+                placeholder: this.props.emptyCaption,
                 value: this.props.selectedValue
             })
         );

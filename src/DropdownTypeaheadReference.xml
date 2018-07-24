@@ -37,14 +37,10 @@
             <category>Appearance</category>
             <description>Text displayed before selection</description>
         </property>
-        <property key="showLabel" type="enumeration" defaultValue="yes">
+        <property key="showLabel" type="boolean" defaultValue="true">
             <caption>Show caption</caption>
             <category>Appearance</category>
             <description/>
-            <enumerationValues>
-                <enumerationValue key="yes">Yes</enumerationValue>
-                <enumerationValue key="no">No</enumerationValue>
-            </enumerationValues>
         </property>
         <property key="labelCaption" type="string" required="false">
             <caption>Label caption</caption>

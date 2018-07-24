@@ -2,16 +2,16 @@ import { Component, createElement } from "react";
 
 import { parseStyle } from "./utils/ContainerUtils";
 import { DropdownTypeaheadReference } from "./components/DropdownTypeaheadReference";
-import { DropdownTypeaheadReferenceContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
+import { ContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
 
 declare function require(name: string): string;
 
 type VisibilityMap = {
-    [P in keyof DropdownTypeaheadReferenceContainerProps]: boolean;
+    [P in keyof ContainerProps]: boolean;
 };
 
 // tslint:disable-next-line class-name
-export class preview extends Component<DropdownTypeaheadReferenceContainerProps, {}> {
+export class preview extends Component<ContainerProps, {}> {
     private selected = {
         label: this.props.emptyOptionCaption,
         value: "noGuid"
@@ -33,7 +33,7 @@ export function getPreviewCss() {
     return require("./ui/DropdownTypeaheadReference.scss");
 }
 
-export function getVisibleProperties(valueMap: DropdownTypeaheadReferenceContainerProps, visibilityMap: VisibilityMap) {
+export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: VisibilityMap) {
     visibilityMap.source = valueMap.microflow === "microflow";
 
     return visibilityMap;
