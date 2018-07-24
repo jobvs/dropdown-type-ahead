@@ -18,7 +18,7 @@ export interface DropdownTypeaheadReferenceProps {
 }
 
 // tslint:disable-next-line:interface-over-type-literal
-export type referenceOption = { guid?: string, label?: string };
+export type referenceOption = { value?: string, label?: string };
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     render() {
@@ -39,14 +39,14 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-        return createElement("div", { className: "div-wrapper" },
-            createElement(Select as any, {
-                isDisabled: this.props.isReadOnly,
-                onChange: this.props.handleOnchange,
-                options: this.props.data,
-                placeholder: this.props.emptyCaption,
-                value: this.props.selectedValue
-            })
-        );
+            return createElement("div", { className: "div-wrapper" },
+                createElement(Select as any, {
+                    isDisabled: this.props.isReadOnly,
+                    onChange: this.props.handleOnchange,
+                    options: this.props.data,
+                    placeholder: this.props.emptyCaption,
+                    value: this.props.selectedValue
+                })
+            );
     }
 }

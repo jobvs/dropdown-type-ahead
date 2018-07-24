@@ -1,6 +1,6 @@
 import { ChangeEvent, Component, createElement } from "react";
 import { parseStyle } from "../utils/ContainerUtils";
-import { FetchDataOptions, FetchedData, fetchData } from "../utils/data";
+import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/data";
 import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
@@ -34,12 +34,6 @@ export interface ContainerState {
     selected: referenceOption;
 }
 
-// TODO: Move to data typings
-export interface Nanoflow {
-    nanoflow: object[];
-    paramsSpec: { Progress: string };
-}
-
 // TODO: Names of Props is too long
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     private subscriptionHandles: number[] = [];
@@ -48,7 +42,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         selected: {}
     };
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
-    // private readonly executeOnChangeEvent:  = this.executeOnChangeEvent.bind(this);
 
     render() {
         return createElement(DropdownTypeaheadReference as any, {
@@ -65,6 +58,14 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     componentWillReceiveProps(newProps: ContainerProps) {
+        if (Object.keys(this.state.selected).length === 0) {
+            Promise.all([ this.fetchDataByreference(newProps.mxObject) ])
+            .then((values: mendix.lib.MxObject[]) => {
+                const MendixObject = values[0];
+                this.setState({ selected: this.getValue(MendixObject) });
+            })
+            .catch(mx.ui.error);
+        }
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             this.retrieveOptions(newProps);
             this.resetSubscriptions(newProps.mxObject);
@@ -83,7 +84,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             const mendixObjects = value[0].mxObjects;
             if (this.props.attribute && mendixObjects) {
                 for (const mxObject of mendixObjects) {
-                    dataOptions.push({ label: mxObject.get(this.props.attribute) as string, guid: mxObject.getGuid() });
+                    dataOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
                 }
             }
             this.setState({ options: dataOptions });
@@ -93,7 +94,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     private isReadOnly = (): boolean => this.props.editable !== "default";
 
     private handleSubscriptions = () => {
-        Promise.all([ this.fetchDataByreference() ])
+        Promise.all([ this.fetchDataByreference(this.props.mxObject) ])
             .then((values: mendix.lib.MxObject[]) => {
                 const MendixObject = values[0];
                 this.setState({ selected: this.getValue(MendixObject) });
@@ -101,14 +102,14 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             .catch(mx.ui.error);
     }
 
-    private fetchDataByreference(): Promise<mendix.lib.MxObject> {
-        return new Promise((resolve) => this.props.mxObject.fetch(this.props.entityPath, resolve));
+    private fetchDataByreference(mxObject: mendix.lib.MxObject): Promise<mendix.lib.MxObject> {
+        return new Promise((resolve) => mxObject.fetch(this.props.entityPath, resolve));
     }
 
     private getValue(mxObject: mendix.lib.MxObject) {
         return {
-            guid: mxObject.getGuid(),
-            label: mxObject.get(this.props.attribute) as string
+            label: mxObject.get(this.props.attribute) as string,
+            value: mxObject.getGuid()
         };
     }
 
@@ -134,9 +135,8 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         if (!this.props.mxObject) {
             return;
         }
-
-        if (recentSelection.guid) {
-        this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.guid);
+        if (recentSelection.value) {
+        this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value);
         }
         this.executeOnChangeEvent();
     }
