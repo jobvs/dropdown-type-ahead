@@ -1,6 +1,6 @@
 import { ChangeEvent, Component, createElement } from "react";
 import { parseStyle } from "../utils/ContainerUtils";
-import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/data";
+import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Datae";
 import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {

@@ -44,9 +44,16 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                     isDisabled: this.props.isReadOnly,
                     onChange: this.props.handleOnchange,
                     options: this.props.data,
-                    placeholder: this.props.emptyCaption,
-                    value: this.props.selectedValue
+                    ...this.createSelectProp()
                 })
             );
+    }
+
+    private createSelectProp(): { placeholder?: string, value?: referenceOption } {
+        if (Object.keys(this.props.selectedValue).length > 0 && this.props.selectedValue.label !== "") {
+            return { value: this.props.selectedValue };
+        } else {
+            return { placeholder: this.props.emptyCaption };
+        }
     }
 }

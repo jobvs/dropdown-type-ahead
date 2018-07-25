@@ -146,5 +146,6 @@ const getReferences = (attributePaths: string[]): ReferencesSpec => {
     attributePaths.forEach(attribute => {
         references = addPathReference(references, attribute);
     });
+
     return references;
 };
