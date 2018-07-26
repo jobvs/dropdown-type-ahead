@@ -1,6 +1,6 @@
 import { ChangeEvent, Component, createElement } from "react";
 import { parseStyle } from "../utils/ContainerUtils";
-import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Datae";
+import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Data";
 import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
@@ -45,7 +45,9 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     render() {
         return createElement(DropdownTypeaheadReference as any, {
+            alertMessage: ReferenceSelectorContainer.validateProps(this.props),
             attribute: this.props.attribute,
+            className: this.props.class,
             data: this.state.options,
             emptyCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
@@ -66,6 +68,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             })
             .catch(mx.ui.error);
         }
+
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             this.retrieveOptions(newProps);
             this.resetSubscriptions(newProps.mxObject);
@@ -88,7 +91,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
                 }
             }
             this.setState({ options: dataOptions });
-        });
+        }).catch(mx.ui.error);
     }
 
     private isReadOnly = (): boolean => this.props.editable !== "default";
@@ -144,6 +147,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     private executeOnChangeEvent = () => {
         const { mxform, mxObject, onChangeEvent, onChangeMicroflow, onChangeNanoflow } = this.props;
         const context = new mendix.lib.MxContext();
+
         context.setContext(mxObject.getEntity(), mxObject.getGuid());
         if (onChangeEvent === "callMicroflow" && onChangeMicroflow) {
             window.mx.ui.action(onChangeMicroflow, {
@@ -162,6 +166,25 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
                 origin: mxform
             });
         }
+    }
+
+    public static validateProps(props: ContainerProps): string {
+        const message: string[] = [];
+
+        if (props.onChangeEvent === "callMicroflow" && !props.onChangeMicroflow) {
+            message.push("On change event is set to 'Call a microflow' but no microflow is selected");
+        } else if (props.onChangeEvent === "callNanoflow" && (JSON.stringify(props.onChangeNanoflow) === JSON.stringify({}))) {
+            message.push("On change event is set to 'Call a nanoflow' but no nanoflow is selected");
+        } else if (props.labelCaption.trim() === "" && props.showLabel === true) {
+            message.push("Show label is enabled but no label is provided");
+        }
+
+        if (message.length) {
+            const errorMessage = `Configuration error in widget ${props.friendlyId}: ${message.join(", ")}`;
+            return errorMessage;
+        }
+
+        return message.join(", ");
     }
 
     private retrieveOptions(props: ContainerProps) {

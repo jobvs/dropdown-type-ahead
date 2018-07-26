@@ -1,6 +1,8 @@
 import { Component, createElement } from "react";
 import Select from "react-select";
 
+import { Alert } from "./Alert";
+import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
 
 export interface DropdownTypeaheadReferenceProps {
@@ -14,7 +16,8 @@ export interface DropdownTypeaheadReferenceProps {
     isReadOnly: boolean;
     selectedValue: referenceOption;
     handleOnchange: (selectedOption: referenceOption) => void;
-    handleClick: () => void;
+    className: string;
+    alertMessage: string;
 }
 
 // tslint:disable-next-line:interface-over-type-literal
@@ -39,14 +42,20 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-            return createElement("div", { className: "div-wrapper" },
-                createElement(Select as any, {
-                    isDisabled: this.props.isReadOnly,
-                    onChange: this.props.handleOnchange,
-                    options: this.props.data,
-                    ...this.createSelectProp()
-                })
-            );
+        return createElement("div", {
+            className: classNames(
+                "div-wrapper",
+                this.props.className,
+                { "div-wrapper": this.props.readOnly }
+            )},
+            createElement(Select as any, {
+                isDisabled: this.props.isReadOnly,
+                onChange: this.props.handleOnchange,
+                options: this.props.data,
+                ...this.createSelectProp()
+            }),
+            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
+        );
     }
 
     private createSelectProp(): { placeholder?: string, value?: referenceOption } {
