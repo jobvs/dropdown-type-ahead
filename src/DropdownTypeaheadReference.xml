@@ -32,10 +32,10 @@
                 <enumerationValue key="never">Never</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="emptyOptionCaption" type="string" required="false" >
+        <property key="emptyOptionCaption" type="string" required="false">
             <caption>Empty option caption</caption>
             <category>Appearance</category>
-            <description>Text displayed before selection</description>
+            <description>Text displayed when no selection is made</description>
         </property>
         <property key="showLabel" type="boolean" defaultValue="true">
             <caption>Show caption</caption>
@@ -96,13 +96,13 @@
         <property key="onChangeMicroflow" type="microflow" required="false">
             <caption>Onchange microflow</caption>
             <category>Events</category>
-            <description>The microflow that will be executed on color change</description>
+            <description>Microflow executed on change selection</description>
             <returnType type="Void"/>
         </property>
         <property key="onChangeNanoflow" type="nanoflow" required="false">
             <caption>Onchange nanoflow</caption>
             <category>Events</category>
-            <description>The nanoflow that will be executed on color change</description>
+            <description>Nanoflow executed on change selection</description>
             <returnType type="Void"/>
         </property>
     </properties>

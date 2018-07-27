@@ -49,7 +49,9 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 { "div-wrapper": this.props.readOnly }
             )},
             createElement(Select as any, {
+                // isClearable: true,
                 isDisabled: this.props.isReadOnly,
+                isSearchable: true,
                 onChange: this.props.handleOnchange,
                 options: this.props.data,
                 ...this.createSelectProp()

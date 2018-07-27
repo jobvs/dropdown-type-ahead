@@ -37,6 +37,7 @@ export interface ContainerState {
 // TODO: Names of Props is too long
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     private subscriptionHandles: number[] = [];
+    // private editable = true;
     readonly state: ContainerState = {
         options: [],
         selected: {}
@@ -45,7 +46,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     render() {
         return createElement(DropdownTypeaheadReference as any, {
-            alertMessage: ReferenceSelectorContainer.validateProps(this.props),
+            alertMessage: this.validateProps(this.props),
             attribute: this.props.attribute,
             className: this.props.class,
             data: this.state.options,
@@ -94,7 +95,15 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }).catch(mx.ui.error);
     }
 
-    private isReadOnly = (): boolean => this.props.editable !== "default";
+    private isReadOnly = (): boolean => {
+        if (this.props.editable !== "default") {
+            return true;
+        }
+        // else if (!this.editable) {
+        //     return true;
+        // }
+        return false;
+    }
 
     private handleSubscriptions = () => {
         Promise.all([ this.fetchDataByreference(this.props.mxObject) ])
@@ -168,7 +177,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    public static validateProps(props: ContainerProps): string {
+    private validateProps(props: ContainerProps): string {
         const message: string[] = [];
 
         if (props.onChangeEvent === "callMicroflow" && !props.onChangeMicroflow) {
@@ -181,6 +190,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
         if (message.length) {
             const errorMessage = `Configuration error in widget ${props.friendlyId}: ${message.join(", ")}`;
+            // this.editable = false;
             return errorMessage;
         }
 
