@@ -47,6 +47,11 @@
             <category>Appearance</category>
             <description/>
         </property>
+        <property key="isClearable" type="boolean" defaultValue="true">
+            <caption>Enable clear selection</caption>
+            <category>Appearance</category>
+            <description>Clears a selected option</description>
+        </property>
         <property key="source" type="enumeration" defaultValue="xpath">
             <caption>Source</caption>
             <category>Selectable objects</category>

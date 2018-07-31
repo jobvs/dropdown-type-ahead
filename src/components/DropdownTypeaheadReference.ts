@@ -7,12 +7,12 @@ import "../ui/DropdownTypeaheadReference.scss";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: object;
-    readOnly: boolean;
     data: referenceOption[];
     value: string;
     label: string;
     showLabel: boolean;
     emptyCaption: string;
+    isClearable: boolean;
     isReadOnly: boolean;
     selectedValue: referenceOption;
     handleOnchange: (selectedOption: referenceOption) => void;
@@ -25,7 +25,9 @@ export type referenceOption = { value?: string, label?: string };
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     render() {
-        return createElement("div", { className: "widget-reference-selector-wrapper" },
+        return createElement("div", {
+            className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
+        },
             this.renderLabel(),
             this.renderSelector()
         );
@@ -45,11 +47,11 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         return createElement("div", {
             className: classNames(
                 "div-wrapper",
-                this.props.className,
-                { "div-wrapper": this.props.readOnly }
+                this.props.isReadOnly ? "disabled" : "enabled",
+                this.props.showLabel ? "showlabel" : "nolabel"
             )},
             createElement(Select as any, {
-                // isClearable: true,
+                isClearable: this.props.isClearable,
                 isDisabled: this.props.isReadOnly,
                 isSearchable: true,
                 onChange: this.props.handleOnchange,
@@ -61,7 +63,9 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private createSelectProp(): { placeholder?: string, value?: referenceOption } {
-        if (Object.keys(this.props.selectedValue).length > 0 && this.props.selectedValue.label !== "") {
+        if (this.props.selectedValue === undefined) {
+            return { placeholder: this.props.emptyCaption };
+        } else if (JSON.stringify(this.props.selectedValue) !== "{}" && this.props.selectedValue.label !== "") {
             return { value: this.props.selectedValue };
         } else {
             return { placeholder: this.props.emptyCaption };

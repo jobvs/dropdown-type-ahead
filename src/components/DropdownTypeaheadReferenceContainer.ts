@@ -21,6 +21,7 @@ export interface ContainerProps extends WrapperProps {
     source: "xpath"| "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
+    isClearable: boolean;
     nanoflow: Nanoflow;
     microflow: string;
     onChangeNanoflow: Nanoflow;
@@ -31,12 +32,12 @@ export interface ContainerProps extends WrapperProps {
 
 export interface ContainerState {
     options: referenceOption[];
-    selected: referenceOption;
+    selected: referenceOption | undefined;
 }
 
-// TODO: Names of Props is too long
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     private subscriptionHandles: number[] = [];
+    private association: string = this.props.entityPath.split("/")[0];
     // private editable = true;
     readonly state: ContainerState = {
         options: [],
@@ -52,6 +53,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             data: this.state.options,
             emptyCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
+            isClearable: this.props.isClearable,
             isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
             selectedValue: this.state.selected,
@@ -61,13 +63,17 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     componentWillReceiveProps(newProps: ContainerProps) {
-        if (Object.keys(this.state.selected).length === 0) {
+        if (JSON.stringify(this.state.selected) === "{}") {
+            if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
             Promise.all([ this.fetchDataByreference(newProps.mxObject) ])
             .then((values: mendix.lib.MxObject[]) => {
+                if (values.length !== 0) {
                 const MendixObject = values[0];
                 this.setState({ selected: this.getValue(MendixObject) });
+                }
             })
             .catch(mx.ui.error);
+        }
         }
 
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
@@ -106,12 +112,14 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private handleSubscriptions = () => {
+        if (this.props.mxObject.getOriginalReferences(this.association).length !== 0) {
         Promise.all([ this.fetchDataByreference(this.props.mxObject) ])
             .then((values: mendix.lib.MxObject[]) => {
                 const MendixObject = values[0];
                 this.setState({ selected: this.getValue(MendixObject) });
             })
             .catch(mx.ui.error);
+        }
     }
 
     private fetchDataByreference(mxObject: mendix.lib.MxObject): Promise<mendix.lib.MxObject> {
@@ -119,16 +127,17 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private getValue(mxObject: mendix.lib.MxObject) {
-        return {
-            label: mxObject.get(this.props.attribute) as string,
-            value: mxObject.getGuid()
-        };
+        if (mxObject) {
+            return {
+                label: mxObject.get(this.props.attribute) as string,
+                value: mxObject.getGuid()
+            };
+        } else return;
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
         this.subscriptionHandles = [];
-        const attr = this.props.entityPath.split("/")[0];
 
         if (mxObject) {
             this.subscriptionHandles.push(window.mx.data.subscribe({
@@ -136,7 +145,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
                 guid: mxObject.getGuid()
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
-                attr,
+                attr: this.association,
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
@@ -147,9 +156,18 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         if (!this.props.mxObject) {
             return;
         }
-        if (recentSelection.value) {
-        this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value);
+        if (this.props.isClearable) {
+        if (!recentSelection && this.state.selected) {
+                 this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
+            } else {
+                // this.props.mxObject.set(this.props.attribute, "");
+                this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as any);
+            }
         }
+        // else {
+        //     this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ recentSelection.value as string ]);
+        // }
+        // this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as string);
         this.executeOnChangeEvent();
     }
 
