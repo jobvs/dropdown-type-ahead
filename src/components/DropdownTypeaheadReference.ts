@@ -24,6 +24,8 @@ export interface DropdownTypeaheadReferenceProps {
 export type referenceOption = { value?: string, label?: string };
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
+    // private Node?: HTMLDivElement;
+
     render() {
         return createElement("div", {
             className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
@@ -43,6 +45,10 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         return;
     }
 
+    // private setReference = (Node: HTMLDivElement) => {
+    //     this.Node = Node;
+    // }
+
     private renderSelector() {
         return createElement("div", {
             className: classNames(
@@ -56,6 +62,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 isSearchable: true,
                 onChange: this.props.handleOnchange,
                 options: this.props.data,
+                // ref: this.setReference,
                 ...this.createSelectProp()
             }),
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
@@ -63,12 +70,9 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private createSelectProp(): { placeholder?: string, value?: referenceOption } {
-        if (this.props.selectedValue === undefined) {
-            return { placeholder: this.props.emptyCaption };
-        } else if (JSON.stringify(this.props.selectedValue) !== "{}" && this.props.selectedValue.label !== "") {
+        if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
-        } else {
-            return { placeholder: this.props.emptyCaption };
         }
+        return { placeholder: this.props.emptyCaption };
     }
 }

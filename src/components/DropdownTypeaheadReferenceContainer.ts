@@ -32,16 +32,14 @@ export interface ContainerProps extends WrapperProps {
 
 export interface ContainerState {
     options: referenceOption[];
-    selected: referenceOption | undefined;
+    selected?: referenceOption;
 }
 
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     private subscriptionHandles: number[] = [];
     private association: string = this.props.entityPath.split("/")[0];
-    // private editable = true;
     readonly state: ContainerState = {
-        options: [],
-        selected: {}
+        options: []
     };
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
@@ -63,22 +61,18 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     componentWillReceiveProps(newProps: ContainerProps) {
-        if (JSON.stringify(this.state.selected) === "{}") {
-            if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
-            Promise.all([ this.fetchDataByreference(newProps.mxObject) ])
-            .then((values: mendix.lib.MxObject[]) => {
-                if (values.length !== 0) {
-                const MendixObject = values[0];
-                this.setState({ selected: this.getValue(MendixObject) });
-                }
-            })
-            .catch(mx.ui.error);
-        }
-        }
-
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
+            if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
+                    this.fetchDataByreference(newProps.mxObject)
+                        .then((value: mendix.lib.MxObject) => {
+                            this.setState({ selected: this.getValue(value) });
+                        })
+                        .catch(mx.ui.error);
+            }
             this.retrieveOptions(newProps);
             this.resetSubscriptions(newProps.mxObject);
+        } else {
+            this.setState({ selected: undefined });
         }
     }
 
@@ -86,37 +80,27 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
     }
 
-    private setOptions = (Data: Promise<FetchedData>) => {
+    private setOptions = (mendixObjects: FetchedData) => {
         const dataOptions: referenceOption[] = [];
-
-        Promise.all([ Data ])
-        .then((value: FetchedData[]) => {
-            const mendixObjects = value[0].mxObjects;
-            if (this.props.attribute && mendixObjects) {
-                for (const mxObject of mendixObjects) {
-                    dataOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
-                }
-            }
-            this.setState({ options: dataOptions });
-        }).catch(mx.ui.error);
+        const guids: string[] = [];
+        if (this.props.attribute && mendixObjects.mxObjects && mendixObjects.mxObjects.length) {
+            mendixObjects.mxObjects.forEach(mxObject => {
+                dataOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+                guids.push(mxObject.getGuid());
+            });
+        }
+        this.setState({ options: dataOptions });
     }
 
     private isReadOnly = (): boolean => {
-        if (this.props.editable !== "default") {
-            return true;
-        }
-        // else if (!this.editable) {
-        //     return true;
-        // }
-        return false;
+        return this.props.editable !== "default";
     }
 
-    private handleSubscriptions = () => {
+    private handleSubscriptions = (_somevalue: any) => {
         if (this.props.mxObject.getOriginalReferences(this.association).length !== 0) {
-        Promise.all([ this.fetchDataByreference(this.props.mxObject) ])
-            .then((values: mendix.lib.MxObject[]) => {
-                const MendixObject = values[0];
-                this.setState({ selected: this.getValue(MendixObject) });
+        this.fetchDataByreference(this.props.mxObject)
+            .then((mxObject: mendix.lib.MxObject) => {
+                this.setState({ selected: this.getValue(mxObject) });
             })
             .catch(mx.ui.error);
         }
@@ -132,7 +116,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
                 label: mxObject.get(this.props.attribute) as string,
                 value: mxObject.getGuid()
             };
-        } else return;
+        }
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
@@ -152,23 +136,24 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private onChange(recentSelection: referenceOption) {
+    private onChange(recentSelection: referenceOption, actionMeta: any) {
         if (!this.props.mxObject) {
             return;
         }
-        if (this.props.isClearable) {
-        if (!recentSelection && this.state.selected) {
-                 this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
+
+        if (!recentSelection) {
+            if (this.state.selected) {
+                this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
             } else {
-                // this.props.mxObject.set(this.props.attribute, "");
-                this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as any);
+                this.setState({ selected: undefined });
             }
+        } else {
+            this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as any);
         }
-        // else {
-        //     this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ recentSelection.value as string ]);
-        // }
-        // this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as string);
+
         this.executeOnChangeEvent();
+        // tslint:disable-next-line:no-console
+        console.log(actionMeta);
     }
 
     private executeOnChangeEvent = () => {
@@ -208,7 +193,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
         if (message.length) {
             const errorMessage = `Configuration error in widget ${props.friendlyId}: ${message.join(", ")}`;
-            // this.editable = false;
             return errorMessage;
         }
 
@@ -231,6 +215,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             source
         };
 
-        this.setOptions(fetchData(options));
+        fetchData(options).then(this.setOptions.bind(this)).catch(mx.ui.error);
     }
 }
