@@ -125,9 +125,7 @@
     -webkit-overflow-scrolling: touch;
     position: relative;
     box-sizing: border-box;
-    // background-color: #FFF;
     background-color: inherit ;
-
 }
 
 .css-1wy0on6 {
@@ -145,7 +143,6 @@
     -webkit-flex-shrink: 0;
     -ms-flex-negative: 0;
     flex-shrink: 0;
-    // background-color: #FFF;
     background-color: inherit ;
     box-sizing: border-box;
 }
@@ -175,8 +172,6 @@
 }
 
 .css-162g8z5 {
-    // background-color: #FFF !important;
-    //     /* border: 1px solid #D7D7D7; */ color: #555555; */
     background-color: #eee !important;
     opacity: 1;
     :hover{ cursor: not-allowed !important;}
@@ -184,4 +179,11 @@
 
 .css-va7pk8 {
     color: #555555 !important;
+}
+
+.modal-content.mx-window-content {
+    overflow: visible;
+}
+.modal-body.mx-window-body {
+    overflow: visible;
 }

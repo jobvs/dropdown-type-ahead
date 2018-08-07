@@ -36,7 +36,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderLabel() {
-        if (this.props.showLabel) {
+        if (this.props.showLabel && this.props.label.trim() !== "") {
             return createElement("div", { className: "div-wrapper-label" },
                 createElement("label", { className: "mx-control-label" },
                     this.props.label));
@@ -57,19 +57,20 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 this.props.showLabel ? "showlabel" : "nolabel"
             )},
             createElement(Select as any, {
+                classNamePrefix: "react-select",
                 isClearable: this.props.isClearable,
                 isDisabled: this.props.isReadOnly,
                 isSearchable: true,
                 onChange: this.props.handleOnchange,
                 options: this.props.data,
                 // ref: this.setReference,
-                ...this.createSelectProp()
+                ...this.createSelectorProp()
             }),
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
         );
     }
 
-    private createSelectProp(): { placeholder?: string, value?: referenceOption } {
+    private createSelectorProp(): { placeholder?: string, value?: referenceOption } {
         if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }

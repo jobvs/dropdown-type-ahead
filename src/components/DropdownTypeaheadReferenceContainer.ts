@@ -63,7 +63,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     componentWillReceiveProps(newProps: ContainerProps) {
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
-                    this.fetchDataByreference(newProps.mxObject)
+                    this.fetchDataByReference(newProps.mxObject)
                         .then((value: mendix.lib.MxObject) => {
                             this.setState({ selected: this.getValue(value) });
                         })
@@ -96,9 +96,9 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         return this.props.editable !== "default";
     }
 
-    private handleSubscriptions = (_somevalue: any) => {
+    private handleSubscriptions = () => {
         if (this.props.mxObject.getOriginalReferences(this.association).length !== 0) {
-        this.fetchDataByreference(this.props.mxObject)
+        this.fetchDataByReference(this.props.mxObject)
             .then((mxObject: mendix.lib.MxObject) => {
                 this.setState({ selected: this.getValue(mxObject) });
             })
@@ -106,7 +106,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private fetchDataByreference(mxObject: mendix.lib.MxObject): Promise<mendix.lib.MxObject> {
+    private fetchDataByReference(mxObject: mendix.lib.MxObject): Promise<mendix.lib.MxObject> {
         return new Promise((resolve) => mxObject.fetch(this.props.entityPath, resolve));
     }
 
@@ -136,7 +136,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private onChange(recentSelection: referenceOption, actionMeta: any) {
+    private onChange(recentSelection: referenceOption) {
         if (!this.props.mxObject) {
             return;
         }
@@ -152,8 +152,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
 
         this.executeOnChangeEvent();
-        // tslint:disable-next-line:no-console
-        console.log(actionMeta);
     }
 
     private executeOnChangeEvent = () => {
@@ -187,12 +185,15 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             message.push("On change event is set to 'Call a microflow' but no microflow is selected");
         } else if (props.onChangeEvent === "callNanoflow" && (JSON.stringify(props.onChangeNanoflow) === JSON.stringify({}))) {
             message.push("On change event is set to 'Call a nanoflow' but no nanoflow is selected");
-        } else if (props.labelCaption.trim() === "" && props.showLabel === true) {
+        }
+
+        if (props.labelCaption.trim() === "" && props.showLabel) {
             message.push("Show label is enabled but no label is provided");
         }
 
         if (message.length) {
-            const errorMessage = `Configuration error in widget ${props.friendlyId}: ${message.join(", ")}`;
+            const widgetName = props.friendlyId.split(".")[2];
+            const errorMessage = `Configuration error in widget - ${widgetName}: ${message.join(", ")}`;
             return errorMessage;
         }
 
@@ -201,7 +202,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
+        const { entityConstraint, source, attribute, sortOrder, microflow, mxObject, nanoflow } = props;
         const attributeReference = `${props.entityPath}${props.attribute}`;
         const options: FetchDataOptions = {
             attributes: [ attributeReference ],
@@ -211,6 +212,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             microflow,
             mxform: this.props.mxform,
             nanoflow,
+            sortAttribute: attribute,
             sortOrder,
             source
         };

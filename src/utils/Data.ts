@@ -90,7 +90,7 @@ export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
                 fetchByMicroflow(options.microflow, guid)
                     .then(mxObjects => resolve({ mxObjects }))
                     .catch(message => reject({ message }));
-            } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) {// nanoflow
+            } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) { // nanoflow
                 fetchByNanoflow(options.nanoflow, options.mxform)
                     .then(mxObjects => resolve({ mxObjects }))
                     .catch(message => reject({ message }));
