@@ -38,7 +38,7 @@
             <description>Text displayed when no selection is made</description>
         </property>
         <property key="showLabel" type="boolean" defaultValue="true">
-            <caption>Show caption</caption>
+            <caption>Show label caption</caption>
             <category>Appearance</category>
             <description/>
         </property>
