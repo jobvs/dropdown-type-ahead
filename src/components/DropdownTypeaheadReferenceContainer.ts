@@ -1,4 +1,6 @@
 import { ChangeEvent, Component, createElement } from "react";
+import * as initializeReactFastclick from "react-fastclick";
+
 import { parseStyle } from "../utils/ContainerUtils";
 import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Data";
 import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
@@ -18,7 +20,7 @@ export interface ContainerProps extends WrapperProps {
     entityConstraint: string;
     emptyOptionCaption: string;
     labelCaption: string;
-    source: "xpath"| "microflow" | "nanoflow";
+    source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
     isClearable: boolean;
@@ -60,14 +62,18 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         });
     }
 
+    componentDidMount() {
+        initializeReactFastclick();
+    }
+
     componentWillReceiveProps(newProps: ContainerProps) {
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
-                    this.fetchDataByReference(newProps.mxObject)
-                        .then((value: mendix.lib.MxObject) => {
-                            this.setState({ selected: this.getValue(value) });
-                        })
-                        .catch(mx.ui.error);
+                this.fetchDataByReference(newProps.mxObject)
+                    .then((value: mendix.lib.MxObject) => {
+                        this.setState({ selected: this.getValue(value) });
+                    })
+                    .catch(mx.ui.error);
             }
             this.retrieveOptions(newProps);
             this.resetSubscriptions(newProps.mxObject);
@@ -98,11 +104,11 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     private handleSubscriptions = () => {
         if (this.props.mxObject.getOriginalReferences(this.association).length !== 0) {
-        this.fetchDataByReference(this.props.mxObject)
-            .then((mxObject: mendix.lib.MxObject) => {
-                this.setState({ selected: this.getValue(mxObject) });
-            })
-            .catch(mx.ui.error);
+            this.fetchDataByReference(this.props.mxObject)
+                .then((mxObject: mendix.lib.MxObject) => {
+                    this.setState({ selected: this.getValue(mxObject) });
+                })
+                .catch(mx.ui.error);
         }
     }
 
@@ -136,22 +142,45 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private onChange(recentSelection: referenceOption) {
+    private onChange(recentSelection: referenceOption, metaData: any) {
         if (!this.props.mxObject) {
             return;
         }
 
-        if (!recentSelection) {
-            if (this.state.selected) {
-                this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
+        if (metaData.action === "pop-value") {
+            if (metaData.removedValue) {
+                this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ metaData.removedValue.value as string ]);
             } else {
                 this.setState({ selected: undefined });
             }
-        } else {
-            this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as any);
+        } else if (metaData.action === "select-option") {
+            this.props.mxObject.addReference(this.association, recentSelection.value as string);
+        } else if (metaData.action === "clear") {
+            if (this.state.selected) {
+                this.props.mxObject.removeReferences(this.association, [ this.state.selected.value as string ]);
+            } else {
+                this.setState({ selected: undefined });
+            }
         }
 
-        this.executeOnChangeEvent();
+        // if (!recentSelection) {
+        //         if (this.state.selected) {
+        //             this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
+        //         } else {
+        //             this.setState({ selected: undefined });
+        //         }
+        //     } else {
+        //         this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as string);
+        //     }
+
+        // tslint:disable-next-line:no-console
+        console.log(metaData.action);
+        if (this.state.selected && recentSelection) {
+            if (this.state.selected.value !== recentSelection.value) {
+                this.executeOnChangeEvent();
+            }
+
+        }
     }
 
     private executeOnChangeEvent = () => {

@@ -28,11 +28,11 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
 
     render() {
         return createElement("div", {
-            className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
-        },
-            this.renderLabel(),
-            this.renderSelector()
-        );
+                className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
+            },
+                this.renderLabel(),
+                this.renderSelector()
+            );
     }
 
     private renderLabel() {
@@ -57,7 +57,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 this.props.showLabel ? "showlabel" : "nolabel"
             )},
             createElement(Select as any, {
-                classNamePrefix: "react-select",
+                classNamePrefix: "widget-dropdown-type-ahead",
                 isClearable: this.props.isClearable,
                 isDisabled: this.props.isReadOnly,
                 isSearchable: true,
