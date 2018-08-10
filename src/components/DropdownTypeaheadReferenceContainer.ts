@@ -35,6 +35,7 @@ export interface ContainerProps extends WrapperProps {
 export interface ContainerState {
     options: referenceOption[];
     selected?: referenceOption;
+    isFetchingData?: boolean;
 }
 
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
@@ -99,7 +100,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private isReadOnly = (): boolean => {
-        return this.props.editable !== "default";
+        return !this.props.mxObject || (this.props.editable !== "default") || this.props.readOnly;
     }
 
     private handleSubscriptions = () => {
@@ -154,7 +155,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
                 this.setState({ selected: undefined });
             }
         } else if (metaData.action === "select-option") {
-            this.props.mxObject.addReference(this.association, recentSelection.value as string);
+                this.props.mxObject.addReference(this.association, recentSelection.value as string);
         } else if (metaData.action === "clear") {
             if (this.state.selected) {
                 this.props.mxObject.removeReferences(this.association, [ this.state.selected.value as string ]);
@@ -163,18 +164,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             }
         }
 
-        // if (!recentSelection) {
-        //         if (this.state.selected) {
-        //             this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ this.state.selected.value as string ]);
-        //         } else {
-        //             this.setState({ selected: undefined });
-        //         }
-        //     } else {
-        //         this.props.mxObject.addReference(this.props.entityPath.split("/")[0], recentSelection.value as string);
-        //     }
-
-        // tslint:disable-next-line:no-console
-        console.log(metaData.action);
         if (this.state.selected && recentSelection) {
             if (this.state.selected.value !== recentSelection.value) {
                 this.executeOnChangeEvent();

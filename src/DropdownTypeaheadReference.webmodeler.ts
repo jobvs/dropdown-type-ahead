@@ -20,9 +20,8 @@ export class preview extends Component<ContainerProps, {}> {
     render() {
         return createElement(DropdownTypeaheadReference as any, {
             attribute: this.props.attribute,
-            // data: this.state.options,
+            emptyCaption: this.selected.label,
             label: this.props.labelCaption,
-            selectedValue: this.selected.label,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
@@ -34,7 +33,16 @@ export function getPreviewCss() {
 }
 
 export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: VisibilityMap) {
-    visibilityMap.source = valueMap.microflow === "microflow";
+    visibilityMap.microflow = valueMap.source === "microflow";
+    visibilityMap.nanoflow = valueMap.source === "nanoflow";
+    visibilityMap.entityPath = valueMap.source === "xpath";
+    visibilityMap.onChangeMicroflow = valueMap.onChangeEvent === "callMicroflow";
+    visibilityMap.onChangeNanoflow = valueMap.onChangeEvent === "callNanoflow";
+
+    if (valueMap.source !== "xpath") {
+        visibilityMap.sortOrder = false;
+        visibilityMap.entityConstraint = false;
+    }
 
     return visibilityMap;
 }

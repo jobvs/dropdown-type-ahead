@@ -17,7 +17,7 @@ An input widget that can be used to display and edit associations
 Mendix 7.13.1
 
 ## Demo project
-[https://referenceselector100.mxapps.io](https://referenceselector100.mxapps.io)
+[https://dropdowntypeahead.mxapps.io]( https://dropdowntypeahead.mxapps.io)
 
 ## Usage
 ![dropdown-typeahead-reference](/assets/dropdown-typeahead-reference.png)
