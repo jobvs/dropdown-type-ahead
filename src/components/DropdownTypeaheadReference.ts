@@ -15,6 +15,7 @@ export interface DropdownTypeaheadReferenceProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectedValue: referenceOption;
+    loaded: boolean;
     handleOnchange: (selectedOption: referenceOption) => void;
     className: string;
     alertMessage: string;
@@ -27,12 +28,13 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     // private Node?: HTMLDivElement;
 
     render() {
-        return createElement("div", {
+        return !this.props.loaded ? createElement("div", {
                 className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
             },
                 this.renderLabel(),
                 this.renderSelector()
-            );
+            ) :
+            createElement("div", {});
     }
 
     private renderLabel() {

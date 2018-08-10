@@ -35,7 +35,7 @@ export interface ContainerProps extends WrapperProps {
 export interface ContainerState {
     options: referenceOption[];
     selected?: referenceOption;
-    isFetchingData?: boolean;
+    isLoading?: boolean;
 }
 
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
@@ -57,6 +57,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             isClearable: this.props.isClearable,
             isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
+            loaded: this.state.isLoading,
             selectedValue: this.state.selected,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
@@ -70,9 +71,10 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     componentWillReceiveProps(newProps: ContainerProps) {
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             if (newProps.mxObject.getOriginalReferences(this.association).length !== 0) {
+                this.setState({ isLoading: true });
                 this.fetchDataByReference(newProps.mxObject)
                     .then((value: mendix.lib.MxObject) => {
-                        this.setState({ selected: this.getValue(value) });
+                        this.setState({ selected: this.getValue(value), isLoading: false });
                     })
                     .catch(mx.ui.error);
             }
