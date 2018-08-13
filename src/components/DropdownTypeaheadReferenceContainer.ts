@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle } from "../utils/ContainerUtils";
 import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Data";
-import { DropdownTypeaheadReference, referenceOption } from "./DropdownTypeaheadReference";
+import { AttributeType, DropdownTypeaheadReference, metaData, referenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
     class: string;
@@ -15,6 +15,9 @@ interface WrapperProps {
 }
 
 export interface ContainerProps extends WrapperProps {
+    labelWidth: number;
+    weight: number;
+    labelOrientation?: "horizontal" | "vertical";
     attribute: string;
     entityPath: string;
     entityConstraint: string;
@@ -23,6 +26,7 @@ export interface ContainerProps extends WrapperProps {
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
+    sortAttributes: AttributeType[];
     isClearable: boolean;
     nanoflow: Nanoflow;
     microflow: string;
@@ -57,6 +61,8 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             isClearable: this.props.isClearable,
             isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
+            labelOrientation: this.props.labelOrientation,
+            labelWidth: this.props.labelWidth,
             loaded: this.state.isLoading,
             selectedValue: this.state.selected,
             showLabel: this.props.showLabel,
@@ -92,7 +98,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     private setOptions = (mendixObjects: FetchedData) => {
         const dataOptions: referenceOption[] = [];
         const guids: string[] = [];
-        if (this.props.attribute && mendixObjects.mxObjects && mendixObjects.mxObjects.length) {
+        if (this.props.attribute && mendixObjects.mxObjects && mendixObjects.mxObjects.length && !this.isReadOnly()) {
             mendixObjects.mxObjects.forEach(mxObject => {
                 dataOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
                 guids.push(mxObject.getGuid());
@@ -145,20 +151,20 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private onChange(recentSelection: referenceOption, metaData: any) {
+    private onChange(recentSelection: any, info: metaData) {
         if (!this.props.mxObject) {
             return;
         }
 
-        if (metaData.action === "pop-value") {
-            if (metaData.removedValue) {
-                this.props.mxObject.removeReferences(this.props.entityPath.split("/")[0], [ metaData.removedValue.value as string ]);
+        if (info.action === "pop-value") { // TODO
+            if (info.removedValue) {
+                this.props.mxObject.removeReferences(this.association, [ info.removedValue.value as string ]);
             } else {
                 this.setState({ selected: undefined });
             }
-        } else if (metaData.action === "select-option") {
+        } else if (info.action === "select-option") {
                 this.props.mxObject.addReference(this.association, recentSelection.value as string);
-        } else if (metaData.action === "clear") {
+        } else if (info.action === "clear") {
             if (this.state.selected) {
                 this.props.mxObject.removeReferences(this.association, [ this.state.selected.value as string ]);
             } else {
@@ -207,6 +213,10 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             message.push("On change event is set to 'Call a nanoflow' but no nanoflow is selected");
         }
 
+        if (props.labelCaption.trim() === "" && props.showLabel && (props.labelWidth > 11 || props.labelWidth < 1)) {
+            message.push("Label width should be a value between 0 and 12");
+        }
+
         if (props.labelCaption.trim() === "" && props.showLabel) {
             message.push("Show label is enabled but no label is provided");
         }
@@ -222,7 +232,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, attribute, sortOrder, microflow, mxObject, nanoflow } = props;
+        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
         const attributeReference = `${props.entityPath}${props.attribute}`;
         const options: FetchDataOptions = {
             attributes: [ attributeReference ],
@@ -232,7 +242,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             microflow,
             mxform: this.props.mxform,
             nanoflow,
-            sortAttribute: attribute,
+            sortAttributes: this.props.sortAttributes,
             sortOrder,
             source
         };
