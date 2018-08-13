@@ -156,7 +156,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             return;
         }
 
-        if (info.action === "pop-value") { // TODO
+        if (info.action === "pop-value") { // TODO:
             if (info.removedValue) {
                 this.props.mxObject.removeReferences(this.association, [ info.removedValue.value as string ]);
             } else {
