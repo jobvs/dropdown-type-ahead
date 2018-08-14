@@ -19,9 +19,12 @@ export class preview extends Component<ContainerProps, {}> {
 
     render() {
         return createElement(DropdownTypeaheadReference as any, {
-            attribute: this.props.attribute,
             emptyCaption: this.selected.label,
+            isClearable: this.props.isClearable,
+            isReadOnly: !this.props.readOnly,
             label: this.props.labelCaption,
+            labelOrientation: this.props.labelOrientation,
+            labelWidth: this.props.labelWidth,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });

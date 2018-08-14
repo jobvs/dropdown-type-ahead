@@ -36,6 +36,25 @@ export interface AttributeType { name: string; sort: string; }
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     // private Node?: HTMLDivElement;
+    // private customStyles: any = {
+    //     control: () => ({
+    //         // none of react-selects styles are passed to <View />
+    //           width: 200
+    //     }),
+    //     option: (base: any, state: AnimationKeyFrame) => ({
+    //         ...base,
+    //         borderBottom: "1px dotted pink",
+    //         color: state.isFullscreen ? "red" : "blue",
+    //         padding: 20
+    //     }),
+    //     singleValue: (base: any, state: any) => {
+    //         const opacity = state.isDisabled ? 0.5 : 1;
+    //         const transition = "opacity 300ms";
+    //         // tslint:disable-next-line:no-console
+    //         console.log(state.isDisabled);
+    //         return { ...base, opacity, transition };
+    //     }
+    // };
 
     render() {
         return !this.props.loaded ? createElement("div", {
@@ -66,19 +85,21 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
 
     private renderSelector() {
         return createElement(Select as any, {
-                classNamePrefix: "widget-dropdown-type-ahead",
-                components: { Input },
-                isClearable: this.props.isClearable,
-                isDisabled: this.props.isReadOnly,
-                isSearchable: true,
-                menuPlacement: "bottom",
-                menuPosition: "fixed",
-                onChange: this.props.handleOnchange,
-                onInputChange: this.props.handleOnchange,
-                options: this.props.data,
-                // ref: this.setReference,
-                ...this.createSelectorProp()
-            }),
+            className: "react-select-container",
+            classNamePrefix: "widget-dropdown-type-ahead",
+            components: { Input },
+            isClearable: this.props.isClearable,
+            isDisabled: this.props.isReadOnly,
+            isSearchable: true,
+            menuPlacement: "bottom",
+            menuPosition: "fixed",
+            onChange: this.props.handleOnchange,
+            // optionClassName: "mx-focus",
+            options: this.props.data,
+            // styles: this.customStyles,
+            // ref: this.setReference,
+            ...this.createSelectorProp()
+        }),
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
     }
 
