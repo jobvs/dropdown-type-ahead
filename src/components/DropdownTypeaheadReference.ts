@@ -6,7 +6,10 @@ import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
-import { Input } from "./input";
+import { Control } from "./Control";
+import { IndicatorsContainer } from "./IndicatorsContainer";
+import { Dropdown } from "./DropdownIndicator";
+import { DropdownClear } from "./DropdownClear";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
@@ -35,27 +38,6 @@ export type metaData = { action: string, removedValue: referenceOption };
 export interface AttributeType { name: string; sort: string; }
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
-    // private Node?: HTMLDivElement;
-    // private customStyles: any = {
-    //     control: () => ({
-    //         // none of react-selects styles are passed to <View />
-    //           width: 200
-    //     }),
-    //     option: (base: any, state: AnimationKeyFrame) => ({
-    //         ...base,
-    //         borderBottom: "1px dotted pink",
-    //         color: state.isFullscreen ? "red" : "blue",
-    //         padding: 20
-    //     }),
-    //     singleValue: (base: any, state: any) => {
-    //         const opacity = state.isDisabled ? 0.5 : 1;
-    //         const transition = "opacity 300ms";
-    //         // tslint:disable-next-line:no-console
-    //         console.log(state.isDisabled);
-    //         return { ...base, opacity, transition };
-    //     }
-    // };
-
     render() {
         return !this.props.loaded ? createElement("div", {
                 className: classNames("widget-dropdown-type-ahead-wrapper", this.props.className)
@@ -79,28 +61,23 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         return this.renderSelector();
     }
 
-    // private setReference = (Node: HTMLDivElement) => {
-    //     this.Node = Node;
-    // }
-
     private renderSelector() {
         return createElement(Select as any, {
             className: "react-select-container",
-            classNamePrefix: "widget-dropdown-type-ahead",
-            components: { Input },
+            // classNamePrefix: "widget-dropdown-type-ahead",
+            components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer },
             isClearable: this.props.isClearable,
             isDisabled: this.props.isReadOnly,
             isSearchable: true,
             menuPlacement: "bottom",
             menuPosition: "fixed",
             onChange: this.props.handleOnchange,
-            // optionClassName: "mx-focus",
             options: this.props.data,
             // styles: this.customStyles,
             // ref: this.setReference,
             ...this.createSelectorProp()
-        }),
-            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
+        },
+            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage));
     }
 
     private createSelectorProp(): { placeholder?: string, value?: referenceOption } {
