@@ -6,6 +6,7 @@ import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
+import { Input } from "./input";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
@@ -64,27 +65,21 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     // }
 
     private renderSelector() {
-        return createElement("div", {
-            className: classNames(
-                // "form-group"
-            //     "div-wrapper",
-            //     this.props.isReadOnly ? "disabled" : "enabled",
-            //     this.props.showLabel ? "showlabel" : "nolabel"
-            )},
-            createElement(Select as any, {
+        return createElement(Select as any, {
                 classNamePrefix: "widget-dropdown-type-ahead",
+                components: { Input },
                 isClearable: this.props.isClearable,
                 isDisabled: this.props.isReadOnly,
                 isSearchable: true,
                 menuPlacement: "bottom",
                 menuPosition: "fixed",
                 onChange: this.props.handleOnchange,
+                onInputChange: this.props.handleOnchange,
                 options: this.props.data,
                 // ref: this.setReference,
                 ...this.createSelectorProp()
             }),
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
-        );
     }
 
     private createSelectorProp(): { placeholder?: string, value?: referenceOption } {
