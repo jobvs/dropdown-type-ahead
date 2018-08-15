@@ -14,26 +14,26 @@ import { DropdownClear } from "./DropdownClear";
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
     labelWidth: number;
-    data: referenceOption[];
+    data: ReferenceOption[];
     value: string;
     label: string;
     showLabel: boolean;
     emptyCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
-    selectedValue: referenceOption;
+    selectedValue: ReferenceOption;
     loaded: boolean;
-    handleOnchange: (selectedOption: referenceOption) => void;
+    handleOnchange: (selectedOption: ReferenceOption) => void;
     className: string;
     labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
 }
 
 // tslint:disable-next-line:interface-over-type-literal
-export type referenceOption = { value?: string, label?: string };
+export type ReferenceOption = { value?: string, label?: string };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type metaData = { action: string, removedValue: referenceOption };
+export type MetaData = { action: string, removedValue: ReferenceOption };
 
 export interface AttributeType { name: string; sort: string; }
 
@@ -64,7 +64,6 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     private renderSelector() {
         return createElement(Select as any, {
             className: "react-select-container",
-            // classNamePrefix: "widget-dropdown-type-ahead",
             components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer },
             isClearable: this.props.isClearable,
             isDisabled: this.props.isReadOnly,
@@ -73,17 +72,15 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
             menuPosition: "fixed",
             onChange: this.props.handleOnchange,
             options: this.props.data,
-            // styles: this.customStyles,
-            // ref: this.setReference,
             ...this.createSelectorProp()
         },
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage));
     }
 
-    private createSelectorProp(): { placeholder?: string, value?: referenceOption } {
+    private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
         if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }
-        return { placeholder: this.props.emptyCaption };
+        return { value: null , placeholder: this.props.emptyCaption };
     }
 }

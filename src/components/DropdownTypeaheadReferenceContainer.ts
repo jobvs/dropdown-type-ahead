@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle } from "../utils/ContainerUtils";
 import { FetchDataOptions, FetchedData, Nanoflow, fetchData } from "../utils/Data";
-import { AttributeType, DropdownTypeaheadReference, metaData, referenceOption } from "./DropdownTypeaheadReference";
+import { AttributeType, DropdownTypeaheadReference, MetaData, ReferenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
     class: string;
@@ -37,8 +37,8 @@ export interface ContainerProps extends WrapperProps {
 }
 
 export interface ContainerState {
-    options: referenceOption[];
-    selected?: referenceOption;
+    options: ReferenceOption[];
+    selected?: ReferenceOption;
     isLoading?: boolean;
 }
 
@@ -48,6 +48,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     readonly state: ContainerState = {
         options: []
     };
+    readonly subscriptionTopic = this.props.entityPath + this.props.attribute;
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
     render() {
@@ -96,7 +97,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private setOptions = (mendixObjects: FetchedData) => {
-        const dataOptions: referenceOption[] = [];
+        const dataOptions: ReferenceOption[] = [];
         const guids: string[] = [];
         if (this.props.attribute && mendixObjects.mxObjects && mendixObjects.mxObjects.length && !this.isReadOnly()) {
             mendixObjects.mxObjects.forEach(mxObject => {
@@ -112,13 +113,11 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private handleSubscriptions = () => {
-        if (this.props.mxObject.getOriginalReferences(this.association).length !== 0) {
-            this.fetchDataByReference(this.props.mxObject)
-                .then((mxObject: mendix.lib.MxObject) => {
-                    this.setState({ selected: this.getValue(mxObject) });
-                })
-                .catch(mx.ui.error);
-        }
+        this.fetchDataByReference(this.props.mxObject)
+            .then((mxObject: mendix.lib.MxObject) => {
+                this.setState({ selected: this.getValue(mxObject) });
+            })
+            .catch(mx.ui.error);
     }
 
     private fetchDataByReference(mxObject: mendix.lib.MxObject): Promise<mendix.lib.MxObject> {
@@ -151,32 +150,25 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private onChange(recentSelection: any, info: metaData) {
+    private onChange(recentSelection: ReferenceOption | any, info: MetaData) {
         if (!this.props.mxObject) {
             return;
         }
 
-        if (info.action === "pop-value") { // TODO:
-            if (info.removedValue) {
-                this.props.mxObject.removeReferences(this.association, [ info.removedValue.value as string ]);
-            } else {
-                this.setState({ selected: undefined });
-            }
-        } else if (info.action === "select-option") {
-                this.props.mxObject.addReference(this.association, recentSelection.value as string);
-        } else if (info.action === "clear") {
-            if (this.state.selected) {
-                this.props.mxObject.removeReferences(this.association, [ this.state.selected.value as string ]);
-            } else {
-                this.setState({ selected: undefined });
-            }
+        if (info.action === "pop-value" || info.action === "clear") {
+            // tslint:disable-next-line
+            const value = this.state.selected && this.state.selected.value; // QN: Under what circumstances will the selected value be undefined when also recent is undefined
+            this.props.mxObject.removeReferences(this.association, [ value as string ]);
+            this.setState({ selected: undefined });
+        } else {
+            this.props.mxObject.addReference(this.association, recentSelection.value as string);
+            this.setState({ selected: recentSelection });
         }
 
         if (this.state.selected && recentSelection) {
             if (this.state.selected.value !== recentSelection.value) {
                 this.executeOnChangeEvent();
             }
-
         }
     }
 
