@@ -9,6 +9,7 @@ import "../ui/DropdownTypeaheadReference.scss";
 import { Control } from "./Control";
 import { IndicatorsContainer } from "./IndicatorsContainer";
 import { Dropdown } from "./DropdownIndicator";
+import { Menu } from "./Menu";
 import { DropdownClear } from "./DropdownClear";
 
 export interface DropdownTypeaheadReferenceProps {
@@ -42,8 +43,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         return !this.props.loaded ? createElement("div", {
                 className: classNames("widget-dropdown-type-ahead-wrapper", this.props.className)
             },
-                this.renderForm()
-            ) :
+            this.renderForm()) :
             null;
     }
 
@@ -64,7 +64,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     private renderSelector() {
         return createElement(Select as any, {
             className: "react-select-container",
-            components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer },
+            components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer, Menu },
             isClearable: this.props.isClearable,
             isDisabled: this.props.isReadOnly,
             isSearchable: true,

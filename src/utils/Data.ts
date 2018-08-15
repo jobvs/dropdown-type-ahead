@@ -70,8 +70,8 @@ const addPathReference = (references: ReferencesSpec, path: string): ReferencesS
         return referenceSet;
     }, references);
 
-export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
-    new Promise<FetchedData>((resolve, reject) => {
+export const fetchData = (options: FetchDataOptions): Promise<mendix.lib.MxObject[]> =>
+    new Promise<mendix.lib.MxObject[]>((resolve, reject) => {
         const { guid, entity, sortAttributes, sortOrder } = options;
         if (entity && guid) {
             if (options.source === "xpath") {
@@ -85,15 +85,15 @@ export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
                     sortAttributes,
                     sortOrder
                 })
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else if (options.source === "microflow" && options.microflow) {
                 fetchByMicroflow(options.microflow, guid)
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) { // nanoflow
                 fetchByNanoflow(options.nanoflow, options.mxform)
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else {
                 reject("entity & guid are required");
