@@ -21,13 +21,17 @@ export class preview extends Component<ContainerProps, {}> {
         return createElement(DropdownTypeaheadReference as any, {
             emptyCaption: this.selected.label,
             isClearable: this.props.isClearable,
-            isReadOnly: !this.props.readOnly,
+            isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
+    }
+
+    private isReadOnly = (): boolean => {
+        return (this.props.editable !== "default") || this.props.readOnly;
     }
 }
 

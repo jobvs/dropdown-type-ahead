@@ -7,10 +7,10 @@ import { Label } from "./Label";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
 import { Control } from "./Control";
-import { IndicatorsContainer } from "./IndicatorsContainer";
-import { Dropdown } from "./DropdownIndicator";
+// import { IndicatorsContainer } from "./IndicatorsContainer";
+// import { Dropdown } from "./DropdownIndicator";
 import { Menu } from "./Menu";
-import { DropdownClear } from "./DropdownClear";
+// import { DropdownClear } from "./DropdownClear";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
@@ -62,9 +62,10 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-        return createElement(Select as any, {
-            className: "react-select-container",
-            components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer, Menu },
+        return createElement("div", {},
+            createElement(Select as any, {
+            className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
+            components: { Control, Menu },
             isClearable: this.props.isClearable,
             isDisabled: this.props.isReadOnly,
             isSearchable: true,
@@ -73,12 +74,12 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
             onChange: this.props.handleOnchange,
             options: this.props.data,
             ...this.createSelectorProp()
-        },
+        }),
             createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage));
     }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
-        if (this.props.selectedValue) {
+        if (this.props.selectedValue !== "") {
             return { value: this.props.selectedValue };
         }
         return { value: null , placeholder: this.props.emptyCaption };

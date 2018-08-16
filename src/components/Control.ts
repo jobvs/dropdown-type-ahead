@@ -7,7 +7,7 @@ export interface ControlProps {
 }
 export const Control: SFC<ControlProps> = (props) =>
     createElement(components.Control as any, {
-        className: classNames("widget-dropdown-type-ahead-control"),
+        className: classNames("widget-dropdown-type-ahead-control", "form-control"),
         ...props
     });
 

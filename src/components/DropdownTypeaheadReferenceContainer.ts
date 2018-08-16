@@ -1,7 +1,7 @@
 import { ChangeEvent, Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
-import { parseStyle } from "../utils/ContainerUtils";
+import { parseStyle, validateProps } from "../utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
 import { AttributeType, DropdownTypeaheadReference, MetaData, ReferenceOption } from "./DropdownTypeaheadReference";
 
@@ -39,7 +39,6 @@ export interface ContainerProps extends WrapperProps {
 export interface ContainerState {
     options: ReferenceOption[];
     selected: string;
-    // isLoading?: boolean;
 }
 
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
@@ -56,7 +55,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         const selectedValue = this.getSelectedValue(this.state.selected);
 
         return createElement(DropdownTypeaheadReference as any, {
-            alertMessage: this.validateProps(this.props),
+            alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
             className: this.props.class,
             data: this.state.options,
@@ -67,7 +66,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
-            // loaded: this.state.isLoading,
             selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
@@ -83,7 +81,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             const selected = newProps.mxObject.get(this.association) as string;
             this.setState({ selected });
             this.retrieveOptions(newProps);
-            this.resetSubscriptions(newProps.mxObject);
+            this.resetSubscriptions(newProps.mxObject); // TODO:
         } else {
             this.setState({ selected: "" });
         }
@@ -129,16 +127,24 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private onChange(recentSelection: ReferenceOption | any, info: MetaData) {
-        if (!this.props.mxObject || this.state.selected === recentSelection.value) {
+        // if (!this.props.mxObject || this.state.selected === recentSelection.value) {
+        //     return;
+        // }
+        let selected = "";
+        if (!this.props.mxObject) {
             return;
         }
-        let selected = recentSelection.value;
+        if (recentSelection) {
+        selected = recentSelection.value;
+        }
         if (info.action === "pop-value" || info.action === "clear") {
             selected = "";
         }
-        this.props.mxObject.set(this.association, selected);
-        this.executeOnChangeEvent();
 
+        // if (this.state.selected === recentSelection.value) { // TOD0:
+        this.executeOnChangeEvent();
+        // }
+        this.props.mxObject.set(this.association, selected);
         this.setState({ selected });
     }
 
@@ -166,32 +172,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
     }
 
-    private validateProps(props: ContainerProps): string {
-        const message: string[] = [];
-
-        if (props.onChangeEvent === "callMicroflow" && !props.onChangeMicroflow) {
-            message.push("On change event is set to 'Call a microflow' but no microflow is selected");
-        } else if (props.onChangeEvent === "callNanoflow" && !props.onChangeNanoflow.nanoflow) {
-            message.push("On change event is set to 'Call a nanoflow' but no nanoflow is selected");
-        }
-
-        if (props.labelCaption.trim() === "" && props.showLabel && (props.labelWidth > 11 || props.labelWidth < 1)) {
-            message.push("Label width should be a value between 0 and 12");
-        }
-
-        if (props.labelCaption.trim() === "" && props.showLabel) {
-            message.push("Show label is enabled but no label is provided");
-        }
-
-        if (message.length) {
-            const widgetName = props.friendlyId.split(".")[2];
-            const errorMessage = `Configuration error in widget - ${widgetName}: ${message.join(", ")}`;
-            return errorMessage;
-        }
-
-        return message.join(", ");
-    }
-
     private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
         const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
@@ -215,12 +195,12 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private setOptions = (mendixObjects: mendix.lib.MxObject[]) => {
-        const dataOptions: ReferenceOption[] = [];
+        const options: ReferenceOption[] = [];
 
         mendixObjects.forEach(mxObject => {
-            dataOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+            options.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
         });
 
-        this.setState({ options: dataOptions });
+        this.setState({ options });
     }
 }

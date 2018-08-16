@@ -8,7 +8,7 @@ export interface MenuProps {
 
 export const Menu: SFC<MenuProps> = (props) =>
     createElement(components.Menu as any, {
-        className: classNames("widget-dropdown-type-ahead-menu", "form-control"),
+        className: classNames("widget-dropdown-type-ahead-menu", "form-control", "mx-focus"),
         ...props
     });
 
