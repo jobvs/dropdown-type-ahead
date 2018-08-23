@@ -38,7 +38,28 @@ export type MetaData = { action: string, removedValue: ReferenceOption };
 
 export interface AttributeType { name: string; sort: string; }
 
+interface MenuPortalState {
+    offset: any;
+    position: any;
+    rect: any;
+    placement: any;
+}
+
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
+    private styleToClass = {
+        menuPortal: (_base: any, state: MenuPortalState) => {
+            // fix postion with inline style?
+            return "customclass-" + state.placement;
+        },
+        option: (_base: any, _state: any) => {
+           return "custom-class-option";
+        },
+        singleValue: (_base: any, state: any) => {
+            logger.debug("styleToClass, singleValue");
+            return state.isDisabled ? "custom-class-disable" : "";
+        }
+    };
+
     render() {
         return !this.props.loaded ? createElement("div", {
                 className: classNames("widget-dropdown-type-ahead-wrapper", this.props.className)
@@ -62,20 +83,30 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-        return createElement(Select as any, {
-            className: "react-select-container",
-            components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer, Menu },
-            isClearable: this.props.isClearable,
-            isDisabled: this.props.isReadOnly,
-            isSearchable: true,
-            menuPlacement: "bottom",
-            menuPosition: "fixed",
-            onChange: this.props.handleOnchange,
-            options: this.props.data,
-            ...this.createSelectorProp()
-        },
-            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage));
+        return createElement(Select as any,
+            {
+                className: "react-select-container",
+                classNamePrefix: "widget-typeahead-reference-selector",
+                components: { Control, ClearIndicator: DropdownClear, DropdownIndicator: Dropdown, IndicatorsContainer, Menu },
+                // getCommonProps: this.getCommonProps,
+                isClearable: this.props.isClearable,
+                isDisabled: this.props.isReadOnly,
+                isSearchable: true,
+                menuPlacement: "bottom",
+                menuPosition: "fixed",
+                onChange: this.props.handleOnchange,
+                options: this.props.data,
+                styles: this.styleToClass,
+                ...this.createSelectorProp()
+            },
+            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
+        );
     }
+
+    // private getStyleClasses(key: string, _props: {}): string {
+    //     logger.debug("getStyleClasses");
+    //     return "custom-class-" + key;
+    // }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
         if (this.props.selectedValue) {
