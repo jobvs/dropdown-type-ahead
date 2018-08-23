@@ -6,11 +6,13 @@ import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
-import { Control } from "./Control";
+import "../ui/react-select.css";
+// import { Control } from "./Control";
 // import { IndicatorsContainer } from "./IndicatorsContainer";
 // import { Dropdown } from "./DropdownIndicator";
-import { Menu } from "./Menu";
+// import { Menu } from "./Menu";
 // import { DropdownClear } from "./DropdownClear";
+// import * as SelectComponents from "./SelectComponents";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
@@ -26,6 +28,7 @@ export interface DropdownTypeaheadReferenceProps {
     loaded: boolean;
     handleOnchange: (selectedOption: ReferenceOption) => void;
     className: string;
+    readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
 }
@@ -62,24 +65,36 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-        return createElement("div", {},
-            createElement(Select as any, {
-            className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
-            components: { Control, Menu },
-            isClearable: this.props.isClearable,
-            isDisabled: this.props.isReadOnly,
-            isSearchable: true,
-            menuPlacement: "bottom",
-            menuPosition: "fixed",
-            onChange: this.props.handleOnchange,
-            options: this.props.data,
-            ...this.createSelectorProp()
-        }),
-            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage));
+        if (this.props.readOnlyStyle === "control") {
+            return createElement("div", {
+                className: classNames("widget-dropdown-type-ahead-wrapper")
+                },
+                    createElement(Select, {
+                        className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
+                        // components: SelectComponents,
+                        clearable: this.props.isClearable,
+                        disabled: this.props.isReadOnly,
+                        searchable: true,
+                        // menuPlacement: "bottom",
+                        // menuPosition: "fixed",
+                        // tslint:disable-next-line:object-literal-sort-keys
+                        options: this.props.data,
+                        onChange: this.props.handleOnchange as any,
+                        // ref: () => void
+                        ...this.createSelectorProp() as object
+                    }),
+                    createElement(Alert, {
+                        className: "widget-dropdown-type-ahead-alert"
+                    }, this.props.alertMessage)
+            );
+        } else {
+            return createElement("p", { className: "form-control-static" }, this.props.selectedValue.label);
+        }
+
     }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
-        if (this.props.selectedValue !== "") {
+        if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }
         return { value: null , placeholder: this.props.emptyCaption };

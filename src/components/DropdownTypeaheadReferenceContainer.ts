@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
-import { AttributeType, DropdownTypeaheadReference, MetaData, ReferenceOption } from "./DropdownTypeaheadReference";
+import { AttributeType, DropdownTypeaheadReference, ReferenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
     class: string;
@@ -23,6 +23,7 @@ export interface ContainerProps extends WrapperProps {
     entityConstraint: string;
     emptyOptionCaption: string;
     labelCaption: string;
+    readOnlyStyle: "control" | "text";
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
@@ -66,6 +67,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
+            readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
@@ -126,20 +128,22 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         this.setState({ selected });
     }
 
-    private onChange(recentSelection: ReferenceOption | any, info: MetaData) {
+    private onChange(recentSelection: ReferenceOption | any) {
         // if (!this.props.mxObject || this.state.selected === recentSelection.value) {
         //     return;
         // }
+
         let selected = "";
-        if (!this.props.mxObject) {
-            return;
-        }
-        if (recentSelection) {
         selected = recentSelection.value;
-        }
-        if (info.action === "pop-value" || info.action === "clear") {
-            selected = "";
-        }
+        // if (!this.props.mxObject) {
+        //     return;
+        // }
+        // if (recentSelection) {
+        // selected = recentSelection.value;
+        // }
+        // if (info.action === "pop-value" || info.action === "clear") {
+        //     selected = "";
+        // }
 
         // if (this.state.selected === recentSelection.value) { // TOD0:
         this.executeOnChangeEvent();

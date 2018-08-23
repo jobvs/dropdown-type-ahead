@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 
-import { parseStyle } from "./utils/ContainerUtils";
+import { parseStyle, validateProps } from "./utils/ContainerUtils";
 import { DropdownTypeaheadReference } from "./components/DropdownTypeaheadReference";
 import { ContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
 
@@ -12,19 +12,24 @@ type VisibilityMap = {
 
 // tslint:disable-next-line class-name
 export class preview extends Component<ContainerProps, {}> {
-    private selected = {
-        label: this.props.emptyOptionCaption,
-        value: "noGuid"
-    };
-
     render() {
+        const selectedValue = {
+            label: this.props.emptyOptionCaption,
+            value: "noGuid"
+        };
+
         return createElement(DropdownTypeaheadReference as any, {
-            emptyCaption: this.selected.label,
+            alertMessage: validateProps(this.props),
+            attribute: this.props.attribute,
+            className: this.props.class,
+            emptyCaption: this.props.emptyOptionCaption,
             isClearable: this.props.isClearable,
             isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
+            readOnlyStyle: this.props.readOnlyStyle,
+            selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
@@ -47,6 +52,7 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
     visibilityMap.onChangeNanoflow = valueMap.onChangeEvent === "callNanoflow";
 
     if (valueMap.source !== "xpath") {
+        visibilityMap.sortAttributes = false;
         visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
     }

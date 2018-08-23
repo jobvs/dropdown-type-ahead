@@ -1,5 +1,5 @@
 import { SFC, createElement } from "react";
-import { components } from "react-select";
+// import { components } from "react-select";
 import * as classNames from "classnames";
 
 export interface MenuProps {
@@ -7,7 +7,7 @@ export interface MenuProps {
 }
 
 export const Menu: SFC<MenuProps> = (props) =>
-    createElement(components.Menu as any, {
+    createElement("div", {
         className: classNames("widget-dropdown-type-ahead-menu", "form-control", "mx-focus"),
         ...props
     });
