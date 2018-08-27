@@ -83,7 +83,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             const selected = newProps.mxObject.get(this.association) as string;
             this.setState({ selected });
             this.retrieveOptions(newProps);
-            this.resetSubscriptions(newProps.mxObject); // TODO:
+            this.resetSubscriptions(newProps.mxObject);
         } else {
             this.setState({ selected: "" });
         }

@@ -21,7 +21,6 @@ export interface DropdownTypeaheadReferenceProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectedValue: ReferenceOption;
-    loaded: boolean; // TODO: implement or remove this
     handleOnchange: (selectedOption: ReferenceOption) => void;
     className: string;
     readOnlyStyle: "control" | "text";
@@ -46,11 +45,7 @@ export interface AttributeType {
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     render() {
-        return !this.props.loaded ? createElement("div", {
-                className: classNames("widget-dropdown-type-ahead-wrapper", this.props.className)
-            },
-            this.renderForm()) :
-            null;
+        return this.renderForm();
     }
 
     private renderForm() {
@@ -69,16 +64,15 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
 
     private renderSelector() {
         if (this.props.readOnlyStyle === "control") {
+
             return createElement("div", {
                 className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
                     createElement(Select, {
-                        // className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
-                        // components: SelectComponents,
                         clearable: this.props.isClearable,
-                        // menuRenderer: (params: any) => Menu(params), document.body.getElementsByClassName("modal-content mx-window-content") as any)as any,
+                        // menuRenderer: (params: any) => createPortal(Menu(params), ContainerNode as any) as any,
                         disabled: this.props.isReadOnly,
-                        onChange: this.props.handleOnchange as any,
+                        onChange: this.props.handleOnchange,
                         options: this.props.data,
                         noResultsText: "No options",
                         clearValueText: "",

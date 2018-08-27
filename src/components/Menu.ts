@@ -6,7 +6,7 @@ export const Menu = (params: any) => {
     params.options.forEach((option: any) => {
         OptionNodes.push(
             createElement("div", {
-            id:  option.label,
+            id:  option.value,
             onClick: () => params.selectValue(option),
             onMouseOver: () => params.focusOption(option),
             className: `Select-option ${params.focusedOption && params.focusedOption.value === option.value ? "is-focused" : ""}`,
