@@ -99,6 +99,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         if (selectedOptions.length > 0) {
             selected = selectedOptions[0];
         }
+
         return selected;
     }
 
@@ -129,27 +130,19 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     }
 
     private onChange(recentSelection: ReferenceOption | any) {
-        // if (!this.props.mxObject || this.state.selected === recentSelection.value) {
-        //     return;
-        // }
+        if (!this.props.mxObject) {
+            return;
+        }
 
         let selected = "";
-        selected = recentSelection.value;
-        // if (!this.props.mxObject) {
-        //     return;
-        // }
-        // if (recentSelection) {
-        // selected = recentSelection.value;
-        // }
-        // if (info.action === "pop-value" || info.action === "clear") {
-        //     selected = "";
-        // }
 
-        // if (this.state.selected === recentSelection.value) { // TOD0:
+        !recentSelection ? selected = "" : selected = recentSelection.value;
+
+        // if (this.state.selected === recentSelection.value) { // TODO: fix this
         this.executeOnChangeEvent();
-        // }
         this.props.mxObject.set(this.association, selected);
         this.setState({ selected });
+        // }
     }
 
     private executeOnChangeEvent = () => {

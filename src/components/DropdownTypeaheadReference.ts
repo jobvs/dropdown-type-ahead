@@ -1,18 +1,14 @@
 import { Component, createElement } from "react";
+// import { createPortal } from "react-dom";
 import Select from "react-select";
 
 import { Alert } from "./Alert";
 import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
+// import { Menu } from "./Menu";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
-import "../ui/react-select.css";
-// import { Control } from "./Control";
-// import { IndicatorsContainer } from "./IndicatorsContainer";
-// import { Dropdown } from "./DropdownIndicator";
-// import { Menu } from "./Menu";
-// import { DropdownClear } from "./DropdownClear";
-// import * as SelectComponents from "./SelectComponents";
+import "react-select/dist/react-select.css";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
@@ -25,7 +21,7 @@ export interface DropdownTypeaheadReferenceProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectedValue: ReferenceOption;
-    loaded: boolean;
+    loaded: boolean; // TODO: implement or remove this
     handleOnchange: (selectedOption: ReferenceOption) => void;
     className: string;
     readOnlyStyle: "control" | "text";
@@ -33,13 +29,20 @@ export interface DropdownTypeaheadReferenceProps {
     alertMessage: string;
 }
 
-// tslint:disable-next-line:interface-over-type-literal
-export type ReferenceOption = { value?: string, label?: string };
+export type ReferenceOption = {
+    value?: string,
+    label?: string
+};
 
-// tslint:disable-next-line:interface-over-type-literal
-export type MetaData = { action: string, removedValue: ReferenceOption };
+export type MetaData = {
+    action: string,
+    removedValue: ReferenceOption
+};
 
-export interface AttributeType { name: string; sort: string; }
+export interface AttributeType {
+    name: string;
+    sort: string;
+}
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
     render() {
@@ -70,17 +73,15 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
                     createElement(Select, {
-                        className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
+                        // className: classNames("react-select-container", this.props.isReadOnly ? "disabled" : "enabled"),
                         // components: SelectComponents,
                         clearable: this.props.isClearable,
+                        // menuRenderer: (params: any) => Menu(params), document.body.getElementsByClassName("modal-content mx-window-content") as any)as any,
                         disabled: this.props.isReadOnly,
-                        searchable: true,
-                        // menuPlacement: "bottom",
-                        // menuPosition: "fixed",
-                        // tslint:disable-next-line:object-literal-sort-keys
-                        options: this.props.data,
                         onChange: this.props.handleOnchange as any,
-                        // ref: () => void
+                        options: this.props.data,
+                        noResultsText: "No options",
+                        clearValueText: "",
                         ...this.createSelectorProp() as object
                     }),
                     createElement(Alert, {
@@ -97,6 +98,7 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }
+
         return { value: null , placeholder: this.props.emptyCaption };
     }
 }
