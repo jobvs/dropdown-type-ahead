@@ -31,6 +31,15 @@
                 <enumerationValue key="never">Never</enumerationValue>
             </enumerationValues>
         </property>
+        <property key="selectType" type="enumeration" defaultValue="normal">
+            <caption>Select type</caption>
+            <category>Appearance</category>
+            <description></description>
+                <enumerationValues>
+                    <enumerationValue key="normal">Normal loading(synchronous)</enumerationValue>
+                    <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
+                </enumerationValues>
+        </property>
         <property key="emptyOptionCaption" type="string" required="false">
             <caption>Empty option caption</caption>
             <category>Appearance</category>
@@ -133,6 +142,25 @@
             <category>Selectable objects</category>
             <description>Returns a list of data values</description>
             <returnType type="Object" entityProperty="entityPath" isList="true"/>
+        </property>
+        <property key="searchMicroflow" type="microflow" required="false">
+            <caption>Search Microflow</caption>
+            <category>Search</category>
+            <description>Returns a list of filtered data values</description>
+            <returnType type="Object" entityProperty="entityPath" isList="true"/>
+        </property>
+        <property key="searchAttribute" type="attribute" required="false">
+            <caption>Search attribute</caption>
+            <category>Search</category>
+            <description/>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Decimal"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
         </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>

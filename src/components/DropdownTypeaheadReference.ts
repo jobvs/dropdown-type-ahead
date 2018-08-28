@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 // import { createPortal } from "react-dom";
-import Select from "react-select";
+import Select , { Async } from "react-select";
 
 import { Alert } from "./Alert";
 import { parseStyle } from "../utils/ContainerUtils";
@@ -14,12 +14,14 @@ export interface DropdownTypeaheadReferenceProps {
     style?: string;
     labelWidth: number;
     data: ReferenceOption[];
+    asyncData: any;
     value: string;
     label: string;
     showLabel: boolean;
     emptyCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
+    selectType: "normal" | "asynchronous";
     selectedValue: ReferenceOption;
     handleOnchange: (selectedOption: ReferenceOption) => void;
     className: string;
@@ -64,10 +66,10 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
 
     private renderSelector() {
         if (this.props.readOnlyStyle === "control") {
-
-            return createElement("div", {
-                className: classNames("widget-dropdown-type-ahead-wrapper")
+                return createElement("div", {
+                    className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
+                this.props.selectType === "normal" ?
                     createElement(Select, {
                         clearable: this.props.isClearable,
                         // menuRenderer: (params: any) => createPortal(Menu(params), ContainerNode as any) as any,
@@ -76,12 +78,20 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                         options: this.props.data,
                         noResultsText: "No options",
                         clearValueText: "",
-                        ...this.createSelectorProp() as object
-                    }),
+                        ...this.createSelectorProp() as object }) :
+                    createElement(Async, {
+                            valueKey : "value",
+                            labelKey : "label",
+                            clearValueText: "",
+                            disabled: this.props.isReadOnly,
+                            clearable: this.props.isClearable,
+                            onChange: this.props.handleOnchange,
+                            loadOptions: (input: string) => this.props.asyncData(input),
+                            ...this.createSelectorProp() as object }),
                     createElement(Alert, {
                         className: "widget-dropdown-type-ahead-alert"
                     }, this.props.alertMessage)
-            );
+                );
         } else {
             return createElement("p", { className: "form-control-static" }, this.props.selectedValue.label);
         }

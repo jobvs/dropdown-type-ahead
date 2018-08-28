@@ -2,7 +2,7 @@ import { ChangeEvent, Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
-import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
+import { FetchDataOptions, Nanoflow, fetchByMicroflow, fetchData } from "../utils/Data";
 import { AttributeType, DropdownTypeaheadReference, ReferenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
@@ -24,6 +24,9 @@ export interface ContainerProps extends WrapperProps {
     emptyOptionCaption: string;
     labelCaption: string;
     readOnlyStyle: "control" | "text";
+    searchAttribute: string;
+    searchMicroflow: string;
+    selectType: "normal" | "asynchronous";
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
@@ -60,9 +63,11 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             attribute: this.props.attribute,
             className: this.props.class,
             data: this.state.options,
+            asyncData: this.setAsyncOptions,
             emptyCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
             isClearable: this.props.isClearable,
+            selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
@@ -95,7 +100,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     private getSelectedValue(selectedGuid: string) {
         const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
-        let selected = {};
+        let selected = null;
         if (selectedOptions.length > 0) {
             selected = selectedOptions[0];
         }
@@ -135,7 +140,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         }
 
         let selected = "";
-
         !recentSelection ? selected = "" : selected = recentSelection.value;
 
         // if (this.state.selected === recentSelection.value) { // TODO: fix this
@@ -199,5 +203,23 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         });
 
         this.setState({ options });
+    }
+
+    private setAsyncOptions = (input: string) => {
+        const FilteredOptions: ReferenceOption[] = [];
+
+        if (!input && !this.props.mxObject) {
+            return Promise.resolve({ options: [] });
+        } else {
+            this.props.mxObject.set(this.props.searchAttribute, input);
+
+            return fetchByMicroflow(this.props.searchMicroflow, this.props.mxObject.getGuid()).then((mendixObjects) => {
+                mendixObjects.forEach(mxObject => {
+                    FilteredOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+                });
+
+                return { options: FilteredOptions };
+            });
+        }
     }
 }

@@ -160,5 +160,6 @@ export const createSortProps = (sortAttributes: AttributeType[]) => {
         const { name, sort } = optionObject;
         combined.push([ name, sort ]);
     });
+
     return combined;
 };
