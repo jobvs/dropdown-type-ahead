@@ -24,7 +24,10 @@ export class preview extends Component<ContainerProps, {}> {
             className: this.props.class,
             emptyCaption: this.props.emptyOptionCaption,
             isClearable: this.props.isClearable,
+            selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
+            data: [ selectedValue ],
+            asyncData: (input: string) => this.setAsyncSampleData(input),
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -38,10 +41,20 @@ export class preview extends Component<ContainerProps, {}> {
     private isReadOnly = (): boolean => {
         return (this.props.editable !== "default") || this.props.readOnly;
     }
+
+    private setAsyncSampleData = (input: string) => {
+        if (!input) {
+        return Promise.resolve({ options: [ ] });
+        }
+
+        return;
+    }
 }
 
 export function getPreviewCss() {
-    return require("./ui/DropdownTypeaheadReference.scss");
+    return (
+        require("./ui/DropdownTypeaheadReference.scss") + require("react-select/dist/react-select.css")
+    );
 }
 
 export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: VisibilityMap) {
