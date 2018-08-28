@@ -2,7 +2,7 @@ import { ChangeEvent, Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
-import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
+import { FetchDataOptions, Nanoflow, fetchData , fetchByMicroflow} from "../utils/Data";
 import { AttributeType, DropdownTypeaheadReference, ReferenceOption } from "./DropdownTypeaheadReference";
 
 interface WrapperProps {
@@ -24,6 +24,8 @@ export interface ContainerProps extends WrapperProps {
     emptyOptionCaption: string;
     labelCaption: string;
     readOnlyStyle: "control" | "text";
+    searchMicroflow: string;
+    searchAttribute: string;
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     showLabel: boolean;
@@ -59,7 +61,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
             className: this.props.class,
-            data: this.state.options,
+            data: this.setAsyncOptions,
             emptyCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
             isClearable: this.props.isClearable,
@@ -199,5 +201,20 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         });
 
         this.setState({ options });
+    }
+
+    private setAsyncOptions = (input: string) => {
+        const optionss: ReferenceOption[] = [];
+        if (!input && !this.props.mxObject) {
+             return Promise.resolve({ options: [] });
+        } else {
+            this.props.mxObject.set(this.props.searchAttribute, input);
+            return fetchByMicroflow(this.props.searchMicroflow, this.props.mxObject.getGuid()).then((mendixObjects) => {
+                mendixObjects.forEach(mxObject => {
+                    optionss.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+                });
+                return { options: optionss };
+            })
+        }
     }
 }

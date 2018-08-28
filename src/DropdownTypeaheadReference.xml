@@ -134,6 +134,25 @@
             <description>Returns a list of data values</description>
             <returnType type="Object" entityProperty="entityPath" isList="true"/>
         </property>
+        <property key="searchMicroflow" type="microflow" required="false">
+            <caption>Search Microflow</caption>
+            <category>Selectable objects</category>
+            <description>Returns a list of filtered data values</description>
+            <returnType type="Object" entityProperty="entityPath" isList="true"/>
+        </property>
+        <property key="searchAttribute" type="attribute" required="false">
+            <caption>Search attribute</caption>
+            <category>Selectable objects</category>
+            <description/>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Decimal"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>
             <category>Events</category>

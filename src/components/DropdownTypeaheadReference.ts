@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 // import { createPortal } from "react-dom";
-import Select from "react-select";
+import { Async } from "react-select";
 
 import { Alert } from "./Alert";
 import { parseStyle } from "../utils/ContainerUtils";
@@ -13,7 +13,7 @@ import "react-select/dist/react-select.css";
 export interface DropdownTypeaheadReferenceProps {
     style?: string;
     labelWidth: number;
-    data: ReferenceOption[];
+    data: any;
     value: string;
     label: string;
     showLabel: boolean;
@@ -68,14 +68,13 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
             return createElement("div", {
                 className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
-                    createElement(Select, {
-                        clearable: this.props.isClearable,
-                        // menuRenderer: (params: any) => createPortal(Menu(params), ContainerNode as any) as any,
+                    createElement(Async, {
+                        valueKey : "value",
+                        labelKey : "label",
+                        placeholder: this.props.emptyCaption,
                         disabled: this.props.isReadOnly,
                         onChange: this.props.handleOnchange,
-                        options: this.props.data,
-                        noResultsText: "No options",
-                        clearValueText: "",
+                        loadOptions: (input: string) => this.props.data(input),
                         ...this.createSelectorProp() as object
                     }),
                     createElement(Alert, {
@@ -87,6 +86,18 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
         }
 
     }
+
+    // private getOptions = (input: string) => {
+    //     if (!input) {
+    //         return Promise.resolve({ options: [] });
+    //     }
+
+    //     return window.fetch(`https://api.github.com/search/users?q=${input}`)
+    //         .then((response) => response.json())
+    //         .then((json) => {
+    //             return { options: json.items };
+    //         });
+    // }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
         if (this.props.selectedValue) {
