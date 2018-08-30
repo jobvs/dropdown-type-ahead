@@ -142,11 +142,11 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         let selected = "";
         !recentSelection ? selected = "" : selected = recentSelection.value;
 
-        // if (this.state.selected === recentSelection.value) { // TODO: fix this
+        if (this.state.selected === recentSelection.value) { // TODO: fix this
         this.executeOnChangeEvent();
         this.props.mxObject.set(this.association, selected);
         this.setState({ selected });
-        // }
+        }
     }
 
     private executeOnChangeEvent = () => {

@@ -1,11 +1,9 @@
 import { Component, createElement } from "react";
-// import { createPortal } from "react-dom";
 import Select , { Async } from "react-select";
 
 import { Alert } from "./Alert";
 import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
-// import { Menu } from "./Menu";
 import * as classNames from "classnames";
 import "../ui/DropdownTypeaheadReference.scss";
 import "react-select/dist/react-select.css";
@@ -72,7 +70,6 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                 this.props.selectType === "normal" ?
                     createElement(Select, {
                         clearable: this.props.isClearable,
-                        // menuRenderer: (params: any) => createPortal(Menu(params), ContainerNode as any) as any,
                         disabled: this.props.isReadOnly,
                         onChange: this.props.handleOnchange,
                         options: this.props.data,
