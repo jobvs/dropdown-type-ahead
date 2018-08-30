@@ -93,7 +93,8 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
                     }, this.props.alertMessage)
                 );
         } else {
-            return createElement("p", { className: "form-control-static" }, this.props.selectedValue.label);
+            return createElement("p", { className: "form-control-static" },
+                this.props.selectedValue ? this.props.selectedValue.label : "");
         }
 
     }

@@ -36,7 +36,7 @@
             <category>Appearance</category>
             <description></description>
                 <enumerationValues>
-                    <enumerationValue key="normal">Normal loading(synchronous)</enumerationValue>
+                    <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
                     <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
                 </enumerationValues>
         </property>

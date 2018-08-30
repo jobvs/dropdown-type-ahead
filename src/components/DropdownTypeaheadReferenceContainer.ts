@@ -55,6 +55,17 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     private association: string = this.props.entityPath.split("/")[0];
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
+    componentWillReceiveProps(newProps: ContainerProps) {
+        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
+            const selected = newProps.mxObject.get(this.association) as string;
+            this.resetSubscriptions(newProps.mxObject);
+            this.retrieveOptions(newProps);
+            this.setState({ selected });
+        } else {
+            this.setState({ selected: "" });
+        }
+    }
+
     render() {
         const selectedValue = this.getSelectedValue(this.state.selected);
 
@@ -81,17 +92,6 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     componentDidMount() {
         initializeReactFastclick();
-    }
-
-    componentWillReceiveProps(newProps: ContainerProps) {
-        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
-            const selected = newProps.mxObject.get(this.association) as string;
-            this.setState({ selected });
-            this.retrieveOptions(newProps);
-            this.resetSubscriptions(newProps.mxObject);
-        } else {
-            this.setState({ selected: "" });
-        }
     }
 
     componentWillUnmount() {

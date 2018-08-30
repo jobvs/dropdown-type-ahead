@@ -112,7 +112,6 @@ export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> 
         callback: resolve,
         error: error => reject(`An error occurred while retrieving data via XPath (${xpath}): ${error.message}`),
         filter: {
-            amount: 20,
             attributes,
             offset: 0,
             references,
