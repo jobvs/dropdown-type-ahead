@@ -32,7 +32,7 @@ export interface DropdownTypeaheadReferenceProps {
 
 export type ReferenceOption = {
     value?: string,
-    label?: string
+    label?: any
 };
 
 export type MetaData = {

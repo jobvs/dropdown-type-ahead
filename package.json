@@ -3,6 +3,7 @@
   "widgetName": "DropdownTypeaheadReference",
   "version": "1.0.0",
   "description": "An input widget that can be used to display and edit associations",
+  "copyright": "Mendix BV",
   "scripts": {
     "start": "nodemon --watch webpack.config.js --watch Gruntfile.js --exec \"grunt",
     "lint": "tslint -c tslint.json '**/*.ts' '**/*.tsx' --exclude '**/node_modules/**'",
