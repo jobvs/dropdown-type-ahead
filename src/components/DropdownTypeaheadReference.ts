@@ -2,26 +2,28 @@ import { Component, createElement } from "react";
 import Select , { Async } from "react-select";
 
 import { Alert } from "./Alert";
-import { parseStyle } from "../utils/ContainerUtils";
+// import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
 import * as classNames from "classnames";
+
 import "../ui/DropdownTypeaheadReference.scss";
 import "react-select/dist/react-select.css";
 
 export interface DropdownTypeaheadReferenceProps {
-    style?: string;
+    style?: object;
     labelWidth: number;
     data: ReferenceOption[];
     asyncData: any;
     value: string;
     label: string;
+    loaded: boolean;
     showLabel: boolean;
     emptyCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
     selectedValue: ReferenceOption;
-    handleOnchange: (selectedOption: ReferenceOption) => void;
+    handleOnchange: (selectedOption: ReferenceOption | any) => void;
     className: string;
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
@@ -30,7 +32,7 @@ export interface DropdownTypeaheadReferenceProps {
 
 export type ReferenceOption = {
     value?: string,
-    label?: any
+    label?: string
 };
 
 export type MetaData = {
@@ -49,20 +51,25 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderForm() {
-        if (this.props.showLabel && this.props.label.trim() !== "") {
-            return createElement(Label, {
-                className: this.props.className,
-                label: this.props.label,
-                orientation: this.props.labelOrientation,
-                style: parseStyle(this.props.style),
-                weight: this.props.labelWidth
-            }, this.renderSelector());
+        if (!this.props.loaded) {
+            if (this.props.showLabel && this.props.label.trim() !== "") {
+                return createElement(Label, {
+                    className: this.props.className,
+                    label: this.props.label,
+                    orientation: this.props.labelOrientation,
+                    style: this.props.style,
+                    weight: this.props.labelWidth
+                }, this.renderSelector());
+            }
+
+            return this.renderSelector();
         }
 
-        return this.renderSelector();
+        return createElement("div", {});
     }
 
     private renderSelector() {
+        // add props
         if (this.props.readOnlyStyle === "control") {
                 return createElement("div", {
                     className: classNames("widget-dropdown-type-ahead-wrapper")

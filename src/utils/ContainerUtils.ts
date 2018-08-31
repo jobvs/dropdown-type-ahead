@@ -8,6 +8,7 @@ export const parseStyle = (style = ""): { [key: string]: string } => {
                 const name = pair[0].trim().replace(/(-.)/g, match => match[1].toUpperCase());
                 styleObject[name] = pair[1].trim();
             }
+
             return styleObject;
         }, {});
     } catch (error) {
@@ -38,6 +39,7 @@ export const validateProps = (props: ContainerProps): string => {
     if (message.length) {
         const widgetName = props.friendlyId.split(".")[2];
         const errorMessage = `Configuration error in widget - ${widgetName}: ${message.join(", ")}`;
+
         return errorMessage;
     }
 

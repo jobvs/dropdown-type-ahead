@@ -38,13 +38,13 @@ export class preview extends Component<ContainerProps, {}> {
         });
     }
 
-    private isReadOnly = (): boolean => {
+    private isReadOnly(): boolean {
         return (this.props.editable !== "default") || this.props.readOnly;
     }
 
-    private setAsyncSampleData = (input: string) => {
+    private setAsyncSampleData(input: string): Promise<{}> | undefined {
         if (!input) {
-        return Promise.resolve({ options: [ ] });
+            return Promise.resolve({ options: [ ] });
         }
 
         return;

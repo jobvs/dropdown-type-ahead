@@ -43,28 +43,19 @@ export interface ContainerProps extends WrapperProps {
 export interface ContainerState {
     options: ReferenceOption[];
     selected: string;
+    isLoading: boolean;
 }
 
 export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
-        selected: ""
+        selected: "",
+        isLoading: true
     };
 
     private subscriptionHandles: number[] = [];
     private association: string = this.props.entityPath.split("/")[0];
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
-
-    componentWillReceiveProps(newProps: ContainerProps) {
-        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
-            const selected = newProps.mxObject.get(this.association) as string;
-            this.resetSubscriptions(newProps.mxObject);
-            this.retrieveOptions(newProps);
-            this.setState({ selected });
-        } else {
-            this.setState({ selected: "" });
-        }
-    }
 
     render() {
         const selectedValue = this.getSelectedValue(this.state.selected);
@@ -80,6 +71,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
+            loaded: this.state.isLoading,
             label: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -90,6 +82,17 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         });
     }
 
+    componentWillReceiveProps(newProps: ContainerProps) {
+        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
+            const selected = newProps.mxObject.get(this.association) as string;
+            this.resetSubscriptions(newProps.mxObject);
+            this.retrieveOptions(newProps);
+            this.setState({ selected });
+        } else {
+            this.setState({ selected: "" });
+        }
+    }
+
     componentDidMount() {
         initializeReactFastclick();
     }
@@ -98,7 +101,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
     }
 
-    private getSelectedValue(selectedGuid: string) {
+    private getSelectedValue(selectedGuid: string): ReferenceOption | null {
         const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
         let selected = null;
         if (selectedOptions.length > 0) {
@@ -142,7 +145,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         let selected = "";
         !recentSelection ? selected = "" : selected = recentSelection.value;
 
-        if (this.state.selected === recentSelection.value) { // TODO: fix this
+        if (this.state.selected !== recentSelection.value) {
         this.executeOnChangeEvent();
         this.props.mxObject.set(this.association, selected);
         this.setState({ selected });
@@ -199,14 +202,19 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
         const options: ReferenceOption[] = [];
 
         mendixObjects.forEach(mxObject => {
-            options.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+            options.push({
+                label: typeof (mxObject.get(this.props.attribute) as string) !== "string"
+                    ? Number(mxObject.get(this.props.attribute)).toString()
+                    : mxObject.get(this.props.attribute) as string,
+                value: mxObject.getGuid()
+            });
         });
 
-        this.setState({ options });
+        this.setState({ options, isLoading: false });
     }
 
-    private setAsyncOptions = (input: string) => {
-        const FilteredOptions: ReferenceOption[] = [];
+    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
+        const filteredOptions: ReferenceOption[] = [];
 
         if (!input && !this.props.mxObject) {
             return Promise.resolve({ options: [] });
@@ -215,10 +223,10 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
             return fetchByMicroflow(this.props.searchMicroflow, this.props.mxObject.getGuid()).then((mendixObjects) => {
                 mendixObjects.forEach(mxObject => {
-                    FilteredOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
+                    filteredOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
                 });
 
-                return { options: FilteredOptions };
+                return { options: filteredOptions, isLoading: false };
             });
         }
     }
