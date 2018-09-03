@@ -1,10 +1,9 @@
 import { Component, createElement } from "react";
 import Select , { Async } from "react-select";
+import * as classNames from "classnames";
 
 import { Alert } from "./Alert";
-// import { parseStyle } from "../utils/ContainerUtils";
 import { Label } from "./Label";
-import * as classNames from "classnames";
 
 import "../ui/DropdownTypeaheadReference.scss";
 import "react-select/dist/react-select.css";
@@ -31,7 +30,7 @@ export interface DropdownTypeaheadReferenceProps {
 }
 
 export type ReferenceOption = {
-    value?: string,
+    value?: string | boolean,
     label?: string
 };
 

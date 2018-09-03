@@ -200,17 +200,35 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
 
     private setOptions = (mendixObjects: mendix.lib.MxObject[]) => {
         const options: ReferenceOption[] = [];
-
-        mendixObjects.forEach(mxObject => {
-            options.push({
-                label: typeof (mxObject.get(this.props.attribute) as string) !== "string"
-                    ? Number(mxObject.get(this.props.attribute)).toString()
-                    : mxObject.get(this.props.attribute) as string,
-                value: mxObject.getGuid()
+        if (mendixObjects.length > 0) {
+            if (mendixObjects[0].isEnum(this.props.attribute)) {
+                const enumerationList = mendixObjects[0].getEnumMap(this.props.attribute);
+                enumerationList.forEach(enumeration => {
+                    options.push({
+                        label: enumeration.caption,
+                        value: enumeration.key
+                    });
+                });
+            } else if (mendixObjects[0].isBoolean(this.props.attribute)) {
+                        options.push({ label: "Yes", value: true }, { label: "No", value: false });
+        } else if (mendixObjects[0].isNumeric(this.props.attribute)) {
+            mendixObjects.forEach(mxObject => {
+                options.push({
+                    label: `${parseFloat(mxObject.get(this.props.attribute) as string)}`,
+                    value: mxObject.getGuid()
+                });
             });
-        });
+        } else {
+                mendixObjects.forEach(mxObject => {
+                    options.push({
+                        label: mxObject.get(this.props.attribute) as string,
+                        value: mxObject.getGuid()
+                    });
+                });
+            }
 
-        this.setState({ options, isLoading: false });
+            this.setState({ options, isLoading: false });
+        }
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
