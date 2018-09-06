@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget id="com.mendix.widget.custom.dropdowntypeaheadreference.DropdownTypeaheadReference" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
-    <name>Dropdown typeahead reference</name>
+    <name>Dropdown Typeahead Reference</name>
     <description></description>
     <icon></icon>
     <properties>
         <property key="entityPath" type="entity" isPath="yes" pathType="reference">
-            <caption>Enity path</caption>
+            <caption>Entity path</caption>
             <category>Data source</category>
             <description/>
         </property>
@@ -15,12 +15,12 @@
             <description>The attribute from which selectable values will be retrieved</description>
             <attributeTypes>
                 <attributeType name="AutoNumber"/>
-                <attributeType name="Currency"/>
                 <attributeType name="Enum"/>
                 <attributeType name="Decimal"/>
                 <attributeType name="Integer"/>
                 <attributeType name="Long"/>
                 <attributeType name="String"/>
+                <attributeType name="Boolean"/>
             </attributeTypes>
         </property>
         <property key="editable" type="enumeration" defaultValue="default">
@@ -32,49 +32,105 @@
                 <enumerationValue key="never">Never</enumerationValue>
             </enumerationValues>
         </property>
+        <property key="selectType" type="enumeration" defaultValue="normal">
+            <caption>Select type</caption>
+            <category>Appearance</category>
+            <description></description>
+                <enumerationValues>
+                    <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
+                    <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
+                </enumerationValues>
+        </property>
         <property key="emptyOptionCaption" type="string" required="false">
             <caption>Empty option caption</caption>
             <category>Appearance</category>
             <description>Text displayed when no selection is made</description>
         </property>
-        <property key="showLabel" type="boolean" defaultValue="true">
-            <caption>Show label caption</caption>
+        <property key="readOnlyStyle" type="enumeration" defaultValue="control">
+            <caption>Read-only style</caption>
             <category>Appearance</category>
             <description/>
-        </property>
-        <property key="labelCaption" type="string" required="false">
-            <caption>Label caption</caption>
-            <category>Appearance</category>
-            <description/>
+            <enumerationValues>
+                <enumerationValue key="control">Control</enumerationValue>
+                <enumerationValue key="text">Text</enumerationValue>
+            </enumerationValues>
         </property>
         <property key="isClearable" type="boolean" defaultValue="true">
             <caption>Enable clear selection</caption>
             <category>Appearance</category>
             <description>Clears a selected option</description>
         </property>
+        <property key="showLabel" type="boolean" defaultValue="true">
+            <caption>Show label</caption>
+            <category>Label</category>
+            <description/>
+        </property>
+        <property key="labelCaption" type="translatableString" required="false">
+            <caption>Label caption</caption>
+            <category>Label</category>
+            <description/>
+            <translations>
+                <translation lang="en_US">Caption</translation>
+                <translation lang="nl_NL">Bijschrift</translation>
+            </translations>
+        </property>
+        <property key="labelWidth" type="integer" defaultValue="3">
+            <caption>Label width</caption>
+            <category>Label</category>
+            <description>The weight of the label, which must be a value between 0 and 12</description>
+        </property>
+        <property key="labelOrientation" type="enumeration" defaultValue="horizontal">
+            <caption>Label orientation</caption>
+            <category>Label</category>
+            <description/>
+            <enumerationValues>
+                <enumerationValue key="horizontal">Horizontal</enumerationValue>
+                <enumerationValue key="vertical">Vertical</enumerationValue>
+            </enumerationValues>
+        </property>
         <property key="source" type="enumeration" defaultValue="xpath">
             <caption>Source</caption>
             <category>Selectable objects</category>
             <description/>
             <enumerationValues>
-                <enumerationValue key="xpath">Xpath</enumerationValue>
+                <enumerationValue key="xpath">Database</enumerationValue>
                 <enumerationValue key="microflow">Microflow</enumerationValue>
                 <enumerationValue key="nanoflow">Nanoflow</enumerationValue>
             </enumerationValues>
         </property>
         <property key="entityConstraint" type="entityConstraint" entityProperty="entityPath" required="false">
-            <caption>Xpath constraint</caption>
+            <caption>XPath constraint</caption>
             <category>Selectable objects</category>
             <description/>
         </property>
-        <property key="sortOrder" type="enumeration" defaultValue="asc">
-            <caption>Sort order</caption>
+        <property key="sortAttributes" type="object" isList="true" required="false">
+            <caption>Sort options</caption>
             <category>Selectable objects</category>
-            <description/>
-            <enumerationValues>
-                <enumerationValue key="asc">Ascending</enumerationValue>
-                <enumerationValue key="desc">Descending</enumerationValue>
-            </enumerationValues>
+            <description></description>
+            <properties>
+                <property key="name" type="attribute" required="false" isPath="optional" pathType="reference" entityProperty="../entityPath">
+                    <caption>Attribute</caption>
+                    <category>Attribute</category>
+                    <description>Attribute to sort the </description>
+                    <attributeTypes>
+                        <attributeType name="AutoNumber"/>
+                        <attributeType name="Enum"/>
+                        <attributeType name="Decimal"/>
+                        <attributeType name="Integer"/>
+                        <attributeType name="Long"/>
+                        <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+                <property key="sort" type="enumeration" defaultValue="asc">
+                    <caption>Sort</caption>
+                    <category>Attribute</category>
+                    <description></description>
+                    <enumerationValues>
+                        <enumerationValue key="asc">Ascending</enumerationValue>
+                        <enumerationValue key="desc">Descending</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </properties>
         </property>
         <property key="microflow" type="microflow" required="false">
             <caption>Microflow</caption>
@@ -88,6 +144,25 @@
             <description>Returns a list of data values</description>
             <returnType type="Object" entityProperty="entityPath" isList="true"/>
         </property>
+        <property key="searchMicroflow" type="microflow" required="false">
+            <caption>Search Microflow</caption>
+            <category>Search</category>
+            <description>Returns a list of filtered data values</description>
+            <returnType type="Object" entityProperty="entityPath" isList="true"/>
+        </property>
+        <property key="searchAttribute" type="attribute" required="false">
+            <caption>Search attribute</caption>
+            <category>Search</category>
+            <description/>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Decimal"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>
             <category>Events</category>
@@ -99,13 +174,13 @@
             </enumerationValues>
         </property>
         <property key="onChangeMicroflow" type="microflow" required="false">
-            <caption>Onchange microflow</caption>
+            <caption>On change microflow</caption>
             <category>Events</category>
             <description>Microflow executed on change selection</description>
             <returnType type="Void"/>
         </property>
         <property key="onChangeNanoflow" type="nanoflow" required="false">
-            <caption>Onchange nanoflow</caption>
+            <caption>On change nanoflow</caption>
             <category>Events</category>
             <description>Nanoflow executed on change selection</description>
             <returnType type="Void"/>

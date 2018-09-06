@@ -2,12 +2,13 @@
 type MxObject = mendix.lib.MxObject;
 type SortOrder = "asc" | "desc";
 
+import { AttributeType } from "../components/DropdownTypeaheadReference";
 export interface FetchDataOptions {
     source: "xpath" | "microflow" | "nanoflow";
     entity: string;
     guid: string;
     constraint?: string;
-    sortAttribute?: string;
+    sortAttributes: AttributeType[];
     sortOrder?: SortOrder;
     attributes?: string[];
     microflow?: string;
@@ -19,7 +20,7 @@ export interface FetchByXPathOptions {
     guid: string;
     entity: string;
     constraint: string;
-    sortAttribute?: string;
+    sortAttributes: AttributeType[];
     sortOrder?: SortOrder;
     attributes?: string[];
     references?: any;
@@ -69,9 +70,9 @@ const addPathReference = (references: ReferencesSpec, path: string): ReferencesS
         return referenceSet;
     }, references);
 
-export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
-    new Promise<FetchedData>((resolve, reject) => {
-        const { guid, entity, sortAttribute, sortOrder } = options;
+export const fetchData = (options: FetchDataOptions): Promise<mendix.lib.MxObject[]> =>
+    new Promise<mendix.lib.MxObject[]>((resolve, reject) => {
+        const { guid, entity, sortAttributes, sortOrder } = options;
         if (entity && guid) {
             if (options.source === "xpath") {
                 const references = getReferences(options.attributes || []);
@@ -81,18 +82,18 @@ export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
                     entity,
                     guid,
                     references: references.references,
-                    sortAttribute,
+                    sortAttributes,
                     sortOrder
                 })
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else if (options.source === "microflow" && options.microflow) {
                 fetchByMicroflow(options.microflow, guid)
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) { // nanoflow
                 fetchByNanoflow(options.nanoflow, options.mxform)
-                    .then(mxObjects => resolve({ mxObjects }))
+                    .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
             } else {
                 reject("entity & guid are required");
@@ -101,7 +102,8 @@ export const fetchData = (options: FetchDataOptions): Promise<FetchedData> =>
     });
 
 export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> => new Promise<MxObject[]>((resolve, reject) => {
-    const { guid, entity, constraint, sortAttribute, sortOrder, attributes, references } = options;
+    const { guid, entity, constraint, sortAttributes, attributes, references } = options;
+
     const entityPath = entity.split("/");
     const entityName = entityPath.length > 1 ? entityPath[entityPath.length - 1] : entity;
     const xpath = `//${entityName}${constraint.split("[%CurrentObject%]").join(guid)}`;
@@ -111,8 +113,9 @@ export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> 
         error: error => reject(`An error occurred while retrieving data via XPath (${xpath}): ${error.message}`),
         filter: {
             attributes,
+            offset: 0,
             references,
-            sort: sortAttribute && sortAttribute.indexOf("/") === -1 ? [ [ sortAttribute, sortOrder || "asc" ] ] : []
+            sort: createSortProps(sortAttributes)
         },
         xpath
     });
@@ -148,4 +151,14 @@ const getReferences = (attributePaths: string[]): ReferencesSpec => {
     });
 
     return references;
+};
+
+export const createSortProps = (sortAttributes: AttributeType[]) => {
+    const combined: any = [];
+    sortAttributes.map((optionObject) => {
+        const { name, sort } = optionObject;
+        combined.push([ name, sort ]);
+    });
+
+    return combined;
 };

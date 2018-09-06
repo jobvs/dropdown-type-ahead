@@ -15,7 +15,7 @@ exports.config = {
     bail: 0,
     screenshotPath: "dist/wdio/",
     baseUrl: debug ? "http://localhost:8080/" : "https://dropdowntypeahead.mxapps.io/",
-    waitforTimeout: 360000,
+    waitforTimeout: 3600,
     connectionRetryTimeout: 200000,
     connectionRetryCount: 2,
     services: [ "selenium-standalone" ],

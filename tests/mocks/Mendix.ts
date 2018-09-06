@@ -1,5 +1,9 @@
 /* tslint:disable */
+interface OnlineData {
+    getByXpath(xpath: string, options?:{ count: boolean, sort: Sort[] }): Promise<{count: number, mxobjs: mendix.lib.MxObject[]}>;
+}
 
+type Sort = [ string, "desc" | "asc" ];
 class MxMock implements mx.MxInterface {
     appUrl: string = "";
     baseUrl: string = "";
@@ -16,6 +20,7 @@ class MxMock implements mx.MxInterface {
     ui!: mx.ui;
     onError(_error: Error): void { /* */ }
     isOffline(): boolean { return false; }
+    onlineData!: OnlineData;
 }
 
 class MxUiMock implements mx.ui {

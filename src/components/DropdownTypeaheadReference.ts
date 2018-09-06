@@ -1,79 +1,112 @@
 import { Component, createElement } from "react";
-import Select from "react-select";
+import Select , { Async } from "react-select";
+import * as classNames from "classnames";
 
 import { Alert } from "./Alert";
-import * as classNames from "classnames";
+import { Label } from "./Label";
+
 import "../ui/DropdownTypeaheadReference.scss";
+import "react-select/dist/react-select.css";
 
 export interface DropdownTypeaheadReferenceProps {
     style?: object;
-    data: referenceOption[];
+    labelWidth: number;
+    data: ReferenceOption[];
+    asyncData: any;
     value: string;
     label: string;
+    loaded: boolean;
     showLabel: boolean;
     emptyCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
-    selectedValue: referenceOption;
-    handleOnchange: (selectedOption: referenceOption) => void;
+    selectType: "normal" | "asynchronous";
+    selectedValue: ReferenceOption;
+    handleOnchange: (selectedOption: ReferenceOption | any) => void;
     className: string;
+    readOnlyStyle: "control" | "text";
+    labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
 }
 
-// tslint:disable-next-line:interface-over-type-literal
-export type referenceOption = { value?: string, label?: string };
+export type ReferenceOption = {
+    value?: string | boolean,
+    label?: string
+};
+
+export type MetaData = {
+    action: string,
+    removedValue: ReferenceOption
+};
+
+export interface AttributeType {
+    name: string;
+    sort: string;
+}
 
 export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
-    // private Node?: HTMLDivElement;
-
     render() {
-        return createElement("div", {
-                className: classNames("widget-dropdowntypeahead-wrapper", this.props.className)
-            },
-                this.renderLabel(),
-                this.renderSelector()
-            );
+        return this.renderForm();
     }
 
-    private renderLabel() {
-        if (this.props.showLabel && this.props.label.trim() !== "") {
-            return createElement("div", { className: "div-wrapper-label" },
-                createElement("label", { className: "mx-control-label" },
-                    this.props.label));
+    private renderForm() {
+        if (!this.props.loaded) {
+            if (this.props.showLabel && this.props.label.trim() !== "") {
+                return createElement(Label, {
+                    className: this.props.className,
+                    label: this.props.label,
+                    orientation: this.props.labelOrientation,
+                    style: this.props.style,
+                    weight: this.props.labelWidth
+                }, this.renderSelector());
+            }
+
+            return this.renderSelector();
         }
 
-        return;
+        return createElement("div", {});
     }
-
-    // private setReference = (Node: HTMLDivElement) => {
-    //     this.Node = Node;
-    // }
 
     private renderSelector() {
-        return createElement("div", {
-            className: classNames(
-                "div-wrapper",
-                this.props.isReadOnly ? "disabled" : "enabled",
-                this.props.showLabel ? "showlabel" : "nolabel"
-            )},
-            createElement(Select as any, {
-                classNamePrefix: "widget-dropdown-type-ahead",
-                isClearable: this.props.isClearable,
-                isDisabled: this.props.isReadOnly,
-                isSearchable: true,
-                onChange: this.props.handleOnchange,
-                options: this.props.data,
-                // ref: this.setReference,
-                ...this.createSelectorProp()
-            }),
-            createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
-        );
+        // add props
+        if (this.props.readOnlyStyle === "control") {
+                return createElement("div", {
+                    className: classNames("widget-dropdown-type-ahead-wrapper")
+                },
+                this.props.selectType === "normal" ?
+                    createElement(Select, {
+                        clearable: this.props.isClearable,
+                        disabled: this.props.isReadOnly,
+                        onChange: this.props.handleOnchange,
+                        options: this.props.data,
+                        noResultsText: "No options",
+                        clearValueText: "",
+                        ...this.createSelectorProp() as object }) :
+                    createElement(Async, {
+                            valueKey : "value",
+                            labelKey : "label",
+                            clearValueText: "",
+                            disabled: this.props.isReadOnly,
+                            clearable: this.props.isClearable,
+                            onChange: this.props.handleOnchange,
+                            loadOptions: (input: string) => this.props.asyncData(input),
+                            ...this.createSelectorProp() as object }),
+                    createElement(Alert, {
+                        className: "widget-dropdown-type-ahead-alert"
+                    }, this.props.alertMessage)
+                );
+        } else {
+            return createElement("p", { className: "form-control-static" },
+                this.props.selectedValue ? this.props.selectedValue.label : "");
+        }
+
     }
 
-    private createSelectorProp(): { placeholder?: string, value?: referenceOption } {
+    private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
         if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }
-        return { placeholder: this.props.emptyCaption };
+
+        return { value: null , placeholder: this.props.emptyCaption };
     }
 }

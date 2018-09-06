@@ -4,6 +4,7 @@ An input widget that can be used to display and edit associations
 
 ## Features
 * Allow the user to search for matching options
+* Asynchronous loading of options
 * Supports different data sources
     - Xpath
     - Microflow
@@ -20,7 +21,7 @@ Mendix 7.13.1
 [https://dropdowntypeahead.mxapps.io]( https://dropdowntypeahead.mxapps.io)
 
 ## Usage
-![dropdown-typeahead-reference](/assets/dropdown-typeahead-reference.png)
+![dropdown-typeahead-reference](/assets/dropdown-typeahead-normal-load.gif)
 
 * Place the widget in data form within the context of an entity 
 * Select entity path and attribute over reference for selectable objects

@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 
-import { parseStyle } from "./utils/ContainerUtils";
+import { parseStyle, validateProps } from "./utils/ContainerUtils";
 import { DropdownTypeaheadReference } from "./components/DropdownTypeaheadReference";
 import { ContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
 
@@ -12,24 +12,49 @@ type VisibilityMap = {
 
 // tslint:disable-next-line class-name
 export class preview extends Component<ContainerProps, {}> {
-    private selected = {
-        label: this.props.emptyOptionCaption,
-        value: "noGuid"
-    };
-
     render() {
+        const selectedValue = {
+            label: this.props.emptyOptionCaption,
+            value: "noGuid"
+        };
+
         return createElement(DropdownTypeaheadReference as any, {
+            alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
-            emptyCaption: this.selected.label,
+            className: this.props.class,
+            emptyCaption: this.props.emptyOptionCaption,
+            isClearable: this.props.isClearable,
+            selectType: this.props.selectType,
+            isReadOnly: this.isReadOnly(),
+            data: [ selectedValue ],
+            asyncData: (input: string) => this.setAsyncSampleData(input),
             label: this.props.labelCaption,
+            labelOrientation: this.props.labelOrientation,
+            labelWidth: this.props.labelWidth,
+            readOnlyStyle: this.props.readOnlyStyle,
+            selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
     }
+
+    private isReadOnly(): boolean {
+        return (this.props.editable !== "default") || this.props.readOnly;
+    }
+
+    private setAsyncSampleData(input: string): Promise<{}> | undefined {
+        if (!input) {
+            return Promise.resolve({ options: [ ] });
+        }
+
+        return;
+    }
 }
 
 export function getPreviewCss() {
-    return require("./ui/DropdownTypeaheadReference.scss");
+    return (
+        require("./ui/DropdownTypeaheadReference.scss") + require("react-select/dist/react-select.css")
+    );
 }
 
 export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: VisibilityMap) {
@@ -40,6 +65,7 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
     visibilityMap.onChangeNanoflow = valueMap.onChangeEvent === "callNanoflow";
 
     if (valueMap.source !== "xpath") {
+        visibilityMap.sortAttributes = false;
         visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
     }

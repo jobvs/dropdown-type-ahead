@@ -1,13 +1,26 @@
 class HomePage {
     public get dropDownSelector() {
-        return browser.element(".mx-name-dropdownTypeaheadReference10 .widget-dropdown-type-ahead__value-container");
+        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-control");
     }
+
+    public get selectedValue() {
+        return browser.getText("#react-select-2--value-item");
+    }
+
+    public get selectPlaceholder() {
+        return browser.getText(".mx-name-dropdownTypeaheadReference13 .Select-control .Select-placeholder");
+    }
+
+    public get selectedElement() {
+        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-control .Select-value-label");
+    }
+
     public get clearIndicator() {
-        return browser.element(".mx-name-dropdownTypeaheadReference10 .widget-dropdown-type-ahead__clear-indicator svg");
+        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-clear-zone .Select-clear");
     }
 
     public get dropDownOptions() {
-        return browser.elements(".widget-dropdown-type-ahead__option");
+        return browser.elements(".Select-option");
     }
 
     public open(): void {
