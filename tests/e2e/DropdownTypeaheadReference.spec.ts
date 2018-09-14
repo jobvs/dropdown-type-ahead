@@ -1,7 +1,6 @@
 import homePage from "./pages/home.page";
 
 const defaultOption = "Select city";
-const initialOption = "Avarua";
 
 describe("Dropdown type ahead ", () => {
 
