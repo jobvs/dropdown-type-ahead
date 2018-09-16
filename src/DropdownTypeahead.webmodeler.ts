@@ -1,8 +1,8 @@
 import { Component, createElement } from "react";
 
 import { parseStyle, validateProps } from "./utils/ContainerUtils";
-import { DropdownTypeaheadReference } from "./components/DropdownTypeaheadReference";
-import { ContainerProps } from "./components/DropdownTypeaheadReferenceContainer";
+import { DropdownTypeahead } from "./components/DropdownTypeahead";
+import { ContainerProps } from "./components/DropdownTypeaheadContainer";
 
 declare function require(name: string): string;
 
@@ -18,7 +18,7 @@ export class preview extends Component<ContainerProps, {}> {
             value: "noGuid"
         };
 
-        return createElement(DropdownTypeaheadReference as any, {
+        return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
             className: this.props.class,
@@ -53,7 +53,7 @@ export class preview extends Component<ContainerProps, {}> {
 
 export function getPreviewCss() {
     return (
-        require("./ui/DropdownTypeaheadReference.scss") + require("react-select/dist/react-select.css")
+        require("./ui/DropdownTypeahead.scss") + require("react-select/dist/react-select.css")
     );
 }
 

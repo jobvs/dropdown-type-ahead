@@ -1,4 +1,4 @@
-import { ContainerProps } from "../components/DropdownTypeaheadReferenceContainer";
+import { ContainerProps } from "../components/DropdownTypeaheadContainer";
 
 export const parseStyle = (style = ""): { [key: string]: string } => {
     try {

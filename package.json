@@ -1,6 +1,6 @@
 {
-  "name": "dropdowntypeaheadreference",
-  "widgetName": "DropdownTypeaheadReference",
+  "name": "dropdowntypeahead",
+  "widgetName": "DropdownTypeahead",
   "version": "1.0.0",
   "description": "An input widget that can be used to display and edit associations",
   "copyright": "Mendix BV",

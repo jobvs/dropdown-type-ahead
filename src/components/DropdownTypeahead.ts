@@ -5,10 +5,10 @@ import * as classNames from "classnames";
 import { Alert } from "./Alert";
 import { Label } from "./Label";
 
-import "../ui/DropdownTypeaheadReference.scss";
+import "../ui/DropdownTypeahead.scss";
 import "react-select/dist/react-select.css";
 
-export interface DropdownTypeaheadReferenceProps {
+export interface DropdownTypeaheadProps {
     style?: object;
     labelWidth: number;
     data: ReferenceOption[];
@@ -44,7 +44,7 @@ export interface AttributeType {
     sort: string;
 }
 
-export class DropdownTypeaheadReference extends Component<DropdownTypeaheadReferenceProps> {
+export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
     render() {
         return this.renderForm();
     }
@@ -68,29 +68,28 @@ export class DropdownTypeaheadReference extends Component<DropdownTypeaheadRefer
     }
 
     private renderSelector() {
-        // add props
+        const commonProps: object = {
+            clearable: this.props.isClearable,
+            disabled: this.props.isReadOnly,
+            onChange: this.props.handleOnchange,
+            clearValueText: "",
+            ...this.createSelectorProp() as object
+        };
+
         if (this.props.readOnlyStyle === "control") {
                 return createElement("div", {
                     className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
                 this.props.selectType === "normal" ?
                     createElement(Select, {
-                        clearable: this.props.isClearable,
-                        disabled: this.props.isReadOnly,
-                        onChange: this.props.handleOnchange,
                         options: this.props.data,
                         noResultsText: "No options",
-                        clearValueText: "",
-                        ...this.createSelectorProp() as object }) :
+                        ...commonProps }) :
                     createElement(Async, {
                             valueKey : "value",
                             labelKey : "label",
-                            clearValueText: "",
-                            disabled: this.props.isReadOnly,
-                            clearable: this.props.isClearable,
-                            onChange: this.props.handleOnchange,
                             loadOptions: (input: string) => this.props.asyncData(input),
-                            ...this.createSelectorProp() as object }),
+                            ...commonProps }),
                     createElement(Alert, {
                         className: "widget-dropdown-type-ahead-alert"
                     }, this.props.alertMessage)

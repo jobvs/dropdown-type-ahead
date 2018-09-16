@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchByMicroflow, fetchData } from "../utils/Data";
-import { AttributeType, DropdownTypeaheadReference, ReferenceOption } from "./DropdownTypeaheadReference";
+import { AttributeType, DropdownTypeahead, ReferenceOption } from "./DropdownTypeahead";
 
 interface WrapperProps {
     class: string;
@@ -46,7 +46,7 @@ export interface ContainerState {
     isLoading: boolean;
 }
 
-export default class ReferenceSelectorContainer extends Component<ContainerProps, ContainerState> {
+export default class DropdownTypeaheadContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
         selected: "",
@@ -60,7 +60,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
     render() {
         const selectedValue = this.getSelectedValue(this.state.selected);
 
-        return createElement(DropdownTypeaheadReference as any, {
+        return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
             className: this.props.class,
@@ -89,7 +89,7 @@ export default class ReferenceSelectorContainer extends Component<ContainerProps
             this.retrieveOptions(newProps);
             this.setState({ selected });
         } else {
-            this.setState({ selected: "" });
+            this.setState({ selected: "" , isLoading: false });
         }
     }
 
