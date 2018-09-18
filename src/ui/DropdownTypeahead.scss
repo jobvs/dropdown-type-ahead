@@ -9,6 +9,10 @@
   background: #fff;
 }
 
+.Select {
+  display: -webkit-box;
+}
+
  Select.has-value.is-focused.is-open > .Select-control {
   border-color: #0595DB !important;
   box-shadow: unset !important;
@@ -23,7 +27,6 @@
 }
 
 .Select-menu-outer {
-  // margin-top: 0px !important;
   border-color:  #0595DB !important;
   box-shadow: none !important;
 }

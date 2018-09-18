@@ -143,12 +143,16 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         }
 
         let selected = "";
-        !recentSelection ? selected = "" : selected = recentSelection.value;
 
-        this.props.mxObject.set(this.association, selected);
-
-        if (this.state.selected !== recentSelection.value) {
-            this.executeOnChangeEvent();
+        if (!recentSelection) {
+            selected = "";
+            this.props.mxObject.set(this.association, selected);
+        } else {
+            selected = recentSelection.value;
+            this.props.mxObject.set(this.association, selected);
+            if (this.state.selected !== recentSelection.value) {
+                this.executeOnChangeEvent();
+            }
         }
 
         this.setState({ selected });

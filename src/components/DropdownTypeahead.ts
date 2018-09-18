@@ -11,8 +11,8 @@ import "react-select/dist/react-select.css";
 export interface DropdownTypeaheadProps {
     style?: object;
     labelWidth: number;
-    data: ReferenceOption[];
-    asyncData: any;
+    data?: ReferenceOption[];
+    asyncData?: any;
     value: string;
     label: string;
     loaded: boolean;
@@ -21,9 +21,9 @@ export interface DropdownTypeaheadProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
-    selectedValue: ReferenceOption;
+    selectedValue: ReferenceOption | null;
     handleOnchange: (selectedOption: ReferenceOption | any) => void;
-    className: string;
+    className?: string;
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
