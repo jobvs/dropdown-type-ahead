@@ -2,7 +2,7 @@
   "name": "dropdowntypeahead",
   "widgetName": "DropdownTypeahead",
   "version": "1.0.0",
-  "description": "An input widget that can be used to display and edit associations",
+  "description": "An input widget used to display and edit associations",
   "copyright": "Mendix BV",
   "scripts": {
     "start": "cross-env NODE_ENV=development grunt",
@@ -94,7 +94,7 @@
     "tslint": "^5.11.0",
     "pre-commit": "^1.2.2",
     "tslint-eslint-rules": "^5.3.1",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.3",
     "wdio-dot-reporter": "0.0.9",
     "wdio-jasmine-framework": "^0.3.4",
     "wdio-selenium-standalone-service": "0.0.10",

@@ -14,8 +14,8 @@
  Create a folder named `dist` in the project root.
  
  Create a Mendix test project in the dist folder and rename its root folder to `dist/MxTestProject`. Changes to the widget code shall be automatically pushed to this test project.
- Or get the test project from [https://github.com/mendixlabs/dropdown-type-ahead/releases]
- (https://github.com/mendixlabs/dropdown-type-ahead/releases)
+ Or get the test project from [https://github.com/mendixlabs/dropdown-type-ahead/releases/latest]
+ (https://github.com/mendixlabs/dropdown-type-ahead/releases/latest)
 
  To automatically compile, bundle and push code changes to the running test project, run:
    > grunt

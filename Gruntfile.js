@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         watch: {
             updateWidgetFiles: {
                 files: [ "./src/**/*" ],
-                tasks: [ "webpack:develop", "file_append", "compress:dist", "copy" ],
+                tasks: [ "webpack:develop", "file_append", "compress", "copy" ],
                 options: {
                     debounceDelay: 250
                 }

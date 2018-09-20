@@ -1,6 +1,6 @@
 
-# Dropdown TypeAhead Reference
-An input widget that can be used to display and edit associations
+# Dropdown Typeahead
+An input widget used to display and edit associations
 
 ## Features
 * Allow the user to search for matching options

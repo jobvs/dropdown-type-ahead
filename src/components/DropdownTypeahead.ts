@@ -29,15 +29,10 @@ export interface DropdownTypeaheadProps {
     alertMessage: string;
 }
 
-export type ReferenceOption = {
-    value?: string | boolean,
-    label?: string
-};
-
-export type MetaData = {
-    action: string,
-    removedValue: ReferenceOption
-};
+export interface ReferenceOption {
+    value?: string | boolean;
+    label?: string;
+}
 
 export interface AttributeType {
     name: string;

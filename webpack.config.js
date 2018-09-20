@@ -39,7 +39,7 @@ const widgetConfig = {
     devtool: "source-map",
     externals: [ "react", "react-dom" ],
     plugins: [
-        new CopyWebpackPlugin([ { from: "src/**/*.xml" }], { copyUnmodified: true }),
+        new CopyWebpackPlugin([ { from: "src/**/*.xml" } ], { copyUnmodified: true }),
         new ExtractTextPlugin({ filename: `./src/com/mendix/widget/custom/${name}/ui/${widgetName}.css` }),
         new webpack.LoaderOptionsPlugin({ debug: true })
     ]
@@ -68,4 +68,4 @@ const previewConfig = {
     plugins: [ new webpack.LoaderOptionsPlugin({ debug: true }) ]
 };
 
-module.exports = [ widgetConfig, previewConfig];
+module.exports = [ widgetConfig, previewConfig ];
