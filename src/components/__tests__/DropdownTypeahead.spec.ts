@@ -65,6 +65,13 @@ describe("DropdownTypeahead", () => {
         );
     });
 
+    it("that is still loading renders with the structure", () => {
+        const DropdownTypeAheadComponent = render(TypeAheadProps);
+
+        DropdownTypeAheadComponent.setProps({ loaded: true });
+        expect(DropdownTypeAheadComponent).toBeElement(createElement("div", {}));
+    });
+
     describe("with readOnlyStyle as 'text'", () => {
         it("renders with the structure with a selected value", () => {
             const DropdownTypeAheadComponent = render(TypeAheadProps);
@@ -85,12 +92,5 @@ describe("DropdownTypeahead", () => {
                     createElement("p", { className: "form-control-static" }, ""))
             );
         });
-    });
-
-    it("that is still loading renders with the structure", () => {
-        const DropdownTypeAheadComponent = render(TypeAheadProps);
-
-        DropdownTypeAheadComponent.setProps({ loaded: true });
-        expect(DropdownTypeAheadComponent).toBeElement(createElement("div", {}));
     });
 });

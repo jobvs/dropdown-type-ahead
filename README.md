@@ -12,7 +12,8 @@ An input widget used to display and edit associations
 * Supports on change actions
     - call a microflow
     - call a nanoflow
-* Supports on press `Tab` or `Enter` keys to auto complete suggested selection
+* Supports `Tab` or `Enter` keys to auto complete suggested selection
+* Supports `Back space` key to clear selection
 
 ## Dependencies
 Mendix 7.13.1
@@ -21,7 +22,7 @@ Mendix 7.13.1
 [https://dropdowntypeahead.mxapps.io]( https://dropdowntypeahead.mxapps.io)
 
 ## Usage
-![dropdown-typeahead-reference](/assets/dropdown-typeahead-normal-load.gif)
+![dropdown-typeahead](/assets/dropdown-typeahead-normal-loading.gif)
 
 * Place the widget in data form within the context of an entity 
 * Select entity path and attribute over reference for selectable objects
@@ -30,13 +31,17 @@ Mendix 7.13.1
 ## Basic configuration
 For a basic configuration, set up the widget as indicated below:-
 ### Data source
-![dropdown-typeahead-datasource](/assets/dropdown-typeahead-datasource.png)
+![dropdown-typeahead-data-source](/assets/dropdown-typeahead-data-source.png)
 ### Appearance  
 ![dropdown-typeahead-appearance](/assets/dropdown-typeahead-appearance.png)  
+### Label
+![dropdown-typeahead-label](/assets/dropdown-typeahead-label.png)  
 ### Selectable objects
-![dropdown-typeahead-selectable-objects](/assets/dropdown-typeahead-selectable-objects.png)  
+![dropdown-typeahead-selectable-objects](/assets/dropdown-typeahead-selectable.png)  
+### Search
+![dropdown-typeahead-search](/assets/dropdown-typeahead-search.png)  
 ### Events
-![dropdown-typeahead-events](/assets/dropdown-typeahead-events.png)  
+![dropdown-typeahead-events](/assets/dropdown-typeahead-events.png)
 
 ## Issues, suggestions and feature requests
 We are actively maintaining this widget, please report any issues or suggestion for improvement at  
