@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/mendixlabs/dropdown-type-ahead.svg?branch=master)](https://travis-ci.org/mendixlabs/dropdown-type-ahead)
+[![Dependency Status](https://david-dm.org/mendixlabs/dropdown-type-ahead.svg)](https://david-dm.org/mendixlabs/dropdown-type-ahead)
+[![Dev Dependency Status](https://david-dm.org/mendixlabs/dropdown-type-ahead.svg#info=devDependencies)](https://david-dm.org/mendixlabs/dropdown-type-ahead#info=devDependencies)
+[![codecov](https://codecov.io/gh/mendixlabs/dropdown-type-ahead/branch/master/graph/badge.svg)](https://codecov.io/gh/mendixlabs/dropdown-type-ahead)
+![badge](https://img.shields.io/badge/mendix-7.14.1-green.svg)
 
 # Dropdown Typeahead
 An input widget used to display and edit associations
@@ -22,7 +27,7 @@ Mendix 7.13.1
 [https://dropdowntypeahead.mxapps.io]( https://dropdowntypeahead.mxapps.io)
 
 ## Usage
-![dropdown-typeahead](/assets/dropdown-typeahead-normal-loading.gif)
+![dropdown-type-ahead](/assets/dropdown-typeahead-normal-loading.gif)
 
 * Place the widget in data form within the context of an entity 
 * Select entity path and attribute over reference for selectable objects
