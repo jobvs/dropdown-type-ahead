@@ -2,15 +2,18 @@ const webpack = require("webpack");
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const pkg = require("./package");
-const widgetName = pkg.widgetName;
-const name = pkg.widgetName.toLowerCase();
+
+const widgetName = require("./package").widgetName.toLowerCase();
 
 const widgetConfig = {
-    entry: `./src/components/${widgetName}Container.ts`,
+    entry: {
+        DropdownTypeahead: "./src/DropdownTypeahead/components/DropdownTypeaheadContainer.ts",
+        DropdownTypeaheadReferenceSet: "./src/DropdownTypeaheadReferenceSet/components/DropdownTypeaheadReferenceSetContainer.ts"
+    },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
-        filename: `src/com/mendix/widget/custom/${name}/${widgetName}.js`,
+        filename: `src/com/mendix/widget/custom/${widgetName}/[name].js`,
+        chunkFilename: `src/com/mendix/widget/custom/${widgetName}[id].js`,
         libraryTarget: "umd"
     },
     resolve: {
@@ -39,17 +42,20 @@ const widgetConfig = {
     devtool: "source-map",
     externals: [ "react", "react-dom" ],
     plugins: [
-        new CopyWebpackPlugin([ { from: "src/**/*.xml" } ], { copyUnmodified: true }),
-        new ExtractTextPlugin({ filename: `./src/com/mendix/widget/custom/${name}/ui/${widgetName}.css` }),
+        new CopyWebpackPlugin([ { from: "src/**/*.xml"} , { from: "src/**/*.js" }], { copyUnmodified: true }),
+        new ExtractTextPlugin({ filename: `./src/com/mendix/widget/custom/${widgetName}/ui/[name].css` }),
         new webpack.LoaderOptionsPlugin({ debug: true })
     ]
 };
 
 const previewConfig = {
-    entry: `./src/${widgetName}.webmodeler.ts`,
+    entry: {
+        DropdownTypeahead: "./src/DropdownTypeahead/DropdownTypeahead.webmodeler.ts",
+        DropdownTypeaheadReferenceSet: "./src/DropdownTypeaheadReferenceSet/DropdownTypeaheadReferenceSet.webmodeler.ts",
+    },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
-        filename: `src/${widgetName}.webmodeler.js`,
+        filename: `src/[name]/[name].webmodeler.js`,
         libraryTarget: "commonjs"
     },
     resolve: {

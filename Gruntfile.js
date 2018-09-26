@@ -2,6 +2,7 @@
 const webpack = require("webpack");
 const webpackConfig = require("./webpack.config");
 const merge = require("webpack-merge");
+const widgetNames = [ "DropdownTypeahead", "DropdownTypeaheadReferenceSet" ];
 
 const webpackConfigRelease = webpackConfig.map(config => merge(config, {
     devtool: false,
@@ -62,10 +63,12 @@ module.exports = function(grunt) {
 
         file_append: {
             addSourceURL: {
-                files: [ {
-                    append: `\n\n//# sourceURL=${pkg.widgetName}.webmodeler.js\n`,
-                    input: `dist/tmp/src/${pkg.widgetName}.webmodeler.js`
-                } ]
+                files: widgetNames.map(widgetName => {
+                    return {
+                        append: `\n\n//# sourceURL=${widgetName}.webmodeler.js\n`,
+                        input: `dist/tmp/src/${widgetName}/${widgetName}.webmodeler.js`
+                    };
+                })
             }
         },
 
