@@ -99,7 +99,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
     }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
-        if (this.props.selectedValue) {
+        if (JSON.stringify(this.props.selectedValue) !== "") {
             return { value: this.props.selectedValue };
         }
 

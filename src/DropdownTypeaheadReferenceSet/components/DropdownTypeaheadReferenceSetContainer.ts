@@ -58,7 +58,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
     render() {
-        // const selectedValue = this.getSelectedValue(this.state.selected);
 
         return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
@@ -89,7 +88,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             this.retrieveOptions(newProps);
             this.setState({ selected });
         } else {
-            this.setState({ selected: "" , isLoading: false });
+            this.setState({ selected: [] , isLoading: false });
         }
     }
 
@@ -100,16 +99,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     componentWillUnmount() {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
     }
-
-    // private getSelectedValue(selectedGuid: string): ReferenceOption | null {
-    //     const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
-    //     let selected = null;
-    //     if (selectedOptions.length > 0) {
-    //         selected = selectedOptions[0];
-    //     }
-
-    //     return selected;
-    // }
 
     private isReadOnly = (): boolean => {
         return !this.props.mxObject || (this.props.editable !== "default") || this.props.readOnly;
@@ -137,27 +126,25 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         this.setState({ selected });
     }
 
-    private onChange(recentSelection: ReferenceOption | any) {
+    private onChange(recentSelection: ReferenceOption[] | any) {
         if (!this.props.mxObject) {
             return;
         }
 
-        const selected = recentSelection;
+        const SelectedArray: string[] = [];
 
-        // if (recentSelection.length === 0) {
-        //     selected = "";
-        //     this.props.mxObject.addReference(this.association, selected);
-        // } else {
-        //     recentSelection.forEach((selection: any) => {
-        //         selected = selection.value;
-        //         this.props.mxObject.addReference(this.association, selected);
-        //         if (this.state.selected !== recentSelection) {
-        this.executeOnChangeEvent();
-        //         }
-        //     });
-        // }
+        recentSelection.forEach((selection: ReferenceOption) => {
+            SelectedArray.push(selection.value as string);
+        });
 
-        this.setState({ selected });
+        this.props.mxObject.removeReferences(this.association, this.state.selected);
+        this.props.mxObject.addReferences(this.association, SelectedArray);
+
+        if (this.state.selected.length !== SelectedArray.length) {
+            this.executeOnChangeEvent();
+        }
+
+        this.setState({ selected: SelectedArray });
     }
 
     private executeOnChangeEvent = () => {
