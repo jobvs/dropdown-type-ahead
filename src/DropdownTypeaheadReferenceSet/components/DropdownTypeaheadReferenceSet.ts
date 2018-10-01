@@ -78,6 +78,13 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
                     className: classNames("widget-dropdown-type-ahead-wrapper")
                 },
                 this.props.selectType === "normal" ?
+                    this.props.isReadOnly ?
+                    createElement("input", {
+                        type: "text",
+                        readonly: "readonly",
+                        className: "form-control",
+                        disabled: "disabled",
+                        value: this.processOptions() }) :
                     createElement(Select, {
                         options: this.props.data,
                         noResultsText: "No options",
@@ -93,16 +100,38 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
                 );
         } else {
             return createElement("p", { className: "form-control-static" },
-                this.props.selectedValue ? this.props.selectedValue.label : "");
+                this.processOptions());
         }
 
     }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
-        if (JSON.stringify(this.props.selectedValue) !== "") {
+        if (this.props.selectedValue.length > 0) {
             return { value: this.props.selectedValue };
         }
 
         return { value: null , placeholder: this.props.emptyCaption };
+    }
+
+    private processOptions() {
+        let selectedLabel = "";
+        let formatedOptions = [];
+
+        if (this.props.selectedValue.length > 0) {
+            formatedOptions = this.props.selectedValue.map((selectedGuid: string) => {
+                if (this.props.data) {
+                    this.props.data.forEach((dataObject: any) => {
+                        const value = dataObject.value;
+                        if (value === selectedGuid) {
+                            selectedLabel = dataObject.label;
+                        }
+                    });
+                }
+
+                return selectedLabel !== "" ? selectedLabel : undefined;
+            });
+        }
+
+        return formatedOptions.join(", ");
     }
 }

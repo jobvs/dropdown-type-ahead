@@ -58,6 +58,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
     render() {
+        // const selectedValue = this.getSelectedValue(this.state.selected);
 
         return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
@@ -76,6 +77,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue: this.state.selected,
+            // selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
@@ -95,6 +97,16 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     componentDidMount() {
         initializeReactFastclick();
     }
+
+    // private getSelectedValue(selectedGuid: string): ReferenceOption | null {
+    //     const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
+    //     let selected = null;
+    //     if (selectedOptions.length > 0) {
+    //         selected = selectedOptions[0];
+    //     }
+
+    //     return selected;
+    // }
 
     componentWillUnmount() {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
@@ -131,20 +143,20 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             return;
         }
 
-        const SelectedArray: string[] = [];
+        const selectedOptions: string[] = [];
 
         recentSelection.forEach((selection: ReferenceOption) => {
-            SelectedArray.push(selection.value as string);
+            selectedOptions.push(selection.value as string);
         });
 
         this.props.mxObject.removeReferences(this.association, this.state.selected);
-        this.props.mxObject.addReferences(this.association, SelectedArray);
+        this.props.mxObject.addReferences(this.association, selectedOptions);
 
-        if (this.state.selected.length !== SelectedArray.length) {
+        if (this.state.selected.length !== selectedOptions.length) {
             this.executeOnChangeEvent();
         }
 
-        this.setState({ selected: SelectedArray });
+        this.setState({ selected: selectedOptions });
     }
 
     private executeOnChangeEvent = () => {

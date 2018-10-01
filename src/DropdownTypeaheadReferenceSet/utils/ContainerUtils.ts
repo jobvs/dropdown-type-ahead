@@ -36,6 +36,10 @@ export const validateProps = (props: ContainerProps): string => {
         message.push("Show label is enabled but no label is provided");
     }
 
+    if (props.selectType === "asynchronous" && !props.searchMicroflow) {
+        message.push("Asynchronous loading requires a search microflow but none is provided");
+    }
+
     if (message.length) {
         const widgetName = props.friendlyId.split(".")[2];
         const errorMessage = `Configuration error in widget - ${widgetName}: ${message.join(", ")}`;

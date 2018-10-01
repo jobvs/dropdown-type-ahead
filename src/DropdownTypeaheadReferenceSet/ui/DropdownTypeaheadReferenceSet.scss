@@ -64,3 +64,18 @@
 .widget-dropdown-type-ahead-alert {
   margin-top: 4px !important;
 }
+
+.Select--multi.is-disabled .Select-value {
+  background-color: inherit !important;
+  border: 0px !important;
+  font-size: 14px !important;
+  color:inherit !important;
+
+  .Select-value-label {
+    padding: unset !important;
+  }
+}
+
+.Select--multi .Select-value {
+  background-color: unset !important;
+}
