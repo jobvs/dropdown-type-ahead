@@ -223,7 +223,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
         const filteredOptions: ReferenceOption[] = [];
 
-        if (!input && !this.props.mxObject) {
+        if (input === "" && !this.props.mxObject) {
             return Promise.resolve({ options: [] });
         } else {
             this.props.mxObject.set(this.props.searchAttribute, input);
