@@ -58,8 +58,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
 
     render() {
-        // const selectedValue = this.getSelectedValue(this.state.selected);
-
         return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
             attribute: this.props.attribute,
@@ -77,7 +75,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue: this.state.selected,
-            // selectedValue,
             showLabel: this.props.showLabel,
             style: parseStyle(this.props.style)
         });
@@ -87,8 +84,10 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             const selected = newProps.mxObject.get(this.association) as string;
             this.resetSubscriptions(newProps.mxObject);
-            this.retrieveOptions(newProps);
-            this.setState({ selected });
+            if (this.props.selectType === "normal") {
+                this.retrieveOptions(newProps);
+            }
+            this.setState({ selected, isLoading: false });
         } else {
             this.setState({ selected: [] , isLoading: false });
         }
@@ -97,16 +96,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     componentDidMount() {
         initializeReactFastclick();
     }
-
-    // private getSelectedValue(selectedGuid: string): ReferenceOption | null {
-    //     const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
-    //     let selected = null;
-    //     if (selectedOptions.length > 0) {
-    //         selected = selectedOptions[0];
-    //     }
-
-    //     return selected;
-    // }
 
     componentWillUnmount() {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
@@ -217,7 +206,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             });
         }
 
-        this.setState({ options, isLoading: false });
+        this.setState({ options });
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {

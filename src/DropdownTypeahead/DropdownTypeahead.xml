@@ -32,15 +32,6 @@
                 <enumerationValue key="never">Never</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="selectType" type="enumeration" defaultValue="normal">
-            <caption>Select type</caption>
-            <category>Appearance</category>
-            <description></description>
-                <enumerationValues>
-                    <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
-                    <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
-                </enumerationValues>
-        </property>
         <property key="emptyOptionCaption" type="string" required="false">
             <caption>Empty option caption</caption>
             <category>Appearance</category>
@@ -87,6 +78,15 @@
                 <enumerationValue key="horizontal">Horizontal</enumerationValue>
                 <enumerationValue key="vertical">Vertical</enumerationValue>
             </enumerationValues>
+        </property>
+        <property key="selectType" type="enumeration" defaultValue="normal">
+            <caption>Select type</caption>
+            <category>Selectable objects</category>
+            <description></description>
+                <enumerationValues>
+                    <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
+                    <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
+                </enumerationValues>
         </property>
         <property key="source" type="enumeration" defaultValue="xpath">
             <caption>Source</caption>
