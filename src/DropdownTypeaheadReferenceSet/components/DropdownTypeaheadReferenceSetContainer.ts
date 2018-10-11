@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchByMicroflow, fetchData } from "../utils/Data";
-import { AttributeType, DropdownTypeahead, ReferenceOption } from "./DropdownTypeaheadReferenceSet";
+import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownTypeaheadReferenceSet";
 
 interface WrapperProps {
     class: string;
@@ -14,24 +14,15 @@ interface WrapperProps {
     friendlyId: string;
 }
 
-export interface ContainerProps extends WrapperProps {
-    labelWidth: number;
-    weight: number;
-    labelOrientation?: "horizontal" | "vertical";
+export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
-    emptyOptionCaption: string;
-    labelCaption: string;
-    readOnlyStyle: "control" | "text";
     searchAttribute: string;
     searchMicroflow: string;
-    selectType: "normal" | "asynchronous";
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
-    showLabel: boolean;
     sortAttributes: AttributeType[];
-    isClearable: boolean;
     nanoflow: Nanoflow;
     microflow: string;
     onChangeNanoflow: Nanoflow;
@@ -64,13 +55,13 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             className: this.props.class,
             data: this.state.options,
             asyncData: this.setAsyncOptions,
-            emptyCaption: this.props.emptyOptionCaption,
+            emptyOptionCaption: this.props.emptyOptionCaption,
             handleOnchange: this.handleOnClick,
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             loaded: this.state.isLoading,
-            label: this.props.labelCaption,
+            labelCaption: this.props.labelCaption,
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,

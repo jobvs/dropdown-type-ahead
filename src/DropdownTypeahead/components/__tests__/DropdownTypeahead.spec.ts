@@ -9,11 +9,11 @@ import { Alert } from "../Alert";
 describe("DropdownTypeahead", () => {
     const render = (props: DropdownTypeaheadProps) => shallow(createElement(DropdownTypeahead, props));
     const TypeAheadProps: DropdownTypeaheadProps = {
-        emptyCaption: "Select city",
+        emptyOptionCaption: "Select city",
         labelWidth: 3,
         data: [ { value: "KampalaId" , label: "kampala" }, { value: "AmsterdamId" , label: "Amsterdam" } ],
         value: "Kampala",
-        label: "City",
+        labelCaption: "City",
         loaded: false,
         showLabel: true,
         isClearable: true,
@@ -49,7 +49,7 @@ describe("DropdownTypeahead", () => {
     it("with no label caption renders the structure correctly", () => {
         const DropdownTypeAheadComponent = render(TypeAheadProps);
 
-        DropdownTypeAheadComponent.setProps({ label: "", showLabel: false });
+        DropdownTypeAheadComponent.setProps({ labelCaption: "", showLabel: false });
         expect(DropdownTypeAheadComponent).toBeElement(
             createElement("div", { className: "widget-dropdown-type-ahead-wrapper" },
                 createElement(Select, {

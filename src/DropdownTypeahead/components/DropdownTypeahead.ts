@@ -9,15 +9,15 @@ import "../ui/DropdownTypeahead.scss";
 import "react-select/dist/react-select.css";
 
 export interface DropdownTypeaheadProps {
-    style?: object;
+    styleObject?: object;
     labelWidth: number;
     data?: ReferenceOption[];
     asyncData?: any;
     value: string;
-    label: string;
+    labelCaption: string;
     loaded: boolean;
     showLabel: boolean;
-    emptyCaption: string;
+    emptyOptionCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
@@ -46,12 +46,12 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
 
     private renderForm() {
         if (!this.props.loaded) {
-            if (this.props.showLabel && this.props.label.trim() !== "") {
+            if (this.props.showLabel && this.props.labelCaption.trim() !== "") {
                 return createElement(Label, {
                     className: this.props.className,
-                    label: this.props.label,
+                    label: this.props.labelCaption,
                     orientation: this.props.labelOrientation,
-                    style: this.props.style,
+                    style: this.props.styleObject,
                     weight: this.props.labelWidth
                 }, this.renderSelector());
             }
@@ -102,6 +102,6 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
             return { value: this.props.selectedValue };
         }
 
-        return { value: null , placeholder: this.props.emptyCaption };
+        return { value: null , placeholder: this.props.emptyOptionCaption };
     }
 }
