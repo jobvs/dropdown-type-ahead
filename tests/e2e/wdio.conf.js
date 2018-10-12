@@ -14,7 +14,7 @@ exports.config = {
     coloredLogs: true,
     bail: 0,
     screenshotPath: "dist/wdio/",
-    baseUrl: debug ? "http://localhost:8080/" : "https://dropdowntypeahead.mxapps.io/",
+    baseUrl: debug ? "http://localhost:8081/" : "https://dropdowntypeahead.mxapps.io/",
     waitforTimeout: 3600,
     connectionRetryTimeout: 200000,
     connectionRetryCount: 2,
