@@ -13,7 +13,7 @@ export interface DropdownTypeaheadProps {
     labelWidth: number;
     data?: ReferenceOption[];
     asyncData?: any;
-    value: string;
+    value?: string;
     labelCaption: string;
     loaded: boolean;
     showLabel: boolean;
@@ -22,7 +22,7 @@ export interface DropdownTypeaheadProps {
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
     selectedValue: ReferenceOption | null;
-    handleOnchange: (selectedOption: ReferenceOption | any) => void;
+    handleOnchange?: (selectedOption: ReferenceOption | any) => void;
     className?: string;
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
@@ -46,7 +46,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
 
     private renderForm() {
         if (!this.props.loaded) {
-            if (this.props.showLabel && this.props.labelCaption.trim() !== "") {
+            if (this.props.showLabel && this.props.labelCaption) {
                 return createElement(Label, {
                     className: this.props.className,
                     label: this.props.labelCaption,

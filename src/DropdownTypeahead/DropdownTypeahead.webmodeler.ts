@@ -18,23 +18,23 @@ export class preview extends Component<ContainerProps, {}> {
             value: "noGuid"
         };
 
-        return createElement(DropdownTypeahead as any, {
+        return createElement(DropdownTypeahead, {
             alertMessage: validateProps(this.props),
-            attribute: this.props.attribute,
             className: this.props.class,
-            emptyCaption: this.props.emptyOptionCaption,
+            emptyOptionCaption: this.props.emptyOptionCaption,
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             data: [ selectedValue ],
             asyncData: (input: string) => this.setAsyncSampleData(input),
-            label: this.props.labelCaption,
+            labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             showLabel: this.props.showLabel,
-            style: parseStyle(this.props.style)
+            styleObject: parseStyle(this.props.style),
+            loaded: false
         });
     }
 

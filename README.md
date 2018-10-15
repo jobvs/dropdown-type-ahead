@@ -4,11 +4,12 @@
 [![codecov](https://codecov.io/gh/mendixlabs/dropdown-type-ahead/branch/master/graph/badge.svg)](https://codecov.io/gh/mendixlabs/dropdown-type-ahead)
 ![badge](https://img.shields.io/badge/mendix-7.14.1-green.svg)
 
-# Dropdown Typeahead
+# Dropdown
 An input widget used to display and edit associations
 
 ## Features
-* Allow the user to search for matching options
+* Search for matching options
+* Selection of multiple options
 * Asynchronous loading of options
 * Supports different data sources
     - Xpath

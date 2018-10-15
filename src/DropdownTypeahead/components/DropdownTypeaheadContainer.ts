@@ -1,4 +1,4 @@
-import { ChangeEvent, Component, createElement } from "react";
+import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
@@ -46,14 +46,13 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
 
     private subscriptionHandles: number[] = [];
     private association: string = this.props.entityPath.split("/")[0];
-    private readonly handleOnClick: ChangeEvent<HTMLDivElement> = this.onChange.bind(this);
+    private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
 
     render() {
         const selectedValue = this.getSelectedValue(this.state.selected);
 
-        return createElement(DropdownTypeahead as any, {
+        return createElement(DropdownTypeahead, {
             alertMessage: validateProps(this.props),
-            attribute: this.props.attribute,
             className: this.props.class,
             data: this.state.options,
             asyncData: this.setAsyncOptions,
@@ -63,13 +62,13 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             loaded: this.state.isLoading,
-            labelCaption: this.props.labelCaption,
+            labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             showLabel: this.props.showLabel,
-            style: parseStyle(this.props.style)
+            styleObject: parseStyle(this.props.style)
         });
     }
 

@@ -68,7 +68,7 @@ const previewConfig = {
             { test: /\.css$/, use: "css-loader" },
         ]
     },
-    mode: "production",
+    mode: "development",
     devtool: "inline-source-map",
     externals: [ "react", "react-dom" ],
     plugins: [ new webpack.LoaderOptionsPlugin({ debug: true }) ]

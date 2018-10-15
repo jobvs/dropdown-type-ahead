@@ -20,15 +20,14 @@ export class preview extends Component<ContainerProps, {}> {
 
         return createElement(DropdownTypeahead as any, {
             alertMessage: validateProps(this.props),
-            attribute: this.props.attribute,
             className: this.props.class,
-            emptyCaption: this.props.emptyOptionCaption,
+            emptyOptionCaption: this.props.emptyOptionCaption,
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             data: [ selectedValue ],
             asyncData: (input: string) => this.setAsyncSampleData(input),
-            label: this.props.labelCaption,
+            labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
