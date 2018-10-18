@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget id="com.mendix.widget.custom.dropdowntypeahead.DropdownTypeahead" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
     <name>Dropdown reference</name>
-    <description></description>
+    <description/>
     <icon></icon>
     <properties>
         <property key="entityPath" type="entity" isPath="yes" pathType="reference">
@@ -82,11 +82,24 @@
         <property key="selectType" type="enumeration" defaultValue="normal">
             <caption>Select type</caption>
             <category>Selectable objects</category>
-            <description></description>
+            <description/>
                 <enumerationValues>
                     <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
                     <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
                 </enumerationValues>
+        </property>
+        <property key="searchAttribute" type="attribute" required="false">
+            <caption>Search attribute</caption>
+            <category>Selectable objects</category>
+            <description>Attribute to be used for custom search (use with asynchronous loading)</description>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Decimal"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
         </property>
         <property key="source" type="enumeration" defaultValue="xpath">
             <caption>Source</caption>
@@ -106,7 +119,7 @@
         <property key="sortAttributes" type="object" isList="true" required="false">
             <caption>Sort options</caption>
             <category>Selectable objects</category>
-            <description></description>
+            <description/>
             <properties>
                 <property key="name" type="attribute" required="false" isPath="optional" pathType="reference" entityProperty="../entityPath">
                     <caption>Attribute</caption>
@@ -124,7 +137,7 @@
                 <property key="sort" type="enumeration" defaultValue="asc">
                     <caption>Sort</caption>
                     <category>Attribute</category>
-                    <description></description>
+                    <description/>
                     <enumerationValues>
                         <enumerationValue key="asc">Ascending</enumerationValue>
                         <enumerationValue key="desc">Descending</enumerationValue>
@@ -143,25 +156,6 @@
             <category>Selectable objects</category>
             <description>Returns a list of data values</description>
             <returnType type="Object" entityProperty="entityPath" isList="true"/>
-        </property>
-        <property key="searchMicroflow" type="microflow" required="false">
-            <caption>Search Microflow</caption>
-            <category>Search</category>
-            <description>Returns a list of filtered data values</description>
-            <returnType type="Object" entityProperty="entityPath" isList="true"/>
-        </property>
-        <property key="searchAttribute" type="attribute" required="false">
-            <caption>Search attribute</caption>
-            <category>Search</category>
-            <description/>
-            <attributeTypes>
-                <attributeType name="AutoNumber"/>
-                <attributeType name="Enum"/>
-                <attributeType name="Decimal"/>
-                <attributeType name="Integer"/>
-                <attributeType name="Long"/>
-                <attributeType name="String"/>
-            </attributeTypes>
         </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>

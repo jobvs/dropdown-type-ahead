@@ -92,6 +92,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
                             valueKey : "value",
                             labelKey : "label",
                             autoload: false,
+                            autoFocus: true,
                             loadOptions: (input: string) => this.props.asyncData(input),
                             ...commonProps }),
                     createElement(Alert, {

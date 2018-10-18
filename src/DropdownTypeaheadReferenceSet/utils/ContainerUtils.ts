@@ -36,7 +36,7 @@ export const validateProps = (props: ContainerProps): string => {
         message.push("Show label is enabled but no label is provided");
     }
 
-    if (props.selectType === "asynchronous" && !props.searchMicroflow) {
+    if (props.selectType === "asynchronous" && !props.microflow) {
         message.push("Asynchronous loading requires a search microflow but none is provided");
     }
 

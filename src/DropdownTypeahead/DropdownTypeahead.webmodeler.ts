@@ -72,7 +72,6 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
 
     if (valueMap.selectType !== "asynchronous") {
         visibilityMap.searchAttribute = false;
-        visibilityMap.searchMicroflow = false;
     }
 
     return visibilityMap;

@@ -2,7 +2,7 @@ import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../utils/ContainerUtils";
-import { FetchDataOptions, Nanoflow, fetchByMicroflow, fetchData } from "../utils/Data";
+import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
 import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownTypeaheadReferenceSet";
 
 interface WrapperProps {
@@ -201,19 +201,35 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
         const filteredOptions: ReferenceOption[] = [];
+        const entity = this.props.entityPath.split("/")[1];
+        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = this.props;
+        const attributeReference = `${this.props.entityPath}${this.props.attribute}`;
+        const options: FetchDataOptions = {
+            attributes: [ attributeReference ],
+            constraint: entityConstraint,
+            entity,
+            guid: mxObject.getGuid(),
+            microflow,
+            mxform: this.props.mxform,
+            nanoflow,
+            sortAttributes: this.props.sortAttributes,
+            sortOrder,
+            source
+        };
 
-        if (input === "" && !this.props.mxObject) {
+        if (!this.props.mxObject) {
             return Promise.resolve({ options: [] });
         } else {
-            this.props.mxObject.set(this.props.searchAttribute, input);
+        this.props.mxObject.set(this.props.searchAttribute, input);
 
-            return fetchByMicroflow(this.props.searchMicroflow, this.props.mxObject.getGuid()).then((mendixObjects) => {
-                mendixObjects.forEach(mxObject => {
-                    filteredOptions.push({ label: mxObject.get(this.props.attribute) as string, value: mxObject.getGuid() });
-                });
-
-                return { options: filteredOptions, isLoading: false };
+        return fetchData(options).then((mendixObjects) => {
+            mendixObjects.forEach(mendixObject => {
+                filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
             });
+            this.setState({ options: filteredOptions, isLoading: false });
+
+            return { options: filteredOptions };
+        });
         }
     }
 }
