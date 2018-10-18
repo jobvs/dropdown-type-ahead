@@ -2,10 +2,10 @@ import { Component, createElement } from "react";
 import Select , { Async } from "react-select";
 import * as classNames from "classnames";
 
-import { Alert } from "./Alert";
-import { Label } from "./Label";
+import { Alert } from "../../SharedResources/components/Alert";
+import { Label } from "../../SharedResources/components/Label";
 
-import "../ui/DropdownTypeaheadReferenceSet.scss";
+import "../../SharedResources/ui/Dropdown.scss";
 import "react-select/dist/react-select.css";
 
 export interface DropdownTypeaheadProps {
@@ -74,7 +74,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
 
         if (this.props.readOnlyStyle === "control") {
                 return createElement("div", {
-                    className: classNames("widget-dropdown-type-ahead-wrapper")
+                    className: classNames("widget-dropdown-reference-set")
                 },
                 this.props.selectType === "normal" ?
                     this.props.isReadOnly ?

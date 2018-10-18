@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 
-import { parseStyle, validateProps } from "./utils/ContainerUtils";
+import { parseStyle, validateProps } from "../SharedResources/utils/ContainerUtils";
 import { DropdownTypeahead } from "./components/DropdownTypeaheadReferenceSet";
 import { ContainerProps } from "./components/DropdownTypeaheadReferenceSetContainer";
 
@@ -52,7 +52,7 @@ export class preview extends Component<ContainerProps, {}> {
 
 export function getPreviewCss() {
     return (
-        require("./ui/DropdownTypeaheadReferenceSet.scss") + require("react-select/dist/react-select.css")
+        require("../SharedResources/ui/Dropdown.scss") + require("react-select/dist/react-select.css")
     );
 }
 

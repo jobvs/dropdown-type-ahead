@@ -2,9 +2,9 @@ import { shallow } from "enzyme";
 import { createElement } from "react";
 
 import Select from "react-select";
-import { Label } from "../Label";
+import { Label } from "../../../SharedResources/components/Label";
 import { DropdownTypeahead, DropdownTypeaheadProps } from "../DropdownTypeahead";
-import { Alert } from "../Alert";
+import { Alert } from "../../../SharedResources/components/Alert";
 
 describe("DropdownTypeahead", () => {
     const render = (props: DropdownTypeaheadProps) => shallow(createElement(DropdownTypeahead, props));

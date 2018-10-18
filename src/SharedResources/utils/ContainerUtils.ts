@@ -1,4 +1,5 @@
-import { ContainerProps } from "../components/DropdownTypeaheadReferenceSetContainer";
+import { ContainerProps } from "../../DropdownTypeahead/components/DropdownTypeaheadContainer";
+import { ContainerProps as ReferenceSetProps } from "../../DropdownTypeaheadReferenceSet/components/DropdownTypeaheadReferenceSetContainer";
 
 export const parseStyle = (style = ""): { [key: string]: string } => {
     try {
@@ -19,7 +20,7 @@ export const parseStyle = (style = ""): { [key: string]: string } => {
     return {};
 };
 
-export const validateProps = (props: ContainerProps): string => {
+export const validateProps = (props: ContainerProps | ReferenceSetProps): string => {
     const message: string[] = [];
 
     if (props.onChangeEvent === "callMicroflow" && !props.onChangeMicroflow) {
@@ -34,10 +35,6 @@ export const validateProps = (props: ContainerProps): string => {
 
     if (props.labelCaption.trim() === "" && props.showLabel) {
         message.push("Show label is enabled but no label is provided");
-    }
-
-    if (props.selectType === "asynchronous" && !props.microflow) {
-        message.push("Asynchronous loading requires a search microflow but none is provided");
     }
 
     if (message.length) {

@@ -1,8 +1,8 @@
 import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
-import { parseStyle, validateProps } from "../utils/ContainerUtils";
-import { FetchDataOptions, Nanoflow, fetchData } from "../utils/Data";
+import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
+import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
 import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownTypeahead";
 
 interface WrapperProps {
