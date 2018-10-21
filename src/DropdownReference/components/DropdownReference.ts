@@ -5,8 +5,8 @@ import * as classNames from "classnames";
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
 
-import "../../SharedResources/ui/Dropdown.scss";
 import "react-select/dist/react-select.css";
+import "../../SharedResources/ui/Dropdown.scss";
 
 export interface DropdownTypeaheadProps {
     styleObject?: object;

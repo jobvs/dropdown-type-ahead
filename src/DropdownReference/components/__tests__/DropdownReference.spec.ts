@@ -3,7 +3,7 @@ import { createElement } from "react";
 
 import Select from "react-select";
 import { Label } from "../../../SharedResources/components/Label";
-import { DropdownTypeahead, DropdownTypeaheadProps } from "../DropdownTypeahead";
+import { DropdownTypeahead, DropdownTypeaheadProps } from "../DropdownReference";
 import { Alert } from "../../../SharedResources/components/Alert";
 
 describe("DropdownTypeahead", () => {

@@ -7,8 +7,8 @@ const widgetName = require("./package").widgetName.toLowerCase();
 
 const widgetConfig = {
     entry: {
-        DropdownTypeahead: "./src/DropdownTypeahead/components/DropdownTypeaheadContainer.ts",
-        DropdownTypeaheadReferenceSet: "./src/DropdownTypeaheadReferenceSet/components/DropdownTypeaheadReferenceSetContainer.ts"
+        DropdownReference: "./src/DropdownReference/components/DropdownReferenceContainer.ts",
+        DropdownReferenceSet: "./src/DropdownReferenceSet/components/DropdownReferenceSetContainer.ts"
     },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
@@ -50,8 +50,8 @@ const widgetConfig = {
 
 const previewConfig = {
     entry: {
-        DropdownTypeahead: "./src/DropdownTypeahead/DropdownTypeahead.webmodeler.ts",
-        DropdownTypeaheadReferenceSet: "./src/DropdownTypeaheadReferenceSet/DropdownTypeaheadReferenceSet.webmodeler.ts",
+        DropdownReference: "./src/DropdownReference/DropdownReference.webmodeler.ts",
+        DropdownReferenceSet: "./src/DropdownReferenceSet/DropdownReferenceSet.webmodeler.ts",
     },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),

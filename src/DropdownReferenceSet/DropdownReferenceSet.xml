@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget id="com.mendix.widget.custom.dropdowntypeahead.DropdownTypeaheadReferenceSet" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
+<widget id="com.mendix.widget.custom.dropdown.DropdownReferenceSet" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
     <name>Dropdown reference set</name>
     <description/>
     <icon></icon>
@@ -32,8 +32,8 @@
                 <enumerationValue key="never">Never</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="emptyOptionCaption" type="string" required="false">
-            <caption>Empty option caption</caption>
+        <property key="emptyOptionCaption" type="translatableString" required="false">
+            <caption>Empty caption</caption>
             <category>Appearance</category>
             <description>Text displayed when no selection is made</description>
         </property>
@@ -47,9 +47,9 @@
             </enumerationValues>
         </property>
         <property key="isClearable" type="boolean" defaultValue="true">
-            <caption>Enable clear selection</caption>
+            <caption>Selection clearable</caption>
             <category>Appearance</category>
-            <description>Clears a selected option</description>
+            <description>Adds a (x) clear button in the input</description>
         </property>
         <property key="showLabel" type="boolean" defaultValue="true">
             <caption>Show label</caption>
@@ -66,40 +66,18 @@
             </translations>
         </property>
         <property key="labelWidth" type="integer" defaultValue="3">
-            <caption>Label width</caption>
+            <caption>Label width (weight)</caption>
             <category>Label</category>
             <description>The weight of the label, which must be a value between 0 and 12</description>
         </property>
         <property key="labelOrientation" type="enumeration" defaultValue="horizontal">
-            <caption>Label orientation</caption>
+            <caption>Form orientation</caption>
             <category>Label</category>
             <description/>
             <enumerationValues>
                 <enumerationValue key="horizontal">Horizontal</enumerationValue>
                 <enumerationValue key="vertical">Vertical</enumerationValue>
             </enumerationValues>
-        </property>
-        <property key="selectType" type="enumeration" defaultValue="normal">
-            <caption>Select type</caption>
-            <category>Selectable objects</category>
-            <description/>
-                <enumerationValues>
-                    <enumerationValue key="normal">Normal loading (synchronous)</enumerationValue>
-                    <enumerationValue key="asynchronous">Asynchronous loading</enumerationValue>
-                </enumerationValues>
-        </property>
-        <property key="searchAttribute" type="attribute" required="false">
-            <caption>Search attribute</caption>
-            <category>Selectable objects</category>
-            <description>Attribute to be used for custom search (use with asynchronous loading)</description>
-            <attributeTypes>
-                <attributeType name="AutoNumber"/>
-                <attributeType name="Enum"/>
-                <attributeType name="Decimal"/>
-                <attributeType name="Integer"/>
-                <attributeType name="Long"/>
-                <attributeType name="String"/>
-            </attributeTypes>
         </property>
         <property key="source" type="enumeration" defaultValue="xpath">
             <caption>Source</caption>
@@ -117,14 +95,14 @@
             <description/>
         </property>
         <property key="sortAttributes" type="object" isList="true" required="false">
-            <caption>Sort options</caption>
+            <caption>Sort order</caption>
             <category>Selectable objects</category>
-            <description></description>
+            <description/>
             <properties>
-                <property key="name" type="attribute" required="false" isPath="optional" pathType="reference" entityProperty="../entityPath">
+                <property key="name" type="attribute" required="false" isPath="optional" pathType="referenceSet" entityProperty="../entityPath">
                     <caption>Attribute</caption>
                     <category>Attribute</category>
-                    <description>Attribute to sort the </description>
+                    <description>Attribute to sort the list</description>
                     <attributeTypes>
                         <attributeType name="AutoNumber"/>
                         <attributeType name="Enum"/>
@@ -137,7 +115,7 @@
                 <property key="sort" type="enumeration" defaultValue="asc">
                     <caption>Sort</caption>
                     <category>Attribute</category>
-                    <description/>
+                    <description></description>
                     <enumerationValues>
                         <enumerationValue key="asc">Ascending</enumerationValue>
                         <enumerationValue key="desc">Descending</enumerationValue>
@@ -156,6 +134,28 @@
             <category>Selectable objects</category>
             <description>Returns a list of data values</description>
             <returnType type="Object" entityProperty="entityPath" isList="true"/>
+        </property>
+        <property key="searchAttribute" type="attribute" required="false">
+            <caption>Search attribute</caption>
+            <category>Selectable objects</category>
+            <description>Attribute set with search text of the user, this could be used for filter results in microflow or nanoflow</description>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Decimal"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <property key="selectType" type="enumeration" defaultValue="asynchronous">
+            <caption>Lazy loading</caption>
+            <category>Selectable objects</category>
+            <description>Start loading the selectable objects when dropdown is opened</description>
+            <enumerationValues>
+                <enumerationValue key="asynchronous">True</enumerationValue>
+                <enumerationValue key="normal">False</enumerationValue>
+            </enumerationValues>
         </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>

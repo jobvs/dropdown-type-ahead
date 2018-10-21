@@ -1,8 +1,8 @@
 import { Component, createElement } from "react";
 
 import { parseStyle, validateProps } from "../SharedResources/utils/ContainerUtils";
-import { DropdownTypeahead } from "./components/DropdownTypeaheadReferenceSet";
-import { ContainerProps } from "./components/DropdownTypeaheadReferenceSetContainer";
+import { DropdownTypeahead } from "./components/DropdownReference";
+import { ContainerProps } from "./components/DropdownReferenceContainer";
 
 declare function require(name: string): string;
 
@@ -18,7 +18,7 @@ export class preview extends Component<ContainerProps, {}> {
             value: "noGuid"
         };
 
-        return createElement(DropdownTypeahead as any, {
+        return createElement(DropdownTypeahead, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
             emptyOptionCaption: this.props.emptyOptionCaption,
@@ -33,7 +33,8 @@ export class preview extends Component<ContainerProps, {}> {
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             showLabel: this.props.showLabel,
-            style: parseStyle(this.props.style)
+            styleObject: parseStyle(this.props.style),
+            loaded: false
         });
     }
 
@@ -52,7 +53,7 @@ export class preview extends Component<ContainerProps, {}> {
 
 export function getPreviewCss() {
     return (
-        require("../SharedResources/ui/Dropdown.scss") + require("react-select/dist/react-select.css")
+       require("react-select/dist/react-select.css") + require("../SharedResources/ui/Dropdown.scss")
     );
 }
 

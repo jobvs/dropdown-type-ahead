@@ -21,5 +21,4 @@ export const Label: SFC<LabelProps> = ({ children, className, label, style, weig
 };
 
 Label.defaultProps = { weight: 6 };
-
 Label.displayName = "Label";

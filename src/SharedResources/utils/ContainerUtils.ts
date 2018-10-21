@@ -1,5 +1,5 @@
-import { ContainerProps } from "../../DropdownTypeahead/components/DropdownTypeaheadContainer";
-import { ContainerProps as ReferenceSetProps } from "../../DropdownTypeaheadReferenceSet/components/DropdownTypeaheadReferenceSetContainer";
+import { ContainerProps } from "../../DropdownReference/components/DropdownReferenceContainer";
+import { ContainerProps as ReferenceSetProps } from "../../DropdownReferenceSet/components/DropdownReferenceSetContainer";
 
 export const parseStyle = (style = ""): { [key: string]: string } => {
     try {

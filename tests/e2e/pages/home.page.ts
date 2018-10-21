@@ -1,10 +1,10 @@
 class HomePage {
     public get dropDownSelector() {
-        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-control");
+        return browser.element(".mx-name-dropdownReference1 .Select-control");
     }
 
     public get dropDownReferenceSet() {
-        return browser.element(".mx-name-dropdownTypeaheadReferenceSet2 .Select-control");
+        return browser.element(".mx-name-dropdownReferenceSet2 .Select-control");
     }
 
     public get selectedValue() {
@@ -16,27 +16,27 @@ class HomePage {
     }
 
     public get selectPlaceholder() {
-        return browser.getText(".mx-name-dropdownTypeaheadReference13 .Select-control .Select-placeholder");
+        return browser.getText(".mx-name-dropdownReference1 .Select-control .Select-placeholder");
     }
 
     public get selectSetPlaceholder() {
-        return browser.getText(".mx-name-dropdownTypeaheadReferenceSet2 .Select-control .Select-placeholder");
+        return browser.getText(".mx-name-dropdownReferenceSet2 .Select-control .Select-placeholder");
     }
 
     public get selectedElement() {
-        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-control .Select-value-label");
+        return browser.element(".mx-name-dropdownReference1 .Select-control .Select-value-label");
     }
 
     public get selectedSetElement() {
-        return browser.element(".mx-name-dropdownTypeaheadReferenceSet2 .Select-control .Select-value-label");
+        return browser.element(".mx-name-dropdownReferenceSet2 .Select-control .Select-value-label");
     }
 
     public get clearIndicator() {
-        return browser.element(".mx-name-dropdownTypeaheadReference13 .Select-clear-zone .Select-clear");
+        return browser.element(".mx-name-dropdownReference1 .Select-clear-zone .Select-clear");
     }
 
     public get clearSetIndicator() {
-        return browser.element(".mx-name-dropdownTypeaheadReferenceSet2 .Select-clear-zone .Select-clear");
+        return browser.element(".mx-name-dropdownReferenceSet2 .Select-clear-zone .Select-clear");
     }
 
     public get dropDownOptions() {

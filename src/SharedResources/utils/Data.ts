@@ -2,7 +2,7 @@
 type MxObject = mendix.lib.MxObject;
 type SortOrder = "asc" | "desc";
 
-import { AttributeType } from "../../DropdownTypeahead/components/DropdownTypeahead";
+import { AttributeType } from "../../DropdownReference/components/DropdownReference";
 export interface FetchDataOptions {
     source: "xpath" | "microflow" | "nanoflow";
     entity: string;

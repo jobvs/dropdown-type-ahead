@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownTypeahead";
+import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownReferenceSet";
 
 interface WrapperProps {
     class: string;
@@ -19,6 +19,7 @@ export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
     entityPath: string;
     entityConstraint: string;
     searchAttribute: string;
+    searchMicroflow: string;
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     sortAttributes: AttributeType[];
@@ -32,14 +33,14 @@ export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
 
 export interface ContainerState {
     options: ReferenceOption[];
-    selected: string;
+    selected: any;
     isLoading: boolean;
 }
 
 export default class DropdownTypeaheadContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
-        selected: "",
+        selected: [],
         isLoading: true
     };
 
@@ -48,8 +49,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
 
     render() {
-        const selectedValue = this.getSelectedValue(this.state.selected);
-
         return createElement(DropdownTypeahead, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
@@ -65,7 +64,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
-            selectedValue,
+            selectedValue: this.state.selected,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
         });
@@ -80,7 +79,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             }
             this.setState({ selected, isLoading: false });
         } else {
-            this.setState({ selected: "", isLoading: false });
+            this.setState({ selected: [] , isLoading: false });
         }
     }
 
@@ -90,16 +89,6 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
 
     componentWillUnmount() {
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
-    }
-
-    private getSelectedValue = (selectedGuid: string): ReferenceOption | null => {
-        const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
-        let selected = null;
-        if (selectedOptions.length > 0) {
-            selected = selectedOptions[0];
-        }
-
-        return selected;
     }
 
     private isReadOnly = (): boolean => {
@@ -128,25 +117,25 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         this.setState({ selected });
     }
 
-    private onChange(recentSelection: ReferenceOption | any) {
+    private onChange(recentSelection: ReferenceOption[] | any) {
         if (!this.props.mxObject) {
             return;
         }
 
-        let selected = "";
+        const selectedOptions: string[] = [];
 
-        if (!recentSelection) {
-            selected = "";
-            this.props.mxObject.set(this.association, selected);
-        } else {
-            selected = recentSelection.value;
-            this.props.mxObject.set(this.association, selected);
-            if (this.state.selected !== recentSelection.value) {
-                this.executeOnChangeEvent();
-            }
+        recentSelection.forEach((selection: ReferenceOption) => {
+            selectedOptions.push(selection.value as string);
+        });
+
+        this.props.mxObject.removeReferences(this.association, this.state.selected);
+        this.props.mxObject.addReferences(this.association, selectedOptions);
+
+        if (this.state.selected.length !== selectedOptions.length) {
+            this.executeOnChangeEvent();
         }
 
-        this.setState({ selected });
+        this.setState({ selected: selectedOptions });
     }
 
     private executeOnChangeEvent = () => {
@@ -207,7 +196,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             });
         }
 
-        this.setState({ options, isLoading: false });
+        this.setState({ options });
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
