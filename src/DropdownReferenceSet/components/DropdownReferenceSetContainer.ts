@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownReferenceSet";
+import { AttributeType, DropdownReferenceSet, DropdownReferenceSetProps, ReferenceOption } from "./DropdownReferenceSet";
 
 interface WrapperProps {
     class: string;
@@ -14,7 +14,7 @@ interface WrapperProps {
     friendlyId: string;
 }
 
-export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
+export interface ContainerProps extends WrapperProps, DropdownReferenceSetProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
@@ -34,14 +34,14 @@ export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
 export interface ContainerState {
     options: ReferenceOption[];
     selected: any;
-    isLoading: boolean;
+    loaded: boolean;
 }
 
-export default class DropdownTypeaheadContainer extends Component<ContainerProps, ContainerState> {
+export default class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
         selected: [],
-        isLoading: true
+        loaded: true
     };
 
     private subscriptionHandles: number[] = [];
@@ -49,7 +49,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
 
     render() {
-        return createElement(DropdownTypeahead, {
+        return createElement(DropdownReferenceSet, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
             data: this.state.options,
@@ -59,7 +59,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
-            loaded: this.state.isLoading,
+            loaded: !this.state.loaded,
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -77,9 +77,9 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             if (this.props.selectType === "normal") {
                 this.retrieveOptions(newProps);
             }
-            this.setState({ selected, isLoading: false });
+            this.setState({ selected, loaded: false });
         } else {
-            this.setState({ selected: [] , isLoading: false });
+            this.setState({ selected: [] , loaded: false });
         }
     }
 
@@ -181,20 +181,18 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
 
         fetchData(options)
             .then(optionObjects => this.setOptions(optionObjects))
-            .catch(mx.ui.error);
+            .catch(errorMessage => window.mx.ui.error(errorMessage.message));
     }
 
     private setOptions = (mendixObjects: mendix.lib.MxObject[]) => {
         const options: ReferenceOption[] = [];
 
-        if (mendixObjects.length > 0) {
-            mendixObjects.forEach(mxObject => {
-                options.push({
-                    label: mx.parser.formatAttribute(mxObject, this.props.attribute),
-                    value: mxObject.getGuid()
-                });
+        mendixObjects.forEach(mxObject => {
+            options.push({
+                label: mx.parser.formatAttribute(mxObject, this.props.attribute),
+                value: mxObject.getGuid()
             });
-        }
+        });
 
         this.setState({ options });
     }
@@ -226,7 +224,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             mendixObjects.forEach(mendixObject => {
                 filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
             });
-            this.setState({ options: filteredOptions, isLoading: false });
+            this.setState({ options: filteredOptions, loaded: false });
 
             return { options: filteredOptions };
         });

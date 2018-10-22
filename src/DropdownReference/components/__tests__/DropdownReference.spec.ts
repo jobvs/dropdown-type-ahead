@@ -3,12 +3,12 @@ import { createElement } from "react";
 
 import Select from "react-select";
 import { Label } from "../../../SharedResources/components/Label";
-import { DropdownTypeahead, DropdownTypeaheadProps } from "../DropdownReference";
+import { DropdownReference, DropdownReferenceProps } from "../DropdownReference";
 import { Alert } from "../../../SharedResources/components/Alert";
 
-describe("DropdownTypeahead", () => {
-    const render = (props: DropdownTypeaheadProps) => shallow(createElement(DropdownTypeahead, props));
-    const TypeAheadProps: DropdownTypeaheadProps = {
+describe("DropdownReference", () => {
+    const render = (props: DropdownReferenceProps) => shallow(createElement(DropdownReference, props));
+    const ReferenceProps: DropdownReferenceProps = {
         emptyOptionCaption: "Select city",
         labelWidth: 3,
         data: [ { value: "KampalaId" , label: "kampala" }, { value: "AmsterdamId" , label: "Amsterdam" } ],
@@ -27,9 +27,9 @@ describe("DropdownTypeahead", () => {
     };
 
     it("renders the structure correctly", () => {
-        const DropdownTypeAheadComponent = render(TypeAheadProps);
+        const DropdownReferenceComponent = render(ReferenceProps);
 
-        expect(DropdownTypeAheadComponent).toBeElement(
+        expect(DropdownReferenceComponent).toBeElement(
             createElement(Label, { label: "City" , orientation: "horizontal" , weight: 3 },
                 createElement("div", { className: "widget-dropdown-type-ahead-wrapper" },
                 createElement(Select, {
@@ -47,10 +47,10 @@ describe("DropdownTypeahead", () => {
     });
 
     it("with no label caption renders the structure correctly", () => {
-        const DropdownTypeAheadComponent = render(TypeAheadProps);
+        const DropdownReferenceComponent = render(ReferenceProps);
 
-        DropdownTypeAheadComponent.setProps({ labelCaption: "", showLabel: false });
-        expect(DropdownTypeAheadComponent).toBeElement(
+        DropdownReferenceComponent.setProps({ labelCaption: "", showLabel: false });
+        expect(DropdownReferenceComponent).toBeElement(
             createElement("div", { className: "widget-dropdown-type-ahead-wrapper" },
                 createElement(Select, {
                     clearable: true,
@@ -66,28 +66,28 @@ describe("DropdownTypeahead", () => {
     });
 
     it("that is still loading renders with the structure", () => {
-        const DropdownTypeAheadComponent = render(TypeAheadProps);
+        const DropdownReferenceComponent = render(ReferenceProps);
 
-        DropdownTypeAheadComponent.setProps({ loaded: true });
-        expect(DropdownTypeAheadComponent).toBeElement(createElement("div", {}));
+        DropdownReferenceComponent.setProps({ loaded: true });
+        expect(DropdownReferenceComponent).toBeElement(createElement("div", {}));
     });
 
     describe("with readOnlyStyle as 'text'", () => {
         it("renders with the structure with a selected value", () => {
-            const DropdownTypeAheadComponent = render(TypeAheadProps);
-            DropdownTypeAheadComponent.setProps({ readOnlyStyle: "text" });
+            const DropdownReferenceComponent = render(ReferenceProps);
+            DropdownReferenceComponent.setProps({ readOnlyStyle: "text" });
 
-            expect(DropdownTypeAheadComponent).toBeElement(
+            expect(DropdownReferenceComponent).toBeElement(
                 createElement(Label, { label: "City" , orientation: "horizontal" , weight: 3 },
                     createElement("p", { className: "form-control-static" }, "kampalaId"))
             );
         });
 
         it("renders with the structure with a no value", () => {
-            const DropdownTypeAheadComponent = render(TypeAheadProps);
-            DropdownTypeAheadComponent.setProps({ readOnlyStyle: "text", selectedValue: null });
+            const DropdownReferenceComponent = render(ReferenceProps);
+            DropdownReferenceComponent.setProps({ readOnlyStyle: "text", selectedValue: null });
 
-            expect(DropdownTypeAheadComponent).toBeElement(
+            expect(DropdownReferenceComponent).toBeElement(
                 createElement(Label, { label: "City" , orientation: "horizontal" , weight: 3 },
                     createElement("p", { className: "form-control-static" }, ""))
             );

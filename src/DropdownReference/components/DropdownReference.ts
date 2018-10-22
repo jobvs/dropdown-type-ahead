@@ -8,7 +8,7 @@ import { Label } from "../../SharedResources/components/Label";
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
 
-export interface DropdownTypeaheadProps {
+export interface DropdownReferenceProps {
     styleObject?: object;
     labelWidth: number;
     data?: ReferenceOption[];
@@ -39,27 +39,19 @@ export interface AttributeType {
     sort: string;
 }
 
-export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
+export class DropdownReference extends Component<DropdownReferenceProps> {
     render() {
-        return this.renderForm();
-    }
-
-    private renderForm() {
-        if (!this.props.loaded) {
-            if (this.props.showLabel && this.props.labelCaption) {
-                return createElement(Label, {
+        return this.props.loaded ?
+            this.props.showLabel ?
+                createElement(Label, {
                     className: this.props.className,
                     label: this.props.labelCaption,
                     orientation: this.props.labelOrientation,
                     style: this.props.styleObject,
                     weight: this.props.labelWidth
-                }, this.renderSelector());
-            }
-
-            return this.renderSelector();
-        }
-
-        return createElement("div", {});
+                }, this.renderSelector()) :
+                this.renderSelector() :
+            createElement("div", { className: "loading-data" });
     }
 
     private renderSelector() {
@@ -78,7 +70,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
                 this.props.selectType === "normal" ?
                     createElement(Select, {
                         options: this.props.data,
-                        noResultsText: "No options",
+                        noResultsText: "",
                         ...commonProps }) :
                     createElement(Async, {
                             valueKey : "value",
@@ -95,7 +87,6 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
             return createElement("p", { className: "form-control-static" },
                 this.props.selectedValue ? this.props.selectedValue.label : "");
         }
-
     }
 
     private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {

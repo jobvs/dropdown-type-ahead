@@ -91,7 +91,7 @@ export const fetchData = (options: FetchDataOptions): Promise<mendix.lib.MxObjec
                 fetchByMicroflow(options.microflow, guid)
                     .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
-            } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) { // nanoflow
+            } else if (options.source === "nanoflow" && options.nanoflow && options.mxform) {
                 fetchByNanoflow(options.nanoflow, options.mxform)
                     .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));

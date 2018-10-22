@@ -65,7 +65,7 @@
   margin-top: 4px !important;
 }
 
-.widget-dropdown-reference-set{
+.widget-dropdown-reference-set {
   .Select.is-focused:not(.is-open) > .Select-control {
     border-color: #0595DB !important;
     box-shadow: unset !important;
@@ -146,5 +146,20 @@
   
   .Select--multi .Select-value {
     background-color: unset !important;
+    }
   }
-  }
+
+  .loading-data {
+      border: 10px dotted white;
+      border-radius: 50%;
+      border-top: 9px solid black;
+      width: 70px;
+      height: 70px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

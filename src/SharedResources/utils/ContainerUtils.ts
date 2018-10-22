@@ -29,12 +29,14 @@ export const validateProps = (props: ContainerProps | ReferenceSetProps): string
         message.push("On change event is set to 'Call a nanoflow' but no nanoflow is selected");
     }
 
-    if (props.labelCaption.trim() === "" && props.showLabel && (props.labelWidth > 11 || props.labelWidth < 1)) {
-        message.push("Label width should be a value between 0 and 12");
+    if (props.source === "microflow" && !props.microflow) {
+        message.push("Source is set as 'microflow' but no microflow is selected");
+    } else if (props.source === "nanoflow" && !props.nanoflow.nanoflow) {
+        message.push("Source is set as 'nanoflow' but no nanoflow is selected");
     }
 
-    if (props.labelCaption.trim() === "" && props.showLabel) {
-        message.push("Show label is enabled but no label is provided");
+    if (props.showLabel && (props.labelWidth > 11 || props.labelWidth < 1)) {
+        message.push("Label width should be a value between 0 and 12");
     }
 
     if (message.length) {

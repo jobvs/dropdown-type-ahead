@@ -8,7 +8,7 @@ import { Label } from "../../SharedResources/components/Label";
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
 
-export interface DropdownTypeaheadProps {
+export interface DropdownReferenceSetProps {
     styleObject?: object;
     labelWidth: number;
     data?: ReferenceOption[];
@@ -33,32 +33,24 @@ export interface ReferenceOption {
     label?: string;
 }
 
-export interface AttributeType {
+export interface AttributeType { // TODO: remove from here
     name: string;
     sort: string;
 }
 
-export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
+export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
     render() {
-        return this.renderForm();
-    }
-
-    private renderForm() {
-        if (!this.props.loaded) {
-            if (this.props.showLabel && this.props.labelCaption) {
-                return createElement(Label, {
+        return this.props.loaded ?
+            this.props.showLabel ?
+                createElement(Label, {
                     className: this.props.className,
                     label: this.props.labelCaption,
                     orientation: this.props.labelOrientation,
                     style: this.props.styleObject,
                     weight: this.props.labelWidth
-                }, this.renderSelector());
-            }
-
-            return this.renderSelector();
-        }
-
-        return createElement("div", {});
+                }, this.renderSelector()) :
+                this.renderSelector() :
+            createElement("div", { className: "loading-data" });
     }
 
     private renderSelector() {
@@ -86,7 +78,7 @@ export class DropdownTypeahead extends Component<DropdownTypeaheadProps> {
                         value: this.processOptions() }) :
                     createElement(Select, {
                         options: this.props.data,
-                        noResultsText: "No options",
+                        noResultsText: "",
                         ...commonProps }) :
                     createElement(Async, {
                             valueKey : "value",

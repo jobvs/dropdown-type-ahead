@@ -3,7 +3,7 @@ import * as initializeReactFastclick from "react-fastclick";
 
 import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { AttributeType, DropdownTypeahead, DropdownTypeaheadProps, ReferenceOption } from "./DropdownReference";
+import { AttributeType, DropdownReference, DropdownReferenceProps, ReferenceOption } from "./DropdownReference";
 
 interface WrapperProps {
     class: string;
@@ -14,7 +14,7 @@ interface WrapperProps {
     friendlyId: string;
 }
 
-export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
+export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
@@ -33,14 +33,14 @@ export interface ContainerProps extends WrapperProps, DropdownTypeaheadProps {
 export interface ContainerState {
     options: ReferenceOption[];
     selected: string;
-    isLoading: boolean;
+    loaded: boolean;
 }
 
-export default class DropdownTypeaheadContainer extends Component<ContainerProps, ContainerState> {
+export default class DropdownReferenceContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
         selected: "",
-        isLoading: true
+        loaded: true
     };
 
     private subscriptionHandles: number[] = [];
@@ -50,7 +50,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
     render() {
         const selectedValue = this.getSelectedValue(this.state.selected);
 
-        return createElement(DropdownTypeahead, {
+        return createElement(DropdownReference, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
             data: this.state.options,
@@ -60,7 +60,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
-            loaded: this.state.isLoading,
+            loaded: !this.state.loaded,
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -78,9 +78,9 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             if (this.props.selectType === "normal") {
                 this.retrieveOptions(newProps);
             }
-            this.setState({ selected, isLoading: false });
+            this.setState({ selected, loaded: false });
         } else {
-            this.setState({ selected: "", isLoading: false });
+            this.setState({ selected: "", loaded: false });
         }
     }
 
@@ -156,7 +156,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         context.setContext(mxObject.getEntity(), mxObject.getGuid());
         if (onChangeEvent === "callMicroflow" && onChangeMicroflow) {
             window.mx.ui.action(onChangeMicroflow, {
-                error: error => window.mx.ui.error(`Error while executing microflow ${onChangeMicroflow}: ${error.message}`), // tslint:disable-line max-line-length
+                error: error => window.mx.ui.error(`Error while executing onchange microflow ${onChangeMicroflow}: ${error.message}`), // tslint:disable-line max-line-length
                 origin: mxform,
                 params: {
                     applyto: "selection",
@@ -166,7 +166,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
         } else if (onChangeEvent === "callNanoflow" && onChangeNanoflow.nanoflow) {
             window.mx.data.callNanoflow({
                 context,
-                error: error => window.mx.ui.error(`Error while executing the onchange nanoflow: ${error.message}`),
+                error: error => window.mx.ui.error(`Error while executing onchange nanoflow: ${error.message}`),
                 nanoflow: onChangeNanoflow,
                 origin: mxform
             });
@@ -192,22 +192,20 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
 
         fetchData(options)
             .then(optionObjects => this.setOptions(optionObjects))
-            .catch(mx.ui.error);
+            .catch(errorMessage => window.mx.ui.error(errorMessage.message));
     }
 
     private setOptions = (mendixObjects: mendix.lib.MxObject[]) => {
         const options: ReferenceOption[] = [];
 
-        if (mendixObjects.length > 0) {
-            mendixObjects.forEach(mxObject => {
-                options.push({
-                    label: mx.parser.formatAttribute(mxObject, this.props.attribute),
-                    value: mxObject.getGuid()
-                });
+        mendixObjects.forEach(mxObject => {
+            options.push({
+                label: mx.parser.formatAttribute(mxObject, this.props.attribute),
+                value: mxObject.getGuid()
             });
-        }
+        });
 
-        this.setState({ options, isLoading: false });
+        this.setState({ options, loaded: false });
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
@@ -237,7 +235,7 @@ export default class DropdownTypeaheadContainer extends Component<ContainerProps
             mendixObjects.forEach(mendixObject => {
                 filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
             });
-            this.setState({ options: filteredOptions, isLoading: false });
+            this.setState({ options: filteredOptions, loaded: false });
 
             return { options: filteredOptions };
         });

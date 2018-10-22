@@ -1,7 +1,7 @@
 import { Component, createElement } from "react";
 
 import { parseStyle, validateProps } from "../SharedResources/utils/ContainerUtils";
-import { DropdownTypeahead } from "./components/DropdownReferenceSet";
+import { DropdownReferenceSet } from "./components/DropdownReferenceSet";
 import { ContainerProps } from "./components/DropdownReferenceSetContainer";
 
 declare function require(name: string): string;
@@ -18,7 +18,7 @@ export class preview extends Component<ContainerProps, {}> {
             value: "noGuid"
         };
 
-        return createElement(DropdownTypeahead as any, {
+        return createElement(DropdownReferenceSet as any, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
             emptyOptionCaption: this.props.emptyOptionCaption,
