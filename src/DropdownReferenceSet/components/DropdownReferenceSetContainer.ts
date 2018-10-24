@@ -1,9 +1,9 @@
 import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
-import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
+import { AttributeType, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { AttributeType, DropdownReferenceSet, DropdownReferenceSetProps, ReferenceOption } from "./DropdownReferenceSet";
+import { DropdownReferenceSet, DropdownReferenceSetProps, ReferenceOption } from "./DropdownReferenceSet";
 
 interface WrapperProps {
     class: string;
@@ -19,7 +19,6 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceSetProps 
     entityPath: string;
     entityConstraint: string;
     searchAttribute: string;
-    searchMicroflow: string;
     source: "xpath" | "microflow" | "nanoflow";
     sortOrder: "asc" | "desc";
     sortAttributes: AttributeType[];
@@ -65,6 +64,9 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue: this.state.selected,
+            searchText: this.props.searchText,
+            loadingText: this.props.loadingText,
+            minimumCharacter: this.props.minimumCharacter,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
         });
@@ -92,7 +94,9 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
     }
 
     private isReadOnly = (): boolean => {
-        return !this.props.mxObject || (this.props.editable !== "default") || this.props.readOnly;
+        const { editable, mxObject, readOnly, attribute } = this.props;
+
+        return editable !== "default" || (!mxObject || readOnly || !(attribute && mxObject.isReadonlyAttr(attribute)));
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
@@ -164,8 +168,8 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
 
     private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
-        const attributeReference = `${props.entityPath}${props.attribute}`;
+        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
+        const attributeReference = `${props.entityPath}${attribute}`;
         const options: FetchDataOptions = {
             attributes: [ attributeReference ],
             constraint: entityConstraint,
@@ -174,7 +178,9 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
             microflow,
             mxform: this.props.mxform,
             nanoflow,
-            sortAttributes: this.props.sortAttributes,
+            sortAttributes: !sortAttributes.length ?
+                [ { name: attribute , sort: "asc" } ] :
+                sortAttributes,
             sortOrder,
             source
         };
@@ -185,49 +191,24 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
     }
 
     private setOptions = (mendixObjects: mendix.lib.MxObject[]) => {
-        const options: ReferenceOption[] = [];
-
-        mendixObjects.forEach(mxObject => {
-            options.push({
+        const options: ReferenceOption[] = mendixObjects.map(mxObject => {
+            return {
                 label: mx.parser.formatAttribute(mxObject, this.props.attribute),
                 value: mxObject.getGuid()
-            });
+            };
         });
 
-        this.setState({ options });
+        this.setState({ options, loaded: false });
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
-        const filteredOptions: ReferenceOption[] = [];
-        const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = this.props;
-        const attributeReference = `${this.props.entityPath}${this.props.attribute}`;
-        const options: FetchDataOptions = {
-            attributes: [ attributeReference ],
-            constraint: entityConstraint,
-            entity,
-            guid: mxObject.getGuid(),
-            microflow,
-            mxform: this.props.mxform,
-            nanoflow,
-            sortAttributes: this.props.sortAttributes,
-            sortOrder,
-            source
-        };
-
-        if (!this.props.mxObject) {
+        if (!this.props.mxObject || input.trim() === "") {
             return Promise.resolve({ options: [] });
         } else {
-        this.props.mxObject.set(this.props.searchAttribute, input);
+            this.props.mxObject.set(this.props.searchAttribute, input);
+            this.retrieveOptions(this.props);
 
-        return fetchData(options).then((mendixObjects) => {
-            mendixObjects.forEach(mendixObject => {
-                filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
-            });
-            this.setState({ options: filteredOptions, loaded: false });
-
-            return { options: filteredOptions };
-        });
+            return Promise.resolve({ options: this.state.options });
         }
     }
 }

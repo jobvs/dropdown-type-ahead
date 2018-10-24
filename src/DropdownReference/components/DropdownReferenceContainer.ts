@@ -1,9 +1,9 @@
 import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 
-import { parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
+import { AttributeType, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { AttributeType, DropdownReference, DropdownReferenceProps, ReferenceOption } from "./DropdownReference";
+import { DropdownReference, DropdownReferenceProps, ReferenceOption } from "./DropdownReference";
 
 interface WrapperProps {
     class: string;
@@ -103,7 +103,9 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
     }
 
     private isReadOnly = (): boolean => {
-        return !this.props.mxObject || (this.props.editable !== "default") || this.props.readOnly;
+        const { editable, mxObject, readOnly, attribute } = this.props;
+
+        return editable !== "default" || (!mxObject || readOnly || !!(attribute && mxObject.isReadonlyAttr(attribute)));
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
@@ -175,8 +177,8 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
 
     private retrieveOptions(props: ContainerProps) {
         const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
-        const attributeReference = `${props.entityPath}${props.attribute}`;
+        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
+        const attributeReference = `${props.entityPath}${attribute}`;
         const options: FetchDataOptions = {
             attributes: [ attributeReference ],
             constraint: entityConstraint,
@@ -185,7 +187,9 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
             microflow,
             mxform: this.props.mxform,
             nanoflow,
-            sortAttributes: this.props.sortAttributes,
+            sortAttributes: !sortAttributes.length ?
+                [ { name: attribute , sort: "asc" } ] :
+                sortAttributes,
             sortOrder,
             source
         };
@@ -208,7 +212,7 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
         this.setState({ options, loaded: false });
     }
 
-    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
+    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> | undefined => {
         const filteredOptions: ReferenceOption[] = [];
         const entity = this.props.entityPath.split("/")[1];
         const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = this.props;
@@ -231,13 +235,19 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
         } else {
         this.props.mxObject.set(this.props.searchAttribute, input);
 
-        return fetchData(options).then((mendixObjects) => {
+        return fetchData(options)
+        .then((mendixObjects) => {
             mendixObjects.forEach(mendixObject => {
                 filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
             });
             this.setState({ options: filteredOptions, loaded: false });
 
             return { options: filteredOptions };
+        })
+        .catch(errorMessage => {
+            window.mx.ui.error(errorMessage.message);
+
+            return Promise.resolve({ options: [] });
         });
         }
     }

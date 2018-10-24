@@ -2,7 +2,7 @@
 type MxObject = mendix.lib.MxObject;
 type SortOrder = "asc" | "desc";
 
-import { AttributeType } from "../../DropdownReference/components/DropdownReference";
+import { AttributeType } from "./ContainerUtils";
 export interface FetchDataOptions {
     source: "xpath" | "microflow" | "nanoflow";
     entity: string;
@@ -133,7 +133,7 @@ export const fetchByMicroflow = (actionname: string, guid: string): Promise<MxOb
 
 export const fetchByNanoflow = (actionname: Nanoflow, mxform: mxui.lib.form._FormBase): Promise<MxObject[]> =>
     new Promise((resolve, reject) => {
-        const errorMessage = `An error occurred while retrieving data by nanoflow (${actionname}): `;
+        const errorMessage = `An error occurred while retrieving data by nanoflow: `;
         const context = new mendix.lib.MxContext();
         window.mx.data.callNanoflow({
             callback:  (result) => resolve(result as any),

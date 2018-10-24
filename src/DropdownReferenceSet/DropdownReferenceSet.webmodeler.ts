@@ -18,7 +18,7 @@ export class preview extends Component<ContainerProps, {}> {
             value: "noGuid"
         };
 
-        return createElement(DropdownReferenceSet as any, {
+        return createElement(DropdownReferenceSet, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
             emptyOptionCaption: this.props.emptyOptionCaption,
@@ -33,7 +33,11 @@ export class preview extends Component<ContainerProps, {}> {
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             showLabel: this.props.showLabel,
-            style: parseStyle(this.props.style)
+            styleObject: parseStyle(this.props.style),
+            loaded: true,
+            searchText: this.props.searchText,
+            loadingText: this.props.loadingText,
+            minimumCharacter: this.props.minimumCharacter
         });
     }
 
@@ -67,6 +71,12 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
         visibilityMap.sortAttributes = false;
         visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
+    }
+
+    if (valueMap.showLabel) {
+        visibilityMap.labelOrientation = true;
+        visibilityMap.labelWidth = true;
+        visibilityMap.labelCaption = true;
     }
 
     if (valueMap.selectType !== "asynchronous") {

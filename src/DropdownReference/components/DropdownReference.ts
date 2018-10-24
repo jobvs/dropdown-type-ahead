@@ -34,11 +34,6 @@ export interface ReferenceOption {
     label?: string;
 }
 
-export interface AttributeType {
-    name: string;
-    sort: string;
-}
-
 export class DropdownReference extends Component<DropdownReferenceProps> {
     render() {
         return this.props.loaded ?

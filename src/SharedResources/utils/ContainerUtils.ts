@@ -1,6 +1,11 @@
 import { ContainerProps } from "../../DropdownReference/components/DropdownReferenceContainer";
 import { ContainerProps as ReferenceSetProps } from "../../DropdownReferenceSet/components/DropdownReferenceSetContainer";
 
+export interface AttributeType {
+    name: string;
+    sort: string;
+}
+
 export const parseStyle = (style = ""): { [key: string]: string } => {
     try {
         return style.split(";").reduce<{ [key: string]: string }>((styleObject, line) => {
@@ -30,9 +35,9 @@ export const validateProps = (props: ContainerProps | ReferenceSetProps): string
     }
 
     if (props.source === "microflow" && !props.microflow) {
-        message.push("Source is set as 'microflow' but no microflow is selected");
+        message.push("Data source is set as 'microflow' but no microflow is selected");
     } else if (props.source === "nanoflow" && !props.nanoflow.nanoflow) {
-        message.push("Source is set as 'nanoflow' but no nanoflow is selected");
+        message.push("Data source is set as 'nanoflow' but no nanoflow is selected");
     }
 
     if (props.showLabel && (props.labelWidth > 11 || props.labelWidth < 1)) {

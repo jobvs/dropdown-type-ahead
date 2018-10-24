@@ -1,5 +1,5 @@
 import { Component, createElement } from "react";
-import Select , { Async } from "react-select";
+import Select, { Async } from "react-select";
 import * as classNames from "classnames";
 
 import { Alert } from "../../SharedResources/components/Alert";
@@ -26,6 +26,9 @@ export interface DropdownReferenceSetProps {
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
+    searchText: string;
+    loadingText: string;
+    minimumCharacter: number;
 }
 
 export interface ReferenceOption {
@@ -33,12 +36,17 @@ export interface ReferenceOption {
     label?: string;
 }
 
-export interface AttributeType { // TODO: remove from here
-    name: string;
-    sort: string;
+interface DropdownReferenceSetState {
+    showOptions: boolean;
+    selectedData: {}[];
 }
 
 export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
+    readonly state: DropdownReferenceSetState = {
+        showOptions: false,
+        selectedData: []
+    };
+
     render() {
         return this.props.loaded ?
             this.props.showLabel ?
@@ -60,37 +68,45 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             removeSelected: true,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
+            searchPromptText: this.props.searchText,
+            onInputChange: (input: string) => this.onInputChange(input),
             clearValueText: "",
             ...this.createSelectorProp() as object
         };
 
         if (this.props.readOnlyStyle === "control") {
-                return createElement("div", {
-                    className: classNames("widget-dropdown-reference-set")
-                },
+            return createElement("div", {
+                className: classNames("widget-dropdown-reference-set")
+            },
                 this.props.selectType === "normal" ?
                     this.props.isReadOnly ?
-                    createElement("input", {
-                        type: "text",
-                        readonly: "readonly",
-                        className: "form-control",
-                        disabled: "disabled",
-                        value: this.processOptions() }) :
-                    createElement(Select, {
-                        options: this.props.data,
-                        noResultsText: "",
-                        ...commonProps }) :
+                        createElement("input", {
+                            type: "text",
+                            readonly: "readonly",
+                            className: "form-control",
+                            disabled: "disabled",
+                            value: this.processOptions()
+                        }) :
+                        createElement(Select, {
+                            options: this.state.showOptions ? this.props.data : this.state.selectedData,
+                            noResultsText: "",
+                            ...commonProps
+                        }) :
                     createElement(Async, {
-                            valueKey : "value",
-                            labelKey : "label",
-                            autoload: false,
-                            autoFocus: true,
-                            loadOptions: (input: string) => this.props.asyncData(input),
-                            ...commonProps }),
-                    createElement(Alert, {
-                        className: "widget-dropdown-type-ahead-alert"
-                    }, this.props.alertMessage)
-                );
+                        valueKey: "value",
+                        labelKey: "label",
+                        autoload: false,
+                        autoFocus: true,
+                        loadingPlaceholder: this.props.loadingText,
+                        loadOptions: this.state.showOptions ?
+                            (input: string) => this.props.asyncData(input) :
+                            (input: string) => this.emptyOptions(input),
+                        ...commonProps
+                    }),
+                createElement(Alert, {
+                    className: "widget-dropdown-type-ahead-alert"
+                }, this.props.alertMessage)
+            );
         } else {
             return createElement("p", { className: "form-control-static" },
                 this.processOptions());
@@ -103,7 +119,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             return { value: this.props.selectedValue };
         }
 
-        return { value: null , placeholder: this.props.emptyOptionCaption };
+        return { value: null, placeholder: this.props.emptyOptionCaption };
     }
 
     private processOptions() {
@@ -126,5 +142,41 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
         }
 
         return formatedOptions.join(", ");
+    }
+
+    private onInputChange = (newValue: string) => {
+        let showOptions = false;
+        if (newValue.length >= this.props.minimumCharacter && newValue.trim() !== "") {
+            showOptions = true;
+        }
+
+        this.setState({ showOptions });
+    }
+
+    private emptyOptions = (input: string) => {
+        if (input.length < this.props.minimumCharacter) {
+            let selectedData = [];
+
+            if (this.props.selectedValue.length > 0) {
+                selectedData = this.props.selectedValue.map((selectedGuid: string) => {
+                let value = "";
+                let label = "";
+                if (this.props.data) {
+                    this.props.data.forEach((dataObject: any) => {
+                        value = dataObject.value;
+                        if (value === selectedGuid) {
+                            label = dataObject.label;
+                        }
+                    });
+                }
+
+                return { label, value };
+            });
+            }
+
+            return Promise.resolve({ options: selectedData });
+        }
+
+        return Promise.resolve({ options: this.props.data });
     }
 }

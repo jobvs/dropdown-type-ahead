@@ -34,7 +34,7 @@ export class preview extends Component<ContainerProps, {}> {
             selectedValue,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style),
-            loaded: false
+            loaded: true
         });
     }
 
@@ -68,6 +68,12 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
         visibilityMap.sortAttributes = false;
         visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
+    }
+
+    if (valueMap.showLabel) {
+        visibilityMap.labelOrientation = true;
+        visibilityMap.labelWidth = true;
+        visibilityMap.labelCaption = true;
     }
 
     if (valueMap.selectType !== "asynchronous") {
