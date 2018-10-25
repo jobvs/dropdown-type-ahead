@@ -98,9 +98,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                         autoload: false,
                         autoFocus: true,
                         loadingPlaceholder: this.props.loadingText,
-                        loadOptions: this.state.showOptions ?
-                            (input: string) => this.props.asyncData(input) :
-                            (input: string) => this.emptyOptions(input),
+                        loadOptions: (input: string) => this.props.asyncData(input),
                         ...commonProps
                     }),
                 createElement(Alert, {
@@ -146,37 +144,10 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private onInputChange = (newValue: string) => {
         let showOptions = false;
-        if (newValue.length >= this.props.minimumCharacter && newValue.trim() !== "") {
+        if (newValue.length >= this.props.minimumCharacter) {
             showOptions = true;
         }
 
-        this.setState({ showOptions });
-    }
-
-    private emptyOptions = (input: string) => {
-        if (input.length < this.props.minimumCharacter) {
-            let selectedData = [];
-
-            if (this.props.selectedValue.length > 0) {
-                selectedData = this.props.selectedValue.map((selectedGuid: string) => {
-                let value = "";
-                let label = "";
-                if (this.props.data) {
-                    this.props.data.forEach((dataObject: any) => {
-                        value = dataObject.value;
-                        if (value === selectedGuid) {
-                            label = dataObject.label;
-                        }
-                    });
-                }
-
-                return { label, value };
-            });
-            }
-
-            return Promise.resolve({ options: selectedData });
-        }
-
-        return Promise.resolve({ options: this.props.data });
+        this.setState({ showOptions, selectedData: this.props.selectedValue });
     }
 }

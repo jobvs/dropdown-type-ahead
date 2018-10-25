@@ -75,6 +75,7 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
     componentWillReceiveProps(newProps: ContainerProps) {
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             const selected = newProps.mxObject.get(this.association) as string;
+            this.getSelectedValues(newProps);
             this.resetSubscriptions(newProps.mxObject);
             if (this.props.selectType === "normal") {
                 this.retrieveOptions(newProps);
@@ -117,8 +118,7 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
     }
 
     private handleSubscriptions = () => {
-        const selected = this.props.mxObject.get(this.association) as string;
-        this.setState({ selected });
+        this.getSelectedValues(this.props);
     }
 
     private onChange(recentSelection: ReferenceOption[] | any) {
@@ -127,19 +127,42 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
         }
 
         const selectedOptions: string[] = [];
+        const previousSelection: string[] = [];
 
         recentSelection.forEach((selection: ReferenceOption) => {
             selectedOptions.push(selection.value as string);
         });
 
-        this.props.mxObject.removeReferences(this.association, this.state.selected);
+        if (this.state.selected.length > 0) {
+            this.state.selected.forEach((selection: ReferenceOption) => {
+                previousSelection.push(selection.value as string);
+            });
+            this.props.mxObject.removeReferences(this.association, previousSelection);
+        }
+
         this.props.mxObject.addReferences(this.association, selectedOptions);
 
         if (this.state.selected.length !== selectedOptions.length) {
             this.executeOnChangeEvent();
         }
 
-        this.setState({ selected: selectedOptions });
+        this.setState({ selected: recentSelection });
+    }
+
+    private getSelectedValues = (props: ContainerProps) => {
+        new Promise((resolve) => props.mxObject.fetch(props.entityPath, resolve))
+        .then((values: any) => {
+            if (values) {
+                const newSelectedObject = values.map((mxObject: mendix.lib.MxObject) => {
+                    return {
+                        value: mxObject.getGuid(),
+                        label: mx.parser.formatAttribute(mxObject, props.attribute)
+                    };
+                });
+
+                this.setState({ selected: newSelectedObject });
+            }
+        });
     }
 
     private executeOnChangeEvent = () => {
@@ -202,13 +225,19 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
-        if (!this.props.mxObject || input.trim() === "") {
+        if (!this.props.mxObject) {
             return Promise.resolve({ options: [] });
         } else {
             this.props.mxObject.set(this.props.searchAttribute, input);
-            this.retrieveOptions(this.props);
+            if (input.length >= this.props.minimumCharacter) {
+                this.retrieveOptions(this.props);
 
-            return Promise.resolve({ options: this.state.options });
+                return Promise.resolve({ options: this.state.options });
+            } else {
+                this.getSelectedValues(this.props);
+
+                return Promise.resolve({ options: this.state.selected ? this.state.selected : undefined });
+            }
         }
     }
 }

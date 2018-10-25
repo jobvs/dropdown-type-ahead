@@ -32,15 +32,15 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
 
 export interface ContainerState {
     options: ReferenceOption[];
-    selected: string;
+    selectedObject: ReferenceOption;
     loaded: boolean;
 }
 
 export default class DropdownReferenceContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
-        selected: "",
-        loaded: true
+        loaded: true,
+        selectedObject: {}
     };
 
     private subscriptionHandles: number[] = [];
@@ -48,8 +48,6 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
     private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
 
     render() {
-        const selectedValue = this.getSelectedValue(this.state.selected);
-
         return createElement(DropdownReference, {
             alertMessage: validateProps(this.props),
             className: this.props.class,
@@ -65,7 +63,10 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
-            selectedValue,
+            searchText: this.props.searchText,
+            loadingText: this.props.loadingText,
+            minimumCharacter: this.props.minimumCharacter,
+            selectedValue: this.state.selectedObject,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
         });
@@ -73,14 +74,14 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
 
     componentWillReceiveProps(newProps: ContainerProps) {
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
-            const selected = newProps.mxObject.get(this.association) as string;
+            this.getSelectedValue(newProps);
             this.resetSubscriptions(newProps.mxObject);
             if (this.props.selectType === "normal") {
                 this.retrieveOptions(newProps);
             }
-            this.setState({ selected, loaded: false });
+            this.setState({ loaded: false });
         } else {
-            this.setState({ selected: "", loaded: false });
+            this.setState({ loaded: false });
         }
     }
 
@@ -92,14 +93,18 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
         this.subscriptionHandles.forEach(window.mx.data.unsubscribe);
     }
 
-    private getSelectedValue = (selectedGuid: string): ReferenceOption | null => {
-        const selectedOptions = this.state.options.filter(option => option.value === selectedGuid);
-        let selected = null;
-        if (selectedOptions.length > 0) {
-            selected = selectedOptions[0];
-        }
-
-        return selected;
+    private getSelectedValue = (props: ContainerProps) => {
+        new Promise((resolve) => props.mxObject.fetch(props.entityPath, resolve))
+        .then((newValue: any) => {
+            if (newValue) {
+                this.setState({
+                    selectedObject: {
+                        value: newValue.getGuid(),
+                        label: mx.parser.formatAttribute(newValue, props.attribute)
+                    }
+                });
+            }
+        });
     }
 
     private isReadOnly = (): boolean => {
@@ -126,8 +131,7 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
     }
 
     private handleSubscriptions = () => {
-        const selected = this.props.mxObject.get(this.association) as string;
-        this.setState({ selected });
+        this.getSelectedValue(this.props);
     }
 
     private onChange(recentSelection: ReferenceOption | any) {
@@ -143,12 +147,12 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
         } else {
             selected = recentSelection.value;
             this.props.mxObject.set(this.association, selected);
-            if (this.state.selected !== recentSelection.value) {
+            if (!this.state.selectedObject || (this.state.selectedObject.value !== recentSelection.value)) {
                 this.executeOnChangeEvent();
             }
         }
 
-        this.setState({ selected });
+        this.setState({ selectedObject: recentSelection ? recentSelection : null });
     }
 
     private executeOnChangeEvent = () => {
@@ -212,43 +216,20 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
         this.setState({ options, loaded: false });
     }
 
-    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> | undefined => {
-        const filteredOptions: ReferenceOption[] = [];
-        const entity = this.props.entityPath.split("/")[1];
-        const { entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = this.props;
-        const attributeReference = `${this.props.entityPath}${this.props.attribute}`;
-        const options: FetchDataOptions = {
-            attributes: [ attributeReference ],
-            constraint: entityConstraint,
-            entity,
-            guid: mxObject.getGuid(),
-            microflow,
-            mxform: this.props.mxform,
-            nanoflow,
-            sortAttributes: this.props.sortAttributes,
-            sortOrder,
-            source
-        };
-
+    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
         if (!this.props.mxObject) {
             return Promise.resolve({ options: [] });
         } else {
-        this.props.mxObject.set(this.props.searchAttribute, input);
+            this.props.mxObject.set(this.props.searchAttribute, input);
+            if (input.length >= this.props.minimumCharacter) {
+                this.retrieveOptions(this.props);
 
-        return fetchData(options)
-        .then((mendixObjects) => {
-            mendixObjects.forEach(mendixObject => {
-                filteredOptions.push({ label: mendixObject.get(this.props.attribute) as string, value: mendixObject.getGuid() });
-            });
-            this.setState({ options: filteredOptions, loaded: false });
+                return Promise.resolve({ options: this.state.options });
+            } else {
+                this.getSelectedValue(this.props);
 
-            return { options: filteredOptions };
-        })
-        .catch(errorMessage => {
-            window.mx.ui.error(errorMessage.message);
-
-            return Promise.resolve({ options: [] });
-        });
+                return Promise.resolve({ options: [ this.state.selectedObject ] });
+            }
         }
     }
 }

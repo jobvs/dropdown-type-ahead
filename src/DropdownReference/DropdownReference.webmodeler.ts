@@ -32,6 +32,9 @@ export class preview extends Component<ContainerProps, {}> {
             labelWidth: this.props.labelWidth,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
+            searchText: this.props.searchText,
+            loadingText: this.props.loadingText,
+            minimumCharacter: this.props.minimumCharacter,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style),
             loaded: true

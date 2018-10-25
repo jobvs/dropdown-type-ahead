@@ -27,6 +27,9 @@ export interface DropdownReferenceProps {
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
+    searchText: string;
+    loadingText: string;
+    minimumCharacter: number;
 }
 
 export interface ReferenceOption {
@@ -34,7 +37,15 @@ export interface ReferenceOption {
     label?: string;
 }
 
-export class DropdownReference extends Component<DropdownReferenceProps> {
+interface DropdownReferenceState {
+    showOptions: boolean;
+}
+
+export class DropdownReference extends Component<DropdownReferenceProps, DropdownReferenceState> {
+    readonly state: DropdownReferenceState = {
+        showOptions: false
+    };
+
     render() {
         return this.props.loaded ?
             this.props.showLabel ?
@@ -54,6 +65,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
             clearable: this.props.isClearable,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
+            onInputChange: (input: string) => this.onInputChange(input),
             clearValueText: "",
             ...this.createSelectorProp() as object
         };
@@ -64,7 +76,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
                 },
                 this.props.selectType === "normal" ?
                     createElement(Select, {
-                        options: this.props.data,
+                        options: this.state.showOptions ? this.props.data : [ this.props.selectedValue ? this.props.selectedValue : {} ],
                         noResultsText: "",
                         ...commonProps }) :
                     createElement(Async, {
@@ -90,5 +102,14 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
         }
 
         return { value: null , placeholder: this.props.emptyOptionCaption };
+    }
+
+    private onInputChange = (newValue: string) => {
+        let showOptions = false;
+        if (newValue.length >= this.props.minimumCharacter) {
+            showOptions = true;
+        }
+
+        this.setState({ showOptions });
     }
 }

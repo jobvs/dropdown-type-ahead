@@ -51,11 +51,6 @@
             <category>Appearance</category>
             <description>Adds a (x) clear button in the input</description>
         </property>
-        <property key="showLabel" type="boolean" defaultValue="true">
-            <caption>Show label</caption>
-            <category>Label</category>
-            <description/>
-        </property>
         <property key="loadingText" type="translatableString" required="false">
             <caption>Loading text</caption>
             <category>Appearance</category>
@@ -73,6 +68,11 @@
                 <translation lang="en_US">Search</translation>
                 <translation lang="nl_NL">Zoek</translation>
             </translations>
+        </property>
+        <property key="showLabel" type="boolean" defaultValue="true">
+            <caption>Show label</caption>
+            <category>Label</category>
+            <description/>
         </property>
         <property key="labelCaption" type="translatableString" required="false">
             <caption>Label caption</caption>
