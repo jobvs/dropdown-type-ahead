@@ -72,7 +72,7 @@ export class DropdownReference extends Component<DropdownReferenceProps, Dropdow
 
         if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
                 return createElement("div", {
-                    className: classNames("widget-dropdown-reference")
+                    className: "widget-dropdown-reference"
                 },
                 this.props.selectType === "normal" ?
                     createElement(Select, {
@@ -87,7 +87,7 @@ export class DropdownReference extends Component<DropdownReferenceProps, Dropdow
                             loadOptions: (input: string) => this.props.asyncData(input),
                             ...commonProps }),
                     createElement(Alert, {
-                        className: "widget-dropdown-type-ahead-alert"
+                        className: "widget-dropdown-reference-alert"
                     }, this.props.alertMessage)
                 );
         } else {

@@ -102,7 +102,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                         ...commonProps
                     }),
                 createElement(Alert, {
-                    className: "widget-dropdown-type-ahead-alert"
+                    className: "widget-dropdown-reference-set-alert"
                 }, this.props.alertMessage)
             );
         } else {
