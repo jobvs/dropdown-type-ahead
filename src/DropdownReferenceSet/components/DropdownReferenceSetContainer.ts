@@ -114,6 +114,18 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
+            this.subscriptionHandles.push(window.mx.data.subscribe({
+                attr: this.props.attribute,
+                callback: this.handleSubscriptions,
+                guid: mxObject.get(this.association) as string
+            }));
+            this.subscriptionHandles.push(window.mx.data.subscribe({
+                entity: this.props.entityPath.split("/")[1],
+                callback: () => {
+                    this.getSelectedValues(this.props);
+                    this.retrieveOptions(this.props);
+                }
+            }));
         }
     }
 

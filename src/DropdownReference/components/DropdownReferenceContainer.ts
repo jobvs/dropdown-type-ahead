@@ -32,7 +32,7 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
 
 export interface ContainerState {
     options: ReferenceOption[];
-    selectedObject: ReferenceOption;
+    selectedObject: ReferenceOption | null;
     loaded: boolean;
 }
 
@@ -128,9 +128,17 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
                 guid: mxObject.getGuid()
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
-                attr: this.props.entityPath,
+                attr: this.props.attribute,
                 callback: this.handleSubscriptions,
-                guid: mxObject.getGuid()
+                guid: mxObject.get(this.association) as string
+            }));
+            this.subscriptionHandles.push(window.mx.data.subscribe({
+                entity: this.props.entityPath.split("/")[1],
+                callback: () => {
+                    this.setState({ selectedObject: null });
+                    this.getSelectedValue(this.props);
+                    this.retrieveOptions(this.props);
+                }
             }));
         }
     }
@@ -233,7 +241,7 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
             } else {
                 this.getSelectedValue(this.props);
 
-                return Promise.resolve({ options: [ this.state.selectedObject ] });
+                return Promise.resolve({ options: [ this.state.selectedObject ? this.state.selectedObject : {} ] });
             }
         }
     }
