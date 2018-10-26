@@ -74,7 +74,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             ...this.createSelectorProp() as object
         };
 
-        if (this.props.readOnlyStyle === "control") {
+        if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
             return createElement("div", {
                 className: classNames("widget-dropdown-reference-set")
             },
@@ -106,7 +106,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                 }, this.props.alertMessage)
             );
         } else {
-            return createElement("p", { className: "form-control-static" },
+            return createElement("p", { className: classNames("form-control-static", "read-only-text") },
                 this.processOptions());
         }
 

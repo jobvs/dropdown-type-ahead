@@ -127,6 +127,11 @@ export default class DropdownReferenceContainer extends Component<ContainerProps
                 callback: this.handleSubscriptions,
                 guid: mxObject.getGuid()
             }));
+            this.subscriptionHandles.push(window.mx.data.subscribe({
+                attr: this.props.entityPath,
+                callback: this.handleSubscriptions,
+                guid: mxObject.getGuid()
+            }));
         }
     }
 

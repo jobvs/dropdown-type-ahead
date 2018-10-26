@@ -70,9 +70,9 @@ export class DropdownReference extends Component<DropdownReferenceProps, Dropdow
             ...this.createSelectorProp() as object
         };
 
-        if (this.props.readOnlyStyle === "control") {
+        if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
                 return createElement("div", {
-                    className: classNames("widget-dropdown-type-ahead-wrapper")
+                    className: classNames("widget-dropdown-reference")
                 },
                 this.props.selectType === "normal" ?
                     createElement(Select, {
@@ -91,7 +91,7 @@ export class DropdownReference extends Component<DropdownReferenceProps, Dropdow
                     }, this.props.alertMessage)
                 );
         } else {
-            return createElement("p", { className: "form-control-static" },
+            return createElement("p", { className: classNames("form-control-static", "read-only-text") },
                 this.props.selectedValue ? this.props.selectedValue.label : "");
         }
     }
