@@ -205,9 +205,9 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             microflow,
             mxform: this.props.mxform,
             nanoflow,
-            sortAttributes: !sortAttributes.length ?
-                [ { name: attribute , sort: "asc" } ] :
-                sortAttributes,
+            sortAttributes: !sortAttributes.length
+                ? [ { name: attribute, sort: "asc" } ]
+                : sortAttributes,
             sortOrder,
             source
         };

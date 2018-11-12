@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
-import Select , { Async } from "react-select";
 import * as classNames from "classnames";
+import Select , { Async } from "react-select";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
@@ -101,7 +101,7 @@ export class DropdownReference extends Component<DropdownReferenceProps, Dropdow
             return { value: this.props.selectedValue };
         }
 
-        return { value: null , placeholder: this.props.emptyOptionCaption };
+        return { value: null, placeholder: this.props.emptyOptionCaption };
     }
 
     private onInputChange = (newValue: string) => {

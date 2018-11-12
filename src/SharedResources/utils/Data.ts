@@ -109,6 +109,7 @@ export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> 
     const xpath = `//${entityName}${constraint.split("[%CurrentObject%]").join(guid)}`;
 
     window.mx.data.get({
+        xpath,
         callback: resolve,
         error: error => reject(`An error occurred while retrieving data via XPath (${xpath}): ${error.message}`),
         filter: {
@@ -116,8 +117,7 @@ export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> 
             offset: 0,
             references,
             sort: createSortProps(sortAttributes)
-        },
-        xpath
+        }
     });
 });
 
