@@ -2,23 +2,36 @@
 const webpack = require("webpack");
 const webpackConfig = require("./webpack.config");
 const merge = require("webpack-merge");
-const widgetNames = [ "DropdownReference", "DropdownReferenceSet" ];
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const widgetNames = Object.keys(webpackConfig[0].entry);
 
 const webpackConfigRelease = webpackConfig.map(config => merge(config, {
     devtool: false,
     mode: "production"
 }));
 
+webpackConfigRelease[0].plugins.push(new ExtractTextPlugin({
+    filename: `./widgets/com/mendix/widget/custom/[name]/ui/[name].css`
+}));
+
+webpackConfigRelease[0].module.rules[1] = {
+    test: /\.css$/, loader: ExtractTextPlugin.extract({
+        fallback: "style-loader",
+        use: [ "css-loader", "sass-loader" ]
+    })
+};
+
 module.exports = function(grunt) {
     const pkg = grunt.file.readJSON("package.json");
     grunt.initConfig({
-
         watch: {
             updateWidgetFiles: {
                 files: [ "./src/**/*" ],
-                tasks: [ "webpack:develop", "file_append", "compress", "copy" ],
+                tasks: [ "webpack:develop", "file_append", "compress:dist", "copy:distDeployment", "copy:mpk" ],
                 options: {
-                    debounceDelay: 250
+                    debounceDelay: 250,
+                    livereload: true
                 }
             }
         },
@@ -33,7 +46,7 @@ module.exports = function(grunt) {
                     expand: true,
                     date: new Date(),
                     store: false,
-                    cwd: "./dist/tmp/src",
+                    cwd: "./dist/tmp/widgets",
                     src: [ "**/*" ]
                 } ]
             }
@@ -43,7 +56,7 @@ module.exports = function(grunt) {
             distDeployment: {
                 files: [ {
                     dest: "./dist/MxTestProject/deployment/web/widgets",
-                    cwd: "./dist/tmp/src/",
+                    cwd: "./dist/tmp/widgets/",
                     src: [ "**/*" ],
                     expand: true
                 } ]
@@ -63,7 +76,7 @@ module.exports = function(grunt) {
                 files: widgetNames.map(widgetName => {
                     return {
                         append: `\n\n//# sourceURL=${widgetName}.webmodeler.js\n`,
-                        input: `dist/tmp/src/${widgetName}/${widgetName}.webmodeler.js`
+                        input: `dist/tmp/widgets/${widgetName}.webmodeler.js`
                     };
                 })
             }
@@ -79,7 +92,8 @@ module.exports = function(grunt) {
                 "./dist/" + pkg.version + "/" + pkg.widgetName + "/*",
                 "./dist/tmp/**/*",
                 "./dist/MxTestProject/deployment/web/widgets/" + pkg.widgetName + "/*",
-                "./dist/MxTestProject/widgets/" + pkg.widgetName + ".mpk"
+                "./dist/MxTestProject/widgets/" + pkg.widgetName + ".mpk",
+                "./dist/wdio/**/*"
             ]
         },
 
@@ -105,7 +119,7 @@ module.exports = function(grunt) {
     grunt.registerTask(
         "release",
         "Compiles all the assets and copies the files to the dist directory. Minified without source mapping",
-        [ "checkDependencies", "clean:build", "webpack:release", "file_append", "compress:dist", "copy" ]
+        [ "checkDependencies", "clean:build", "webpack:release", "file_append", "compress:dist", "copy:mpk" ]
     );
     grunt.registerTask("build", [ "clean build" ]);
 };

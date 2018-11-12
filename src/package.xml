@@ -2,12 +2,12 @@
 <package xmlns="http://www.mendix.com/package/1.0/">
     <clientModule name="Dropdown" version="1.0.0" xmlns="http://www.mendix.com/clientModule/1.0/">
         <widgetFiles>
-            <widgetFile path="DropdownReference/DropdownReference.xml"/>
-            <widgetFile path="DropdownReferenceSet/DropdownReferenceSet.xml"/>
+            <widgetFile path="DropdownReference.xml"/>
+            <widgetFile path="DropdownReferenceSet.xml"/>
         </widgetFiles>
         <files>
-            <file path="com/mendix/widget/custom/dropdown/DropdownReference"/>
-            <file path="com/mendix/widget/custom/dropdown/DropdownReferenceSet"/>
+            <file path="com/mendix/widget/custom/DropdownReference"/>
+            <file path="com/mendix/widget/custom/DropdownReferenceSet"/>
         </files>
     </clientModule>
 </package>

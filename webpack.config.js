@@ -1,9 +1,10 @@
 const webpack = require("webpack");
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const widgetName = require("./package").widgetName.toLowerCase();
+const mxHost = process.env.npm_package_config_mendixHost || "http://localhost:8080";
+const developmentPort = process.env.npm_package_config_developmentPort || "3000";
 
 const widgetConfig = {
     entry: {
@@ -12,9 +13,36 @@ const widgetConfig = {
     },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
-        filename: `src/com/mendix/widget/custom/${widgetName}/[name].js`,
-        chunkFilename: `src/com/mendix/widget/custom/${widgetName}[id].js`,
-        libraryTarget: "umd"
+        filename: "widgets/com/mendix/widget/custom/dropdown/[name].js",
+        libraryTarget: "umd",
+        publicPath: "/"
+    },
+    devServer: {
+        port: developmentPort,
+        proxy: [ {
+            context: [ "**",
+                `!/widgets/com/mendix/widget/custom/dropdown/DropdownReference.js`,
+                `!/widgets/com/mendix/widget/custom/dropdown/DropdownReferenceSet.js`
+            ],
+            target: mxHost,
+            ws: true,
+            onError: function(err, req, res) {
+                if (res) {
+                    res.writeHead(500, {
+                        "Content-Type": "text/plain"
+                    });
+                    if (err.code === "ECONNREFUSED") {
+                        res.end("Please make sure that the Mendix server is running at " + mxHost
+                            + " or change the configuration \n "
+                            + "> npm config set google-maps:mendixhost http://host:port");
+                    } else {
+                        res.end("Error connecting to Mendix server"
+                        + "\n " + JSON.stringify(err, null, 2));
+                    }
+                }
+            }
+        } ],
+        stats: "errors-only"
     },
     resolve: {
         extensions: [ ".ts", ".js" ],
@@ -24,26 +52,33 @@ const widgetConfig = {
     },
     module: {
         rules: [
-            { test: /\.ts$/, loader: "ts-loader" },
-            { test: /\.css$/, loader: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: "css-loader"
-            }) },
-            { test: /\.scss$/, loader: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: [
-                    { loader: "css-loader" },
-                    { loader: "sass-loader" }
-                ]
-            }) }
+            {
+                test: /\.ts$/,
+                use: {
+                    loader: "ts-loader",
+                    options: {
+                        transpileOnly: true
+                    }
+                }
+            },
+            { test: /\.(css|scss)$/, use: [
+                "style-loader", "css-loader", "sass-loader"
+            ] },
         ]
     },
     mode: "development",
-    devtool: "source-map",
-    externals: [ "react", "react-dom" ],
+    devtool: "eval",
+    externals: [ "mendix/lang", "react", "react-dom" ],
     plugins: [
-        new CopyWebpackPlugin([ { from: "src/**/*.xml"} , { from: "src/**/*.js" }], { copyUnmodified: true }),
-        new ExtractTextPlugin({ filename: `./src/com/mendix/widget/custom/${widgetName}/ui/[name].css` }),
+        new ForkTsCheckerWebpackPlugin(),
+        new CopyWebpackPlugin(
+            [ {
+                from: "src/**/*.xml",
+                toType: "template",
+                to: "widgets/[name].[ext]"
+            } ],
+            { copyUnmodified: true }
+        ),
         new webpack.LoaderOptionsPlugin({ debug: true })
     ]
 };
@@ -55,17 +90,17 @@ const previewConfig = {
     },
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
-        filename: `src/[name]/[name].webmodeler.js`,
+        filename: "widgets/[name].webmodeler.js",
         libraryTarget: "commonjs"
     },
     resolve: {
-        extensions: [ ".ts", ".js" ]
+        extensions: [ ".ts", ".js" ],
     },
     module: {
         rules: [
             { test: /\.ts$/, use: "ts-loader" },
             { test: /\.scss$/, use: [ "raw-loader", "sass-loader" ]},
-            { test: /\.css$/, use: "css-loader" },
+            { test: /\.css$/, loader: "raw-loader" }
         ]
     },
     mode: "development",

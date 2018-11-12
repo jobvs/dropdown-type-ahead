@@ -1,5 +1,6 @@
 import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
+import { hot } from "react-hot-loader";
 
 import { AttributeType, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
@@ -36,7 +37,7 @@ export interface ContainerState {
     loaded: boolean;
 }
 
-export default class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerState> {
+class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
         options: [],
         selected: [],
@@ -253,3 +254,5 @@ export default class DropdownReferenceSetContainer extends Component<ContainerPr
         }
     }
 }
+
+export default hot(module)(DropdownReferenceSetContainer);
