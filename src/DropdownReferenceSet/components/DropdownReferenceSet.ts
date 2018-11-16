@@ -49,6 +49,23 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             : this.renderSelector();
     }
 
+    componentDidMount() {
+        const scrollContainer = document.querySelector(".region-content .mx-scrollcontainer-wrapper");
+        if (scrollContainer) {
+            const dropdown = document.getElementsByClassName("Select-menu-outer");
+            scrollContainer.addEventListener("scroll", () => {
+                // document.querySelectorAll(".Select.is-focused")[0]
+                // ? document.querySelectorAll(".Select.is-focused")[0].classList.remove("Select", "is-open", "is-focused")
+                // : window.logger.warn("Dropdown not available");
+                dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
+                const activeElement = document.activeElement;
+                if (activeElement) {
+                    (activeElement as any).blur();
+                }
+            });
+        }
+    }
+
     private renderSelector() {
         const commonProps = {
             clearable: this.props.isClearable,
@@ -63,7 +80,8 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
         if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
             return createElement("div", {
-                className: classNames("widget-dropdown-reference-set")
+                className: classNames("widget-dropdown-reference-set"),
+                onClick: this.setDropdownSize
             },
                 this.props.selectType === "normal" ?
                     this.props.isReadOnly ?
@@ -92,6 +110,20 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             return createElement("p", { className: classNames("form-control-static", "read-only-text") },
                 this.processOptions()
             );
+        }
+    }
+
+    private setDropdownSize = () => {
+        const dropdown = document.getElementsByClassName("Select-menu-outer");
+        if ((dropdown[0] as HTMLElement).style.visibility !== "visible") {
+            const dropdownDimensions = dropdown[0].getBoundingClientRect();
+            if (dropdown && dropdown.length && dropdownDimensions) {
+                (dropdown[0] as HTMLElement).style.width = dropdownDimensions.width - .08 + "px";
+                (dropdown[0] as HTMLElement).style.left = dropdownDimensions.left + "px";
+                (dropdown[0] as HTMLElement).style.top = dropdownDimensions.top + "px";
+                (dropdown[0] as HTMLElement).style.visibility = "visible";
+                (dropdown[0] as HTMLElement).style.position = "fixed";
+            }
         }
     }
 
