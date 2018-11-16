@@ -36,8 +36,8 @@ export class preview extends Component<ContainerProps, {}> {
             loadingText: this.props.loadingText,
             minimumCharacter: this.props.minimumCharacter,
             showLabel: this.props.showLabel,
-            styleObject: parseStyle(this.props.style),
-            loaded: true
+            styleObject: parseStyle(this.props.style)
+            // loaded: true
         });
     }
 
@@ -79,9 +79,9 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
         visibilityMap.labelCaption = true;
     }
 
-    if (valueMap.selectType !== "asynchronous") {
-        visibilityMap.searchAttribute = false;
-    }
+    // if (valueMap.selectType !== "asynchronous") {
+    //     visibilityMap.searchAttribute = false;
+    // }
 
     return visibilityMap;
 }

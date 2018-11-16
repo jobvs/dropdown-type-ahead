@@ -27,14 +27,14 @@ const widgetConfig = {
             target: mxHost,
             ws: true,
             onError: function(err, req, res) {
-                if (res) {
+                if (res && res.writeHead) {
                     res.writeHead(500, {
                         "Content-Type": "text/plain"
                     });
                     if (err.code === "ECONNREFUSED") {
                         res.end("Please make sure that the Mendix server is running at " + mxHost
                             + " or change the configuration \n "
-                            + "> npm config set google-maps:mendixhost http://host:port");
+                            + "> npm config set " + packageName + ":mendixhost http://host:port");
                     } else {
                         res.end("Error connecting to Mendix server"
                         + "\n " + JSON.stringify(err, null, 2));

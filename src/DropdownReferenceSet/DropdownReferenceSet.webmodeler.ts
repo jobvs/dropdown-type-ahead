@@ -34,7 +34,6 @@ export class preview extends Component<ContainerProps, {}> {
             selectedValue,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style),
-            loaded: true,
             searchText: this.props.searchText,
             loadingText: this.props.loadingText,
             minimumCharacter: this.props.minimumCharacter

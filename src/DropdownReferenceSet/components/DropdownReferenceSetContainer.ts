@@ -32,16 +32,16 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceSetProps 
 }
 
 export interface ContainerState {
+    isClearable: boolean;
     options: ReferenceOption[];
     selected: any;
-    loaded: boolean;
 }
 
 class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
+        isClearable: this.props.isClearable ? true : false,
         options: [],
-        selected: [],
-        loaded: true
+        selected: []
     };
 
     private subscriptionHandles: number[] = [];
@@ -59,7 +59,6 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
-            loaded: !this.state.loaded,
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -78,12 +77,10 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             const selected = newProps.mxObject.get(this.association) as string;
             this.getSelectedValues(newProps);
             this.resetSubscriptions(newProps.mxObject);
-            if (this.props.selectType === "normal") {
-                this.retrieveOptions(newProps);
-            }
-            this.setState({ selected, loaded: false });
+            this.retrieveOptions(newProps);
+            this.setState({ selected });
         } else {
-            this.setState({ selected: [] , loaded: false });
+            this.setState({ selected: [] });
         }
     }
 
@@ -163,7 +160,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
     }
 
     private getSelectedValues = (props: ContainerProps) => {
-        new Promise((resolve) => props.mxObject.fetch(props.entityPath, resolve))
+        new Promise(resolve => props.mxObject.fetch(props.entityPath, resolve))
         .then((values: any) => {
             if (values) {
                 const newSelectedObject = values.map((mxObject: mendix.lib.MxObject) => {
@@ -174,6 +171,14 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
                 });
 
                 this.setState({ selected: newSelectedObject });
+            } else {
+                this.setState({
+                    isClearable: false,
+                    selected: {
+                        value: "",
+                        label: ""
+                    }
+                });
             }
         });
     }
@@ -234,13 +239,11 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             };
         });
 
-        this.setState({ options, loaded: false });
+        this.setState({ options });
     }
 
     private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
-        if (!this.props.mxObject) {
-            return Promise.resolve({ options: [] });
-        } else {
+        if (this.props.mxObject) {
             this.props.mxObject.set(this.props.searchAttribute, input);
             if (input.length >= this.props.minimumCharacter) {
                 this.retrieveOptions(this.props);
@@ -249,9 +252,9 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             } else {
                 this.getSelectedValues(this.props);
 
-                return Promise.resolve({ options: this.state.selected ? this.state.selected : undefined });
+                return Promise.resolve({ options: [] });
             }
-        }
+        } else { return Promise.resolve({ options: [] }); }
     }
 }
 

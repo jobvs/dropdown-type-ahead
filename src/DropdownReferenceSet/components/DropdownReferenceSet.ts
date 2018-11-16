@@ -14,7 +14,6 @@ export interface DropdownReferenceSetProps {
     data?: ReferenceOption[];
     asyncData?: any;
     labelCaption: string;
-    loaded: boolean;
     showLabel: boolean;
     emptyOptionCaption: string;
     isClearable: boolean;
@@ -36,42 +35,30 @@ export interface ReferenceOption {
     label?: string;
 }
 
-interface DropdownReferenceSetState {
-    showOptions: boolean;
-    selectedData: {}[];
-}
-
 export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
-    readonly state: DropdownReferenceSetState = {
-        showOptions: false,
-        selectedData: []
-    };
 
     render() {
-        return this.props.loaded ?
-            this.props.showLabel ?
-                createElement(Label, {
-                    className: this.props.className,
-                    label: this.props.labelCaption,
-                    orientation: this.props.labelOrientation,
-                    style: this.props.styleObject,
-                    weight: this.props.labelWidth
-                }, this.renderSelector()) :
-                this.renderSelector() :
-            createElement("div", { className: "loading-data" });
+        return this.props.showLabel
+            ? createElement(Label, {
+                className: this.props.className,
+                label: this.props.labelCaption,
+                orientation: this.props.labelOrientation,
+                style: this.props.styleObject,
+                weight: this.props.labelWidth
+            }, this.renderSelector())
+            : this.renderSelector();
     }
 
     private renderSelector() {
-        const commonProps: object = {
+        const commonProps = {
             clearable: this.props.isClearable,
+            closeOnSelect: false,
             multi: true,
             removeSelected: true,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
             searchPromptText: this.props.searchText,
-            onInputChange: (input: string) => this.onInputChange(input),
-            clearValueText: "",
-            ...this.createSelectorProp() as object
+            ...this.createSelectorProp()
         };
 
         if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
@@ -88,66 +75,53 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                             value: this.processOptions()
                         }) :
                         createElement(Select, {
-                            options: this.state.showOptions ? this.props.data : this.state.selectedData,
+                            options: this.props.data,
                             noResultsText: "",
                             ...commonProps
                         }) :
                     createElement(Async, {
-                        valueKey: "value",
-                        labelKey: "label",
-                        autoload: false,
-                        autoFocus: true,
-                        loadingPlaceholder: this.props.loadingText,
-                        loadOptions: (input: string) => this.props.asyncData(input),
+                        searchPromptText: this.props.minimumCharacter > 0
+                            ? `Type more than ${this.props.minimumCharacter} characters to search`
+                            : "Type to search",
+                        loadOptions: this.props.asyncData,
                         ...commonProps
                     }),
-                createElement(Alert, {
-                    className: "widget-dropdown-reference-set-alert"
-                }, this.props.alertMessage)
+                createElement(Alert, { className: "widget-dropdown-reference-set-alert" }, this.props.alertMessage)
             );
         } else {
             return createElement("p", { className: classNames("form-control-static", "read-only-text") },
-                this.processOptions());
+                this.processOptions()
+            );
         }
-
     }
 
-    private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
+    private createSelectorProp(): { placeholder?: string, value?: any } {
         if (this.props.selectedValue.length > 0) {
             return { value: this.props.selectedValue };
         }
 
-        return { value: null, placeholder: this.props.emptyOptionCaption };
+        return { placeholder: this.props.emptyOptionCaption };
     }
 
     private processOptions() {
         let selectedLabel = "";
-        let formatedOptions = [];
+        let formatedOptions = [] as any;
 
         if (this.props.selectedValue.length > 0) {
-            formatedOptions = this.props.selectedValue.map((selectedGuid: string) => {
-                if (this.props.data) {
-                    this.props.data.forEach((dataObject: any) => {
+            formatedOptions = this.props.selectedValue.map((selectedGuid: any) => {
+                if (this.props.selectedValue) {
+                    this.props.selectedValue.forEach((dataObject: any) => {
                         const value = dataObject.value;
-                        if (value === selectedGuid) {
+                        if (value === selectedGuid.value) {
                             selectedLabel = dataObject.label;
                         }
                     });
                 }
 
-                return selectedLabel || undefined;
+                return selectedLabel;
             });
         }
 
         return formatedOptions.join(", ");
-    }
-
-    private onInputChange = (newValue: string) => {
-        let showOptions = false;
-        if (newValue.length >= this.props.minimumCharacter) {
-            showOptions = true;
-        }
-
-        this.setState({ showOptions, selectedData: this.props.selectedValue });
     }
 }

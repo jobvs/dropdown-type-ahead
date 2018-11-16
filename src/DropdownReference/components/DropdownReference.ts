@@ -1,6 +1,6 @@
 import { Component, createElement } from "react";
 import * as classNames from "classnames";
-import Select , { Async } from "react-select";
+import Select, { Async, LoadOptionsHandler } from "react-select";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
@@ -11,25 +11,24 @@ import "../../SharedResources/ui/Dropdown.scss";
 export interface DropdownReferenceProps {
     styleObject?: object;
     labelWidth: number;
-    data?: ReferenceOption[];
-    asyncData?: any;
+    data: ReferenceOption[];
+    asyncData: LoadOptionsHandler<{}>;
     value?: string;
     labelCaption: string;
-    loaded: boolean;
     showLabel: boolean;
     emptyOptionCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
-    selectType: "normal" | "asynchronous";
-    selectedValue: ReferenceOption | null;
-    handleOnchange?: (selectedOption: ReferenceOption | any) => void;
+    selectedValue: ReferenceOption;
     className?: string;
-    readOnlyStyle: "control" | "text";
-    labelOrientation: "horizontal" | "vertical";
     alertMessage: string;
     searchText: string;
     loadingText: string;
     minimumCharacter: number;
+    labelOrientation: "horizontal" | "vertical";
+    readOnlyStyle: "control" | "text";
+    selectType: "normal" | "asynchronous";
+    handleOnchange?: (selectedOption: any) => void;
 }
 
 export interface ReferenceOption {
@@ -37,79 +36,57 @@ export interface ReferenceOption {
     label?: string;
 }
 
-interface DropdownReferenceState {
-    showOptions: boolean;
-}
-
-export class DropdownReference extends Component<DropdownReferenceProps, DropdownReferenceState> {
-    readonly state: DropdownReferenceState = {
-        showOptions: false
-    };
+export class DropdownReference extends Component<DropdownReferenceProps> {
 
     render() {
-        return this.props.loaded ?
-            this.props.showLabel ?
-                createElement(Label, {
-                    className: this.props.className,
-                    label: this.props.labelCaption,
-                    orientation: this.props.labelOrientation,
-                    style: this.props.styleObject,
-                    weight: this.props.labelWidth
-                }, this.renderSelector()) :
-                this.renderSelector() :
-            createElement("div", { className: "loading-data" });
+        return this.props.showLabel
+            ? createElement(Label, {
+                className: this.props.className,
+                label: this.props.labelCaption,
+                orientation: this.props.labelOrientation,
+                style: this.props.styleObject,
+                weight: this.props.labelWidth
+            }, this.renderSelector())
+            : this.renderSelector();
     }
 
     private renderSelector() {
-        const commonProps: object = {
+        const commonProps = {
             clearable: this.props.isClearable,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
-            onInputChange: (input: string) => this.onInputChange(input),
-            clearValueText: "",
-            ...this.createSelectorProp() as object
+            ...this.createSelectorProp()
         };
 
         if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
-                return createElement("div", {
-                    className: "widget-dropdown-reference"
-                },
-                this.props.selectType === "normal" ?
-                    createElement(Select, {
-                        options: this.state.showOptions ? this.props.data : [ this.props.selectedValue ? this.props.selectedValue : {} ],
-                        noResultsText: "",
-                        ...commonProps }) :
-                    createElement(Async, {
-                            valueKey : "value",
-                            labelKey : "label",
-                            autoFocus: true,
-                            autoload: false,
-                            loadOptions: (input: string) => this.props.asyncData(input),
-                            ...commonProps }),
-                    createElement(Alert, {
-                        className: "widget-dropdown-reference-alert"
-                    }, this.props.alertMessage)
-                );
+            return createElement("div", {
+                className: "widget-dropdown-reference"
+            },
+                this.props.selectType === "normal"
+                    ? createElement(Select, {
+                        options: this.props.data,
+                        ...commonProps
+                    })
+                    : createElement(Async, {
+                        searchPromptText: this.props.minimumCharacter > 0
+                            ? `Type more than ${this.props.minimumCharacter} characters to search`
+                            : "Type to search",
+                        loadOptions: this.props.asyncData,
+                        ...commonProps
+                    }),
+                createElement(Alert, { className: "widget-dropdown-reference-alert" }, this.props.alertMessage)
+            );
         } else {
             return createElement("p", { className: classNames("form-control-static", "read-only-text") },
                 this.props.selectedValue ? this.props.selectedValue.label : "");
         }
     }
 
-    private createSelectorProp(): { placeholder?: string, value?: ReferenceOption | null } {
+    private createSelectorProp(): { placeholder?: string, value?: object } {
         if (this.props.selectedValue) {
             return { value: this.props.selectedValue };
         }
 
-        return { value: null, placeholder: this.props.emptyOptionCaption };
-    }
-
-    private onInputChange = (newValue: string) => {
-        let showOptions = false;
-        if (newValue.length >= this.props.minimumCharacter) {
-            showOptions = true;
-        }
-
-        this.setState({ showOptions });
+        return { placeholder: this.props.emptyOptionCaption };
     }
 }
