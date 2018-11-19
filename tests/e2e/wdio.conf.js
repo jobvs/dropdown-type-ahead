@@ -15,15 +15,15 @@ exports.config = {
     bail: 0,
     screenshotPath: "dist/wdio/",
     baseUrl: debug ? "http://localhost:8080/" : "https://dropdowntypeahead.mxapps.io/",
-    waitforTimeout: 36000,
-    connectionRetryTimeout: 200000,
-    connectionRetryCount: 2,
+    waitforTimeout: 40000,
+    connectionRetryTimeout: 90000,
+    connectionRetryCount: 0,
     services: [ "selenium-standalone" ],
     framework: "jasmine",
-    reporters: [ "dot", "spec" ],
+    reporters: [ "spec" ],
     execArgv: debug ? [ "--inspect" ] : undefined,
     jasmineNodeOpts: {
-        defaultTimeoutInterval: debug ? (60 * 60 * 1000) : (100 * 1000),
+        defaultTimeoutInterval: debug ? (60 * 60 * 1000) : (30 * 1000),
         expectationResultHandler: function(passed, assertion) {
             if (passed) {
                 return;

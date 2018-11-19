@@ -26,7 +26,7 @@ export class preview extends Component<ContainerProps, {}> {
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             data: [ selectedValue ],
-            asyncData: (input: string) => this.setAsyncSampleData(input),
+            asyncData: this.setAsyncSampleData,
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,

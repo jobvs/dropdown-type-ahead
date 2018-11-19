@@ -26,7 +26,7 @@ export class preview extends Component<ContainerProps, {}> {
             selectType: this.props.selectType,
             isReadOnly: this.isReadOnly(),
             data: [ selectedValue ],
-            asyncData: (input: string) => this.setAsyncSampleData(input),
+            asyncData: this.setAsyncSampleData,
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
@@ -37,7 +37,6 @@ export class preview extends Component<ContainerProps, {}> {
             minimumCharacter: this.props.minimumCharacter,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
-            // loaded: true
         });
     }
 
@@ -79,9 +78,9 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
         visibilityMap.labelCaption = true;
     }
 
-    // if (valueMap.selectType !== "asynchronous") {
-    //     visibilityMap.searchAttribute = false;
-    // }
+    if (valueMap.selectType !== "asynchronous") {
+        visibilityMap.searchAttribute = false;
+    }
 
     return visibilityMap;
 }

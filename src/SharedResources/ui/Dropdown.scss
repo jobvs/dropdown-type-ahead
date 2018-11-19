@@ -1,4 +1,4 @@
-.widget-dropdown-reference {
+.widget-dropdown-reference, .widget-dropdown-reference-set {
   overflow: hidden;
 
   .Select.is-focused:not(.is-open) > .Select-control {
@@ -12,31 +12,9 @@
   }
 
   .Select-menu-outer {
-    visibility: hidden;
-    top: auto;
     border-color: #0595DB;
     box-shadow: none;
-  }
-}
-
-.widget-dropdown-reference-set {
-  overflow: hidden;
-
-  .Select.is-focused:not(.is-open) > .Select-control {
-    border-color: #0595DB;
-    box-shadow: unset;
-  }
-
-  .Select.Select-control {
-    border-color: #0595DB;
-    box-shadow: unset;
-    background: #fff;
-  }
-
-  .Select-menu-outer {
-    visibility: hidden;
     top: auto;
-    border-color:  #0595DB;
-    box-shadow: none;
+    visibility: hidden;
   }
 }

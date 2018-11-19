@@ -16,7 +16,7 @@ webpackConfigRelease[0].plugins.push(new ExtractTextPlugin({
 }));
 
 webpackConfigRelease[0].module.rules[1] = {
-    test: /\.css$/, loader: ExtractTextPlugin.extract({
+    test: /\.s?css$/, loader: ExtractTextPlugin.extract({
         fallback: "style-loader",
         use: [ "css-loader", "sass-loader" ]
     })

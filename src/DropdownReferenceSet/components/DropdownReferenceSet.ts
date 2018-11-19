@@ -20,7 +20,7 @@ export interface DropdownReferenceSetProps {
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
     selectedValue: any;
-    handleOnchange?: (selectedOption: ReferenceOption | any) => void;
+    handleOnchange?: (selectedOption: any) => void;
     className?: string;
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
@@ -54,9 +54,6 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
         if (scrollContainer) {
             const dropdown = document.getElementsByClassName("Select-menu-outer");
             scrollContainer.addEventListener("scroll", () => {
-                // document.querySelectorAll(".Select.is-focused")[0]
-                // ? document.querySelectorAll(".Select.is-focused")[0].classList.remove("Select", "is-open", "is-focused")
-                // : window.logger.warn("Dropdown not available");
                 dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
                 const activeElement = document.activeElement;
                 if (activeElement) {

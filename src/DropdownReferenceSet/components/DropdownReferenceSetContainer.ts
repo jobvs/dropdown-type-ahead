@@ -46,7 +46,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
 
     private subscriptionHandles: number[] = [];
     private association: string = this.props.entityPath.split("/")[0];
-    private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
+    private readonly handleOnClick: (selectedOption: ReferenceOption) => void = this.onChange.bind(this);
 
     render() {
         return createElement(DropdownReferenceSet, {

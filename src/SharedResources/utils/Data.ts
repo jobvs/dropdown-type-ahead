@@ -125,7 +125,7 @@ export const fetchByMicroflow = (actionname: string, guid: string): Promise<MxOb
     new Promise((resolve, reject) => {
         const errorMessage = `An error occurred while retrieving data by microflow (${actionname}): `;
         window.mx.ui.action(actionname, {
-            callback: (result) => resolve(result as any),
+            callback: result => resolve(result as any),
             error: error => reject(`${errorMessage} ${error.message}`),
             params: { applyto: "selection", guids: [ guid ] }
         });
@@ -136,7 +136,7 @@ export const fetchByNanoflow = (actionname: Nanoflow, mxform: mxui.lib.form._For
         const errorMessage = `An error occurred while retrieving data by nanoflow: `;
         const context = new mendix.lib.MxContext();
         window.mx.data.callNanoflow({
-            callback:  (result) => resolve(result as any),
+            callback: result => resolve(result as any),
             context,
             error: error => reject(`${errorMessage} ${error.message}`),
             nanoflow: actionname,
@@ -155,7 +155,7 @@ const getReferences = (attributePaths: string[]): ReferencesSpec => {
 
 export const createSortProps = (sortAttributes: AttributeType[]) => {
     const combined: any = [];
-    sortAttributes.map((optionObject) => {
+    sortAttributes.map(optionObject => {
         const { name, sort } = optionObject;
         combined.push([ name, sort ]);
     });
