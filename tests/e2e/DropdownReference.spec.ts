@@ -2,8 +2,7 @@ import homePage from "./pages/home.page";
 
 const defaultOption = "Select city";
 
-xdescribe("Dropdown reference ", () => {
-
+describe("Dropdown reference ", () => {
     it("should populate multiple values in a dropdown list", () => {
         homePage.open();
         homePage.dropDownSelector.waitForExist();
