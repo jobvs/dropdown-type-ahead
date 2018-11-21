@@ -2,19 +2,19 @@ import homePage from "./pages/home.page";
 
 const defaultOption = "Select city";
 
-describe("Dropdown reference ", () => {
+xdescribe("Dropdown reference ", () => {
     it("should populate multiple values in a dropdown list", () => {
         homePage.open();
         homePage.dropDownSelector.waitForExist();
 
         homePage.dropDownSelector.click();
         homePage.dropDownOptions.waitForExist();
-
         browser.waitUntil(() => {
+            browser.debug();
             const dropDownOptions: WebdriverIO.Element[] = homePage.dropDownOptions.value;
 
             return dropDownOptions.length > 1;
-        }, 5000, "expected more 1 option to be populated");
+        });
     });
 
     it("should select an option from the drop-down menu", () => {

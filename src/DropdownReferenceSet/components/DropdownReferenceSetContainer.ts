@@ -104,17 +104,17 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
 
         if (mxObject) {
             this.subscriptionHandles.push(window.mx.data.subscribe({
-                callback: this.handleSubscriptions,
+                callback: () => this.getSelectedValues(this.props),
                 guid: mxObject.getGuid()
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
                 attr: this.association,
-                callback: this.handleSubscriptions,
+                callback: () => this.getSelectedValues(this.props),
                 guid: mxObject.getGuid()
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
                 attr: this.props.attribute,
-                callback: this.handleSubscriptions,
+                callback: () => this.getSelectedValues(this.props),
                 guid: mxObject.get(this.association) as string
             }));
             this.subscriptionHandles.push(window.mx.data.subscribe({
@@ -125,10 +125,6 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
                 }
             }));
         }
-    }
-
-    private handleSubscriptions = () => {
-        this.getSelectedValues(this.props);
     }
 
     private onChange(recentSelection: ReferenceOption[] | any) {
@@ -169,9 +165,10 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
                         label: mx.parser.formatAttribute(mxObject, props.attribute)
                     };
                 });
-
-                this.setState({ selected: newSelectedObject });
-            } else {
+                this.setState({
+                    selected: newSelectedObject
+                });
+            } else if (this.props.mxObject.get(this.association) === "") {
                 this.setState({
                     isClearable: false,
                     selected: {

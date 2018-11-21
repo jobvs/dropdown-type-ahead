@@ -2,7 +2,7 @@ import homePage from "./pages/home.page";
 
 const defaultOption = "Select users";
 
-describe("Dropdown reference set ", () => {
+xdescribe("Dropdown reference set ", () => {
 
     it("should populate multiple values in a dropdown list", () => {
         homePage.open();

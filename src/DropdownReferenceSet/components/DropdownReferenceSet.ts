@@ -1,5 +1,5 @@
 import { Component, createElement } from "react";
-import Select, { Async } from "react-select";
+import Select, { Async, LoadOptionsHandler } from "react-select";
 import * as classNames from "classnames";
 
 import { Alert } from "../../SharedResources/components/Alert";
@@ -12,7 +12,7 @@ export interface DropdownReferenceSetProps {
     styleObject?: object;
     labelWidth: number;
     data?: ReferenceOption[];
-    asyncData?: any;
+    asyncData: LoadOptionsHandler<{}>;
     labelCaption: string;
     showLabel: boolean;
     emptyOptionCaption: string;
@@ -66,12 +66,10 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
     private renderSelector() {
         const commonProps = {
             clearable: this.props.isClearable,
-            closeOnSelect: false,
             multi: true,
             removeSelected: true,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
-            searchPromptText: this.props.searchText,
             ...this.createSelectorProp()
         };
 
@@ -80,21 +78,21 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                 className: classNames("widget-dropdown-reference-set"),
                 onClick: this.setDropdownSize
             },
-                this.props.selectType === "normal" ?
-                    this.props.isReadOnly ?
-                        createElement("input", {
+                this.props.selectType === "normal"
+                    ? this.props.isReadOnly
+                        ? createElement("input", {
                             type: "text",
                             readonly: "readonly",
                             className: "form-control",
                             disabled: "disabled",
                             value: this.processOptions()
-                        }) :
-                        createElement(Select, {
+                        })
+                        : createElement(Select, {
                             options: this.props.data,
                             noResultsText: "",
                             ...commonProps
-                        }) :
-                    createElement(Async, {
+                        })
+                    : createElement(Async, {
                         searchPromptText: this.props.minimumCharacter > 0
                             ? `Type more than ${this.props.minimumCharacter} characters to search`
                             : "Type to search",
@@ -112,7 +110,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
-        if ((dropdown[0] as HTMLElement).style.visibility !== "visible") {
+        if (dropdown[0] && (dropdown[0] as HTMLElement).style.visibility !== "visible") {
             const dropdownDimensions = dropdown[0].getBoundingClientRect();
             if (dropdown && dropdown.length && dropdownDimensions) {
                 (dropdown[0] as HTMLElement).style.width = dropdownDimensions.width - .08 + "px";
