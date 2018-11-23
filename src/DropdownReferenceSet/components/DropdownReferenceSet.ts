@@ -36,7 +36,6 @@ export interface ReferenceOption {
 }
 
 export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
-
     render() {
         return this.props.showLabel
             ? createElement(Label, {
@@ -57,7 +56,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                 dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
                 const activeElement = document.activeElement;
                 if (activeElement) {
-                    (activeElement as any).blur();
+                    (activeElement as HTMLElement).blur();
                 }
             });
         }

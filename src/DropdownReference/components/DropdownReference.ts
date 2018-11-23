@@ -98,7 +98,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
 
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
-        if ((dropdown[0] as HTMLElement).style.visibility !== "visible") {
+        if (dropdown[0] && (dropdown[0] as HTMLElement).style.visibility !== "visible") {
             const dropdownDimensions = dropdown[0].getBoundingClientRect();
             if (dropdown && dropdown.length && dropdownDimensions) {
                 (dropdown[0] as HTMLElement).style.width = dropdownDimensions.width - .08 + "px";
