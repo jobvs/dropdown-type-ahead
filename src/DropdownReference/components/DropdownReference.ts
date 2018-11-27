@@ -19,7 +19,7 @@ export interface DropdownReferenceProps {
     emptyOptionCaption: string;
     isClearable: boolean;
     isReadOnly: boolean;
-    selectedValue: ReferenceOption;
+    selectedValue: any;
     className?: string;
     alertMessage: string;
     searchText: string;
@@ -98,20 +98,21 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
 
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
-        if (dropdown[0] && (dropdown[0] as HTMLElement).style.visibility !== "visible") {
+        const dropdownElement = dropdown[0] as HTMLElement;
+        if (dropdownElement && dropdownElement.style.visibility !== "visible") {
             const dropdownDimensions = dropdown[0].getBoundingClientRect();
-            if (dropdown && dropdown.length && dropdownDimensions) {
-                (dropdown[0] as HTMLElement).style.width = dropdownDimensions.width - .08 + "px";
-                (dropdown[0] as HTMLElement).style.left = dropdownDimensions.left + "px";
-                (dropdown[0] as HTMLElement).style.top = dropdownDimensions.top + "px";
-                (dropdown[0] as HTMLElement).style.visibility = "visible";
-                (dropdown[0] as HTMLElement).style.position = "fixed";
+            if (dropdownElement && dropdownDimensions) {
+                dropdownElement.style.width = dropdownDimensions.width - .08 + "px";
+                dropdownElement.style.left = dropdownDimensions.left + "px";
+                dropdownElement.style.top = dropdownDimensions.top + "px";
+                dropdownElement.style.visibility = "visible";
+                dropdownElement.style.position = "fixed";
             }
         }
     }
 
     private createSelectorProp(): { placeholder?: string, value?: object } {
-        if (this.props.selectedValue) {
+        if (this.props.selectedValue && this.props.selectedValue.value) {
             return { value: this.props.selectedValue };
         }
 

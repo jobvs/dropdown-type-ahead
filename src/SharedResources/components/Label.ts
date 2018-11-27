@@ -1,4 +1,4 @@
-import { SFC, createElement } from "react";
+import { FunctionComponent, createElement } from "react";
 import * as classNames from "classnames";
 
 export interface LabelProps {
@@ -9,10 +9,10 @@ export interface LabelProps {
     orientation?: "horizontal" | "vertical";
 }
 
-export const Label: SFC<LabelProps> = ({ children, className, label, style, weight, orientation }) => {
+export const Label: FunctionComponent<LabelProps> = ({ children, className, label, style, weight, orientation }) => {
     weight = (weight > 11 || weight < 1) ? 3 : weight;
-    const labelWeight = orientation === "horizontal" ? `col-sm-${weight}` : "";
-    const childrenWeight = orientation === "horizontal" ? `col-sm-${12 - weight}` : "";
+    const labelWeight = orientation === "horizontal" ? `col-sm-${weight}` : "col-sm-1";
+    const childrenWeight = orientation === "horizontal" ? `col-sm-${12 - weight}` : "col-sm-12";
 
     return createElement("div", { className: classNames("form-group", className), style },
         createElement("label", { className: `control-label ${labelWeight}` }, label),

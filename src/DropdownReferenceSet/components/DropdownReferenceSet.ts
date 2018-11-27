@@ -64,11 +64,13 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private renderSelector() {
         const commonProps = {
+            autoload: false,
             clearable: this.props.isClearable,
             multi: true,
             removeSelected: true,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
+            onCloseResetsInput: false,
             ...this.createSelectorProp()
         };
 
@@ -92,6 +94,8 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                             ...commonProps
                         })
                     : createElement(Async, {
+                        autoload: false,
+                        onCloseResetsInput: false,
                         searchPromptText: this.props.minimumCharacter > 0
                             ? `Type more than ${this.props.minimumCharacter} characters to search`
                             : "Type to search",
@@ -109,19 +113,20 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
-        if (dropdown[0] && (dropdown[0] as HTMLElement).style.visibility !== "visible") {
-            const dropdownDimensions = dropdown[0].getBoundingClientRect();
-            if (dropdown && dropdown.length && dropdownDimensions) {
-                (dropdown[0] as HTMLElement).style.width = dropdownDimensions.width - .08 + "px";
-                (dropdown[0] as HTMLElement).style.left = dropdownDimensions.left + "px";
-                (dropdown[0] as HTMLElement).style.top = dropdownDimensions.top + "px";
-                (dropdown[0] as HTMLElement).style.visibility = "visible";
-                (dropdown[0] as HTMLElement).style.position = "fixed";
+        const dropdownElement = dropdown[0] as HTMLElement;
+        if (dropdownElement && dropdownElement.style.visibility !== "visible") {
+            const dropdownDimensions = dropdownElement.getBoundingClientRect();
+            if (dropdownElement && dropdownDimensions) {
+                dropdownElement.style.width = dropdownDimensions.width - .08 + "px";
+                dropdownElement.style.left = dropdownDimensions.left + "px";
+                dropdownElement.style.top = dropdownDimensions.top + "px";
+                dropdownElement.style.visibility = "visible";
+                dropdownElement.style.position = "fixed";
             }
         }
     }
 
-    private createSelectorProp(): { placeholder?: string, value?: any } {
+    private createSelectorProp(): { placeholder?: string, value?: object } {
         if (this.props.selectedValue.length > 0) {
             return { value: this.props.selectedValue };
         }

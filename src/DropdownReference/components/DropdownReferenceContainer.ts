@@ -242,7 +242,9 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
 
                 return Promise.resolve({ options: [] });
             }
-        } else { return Promise.resolve({ options: [] }); }
+        }
+
+        return Promise.resolve({ options: [] });
     }
 }
 

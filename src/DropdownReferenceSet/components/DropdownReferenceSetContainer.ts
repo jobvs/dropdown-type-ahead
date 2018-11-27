@@ -128,31 +128,26 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
     }
 
     private onChange(recentSelection: ReferenceOption[] | any) {
-        if (!this.props.mxObject) {
-            return;
-        }
+        if (this.props.mxObject) {
+            const selectedOptions: string[] = [];
 
-        const selectedOptions: string[] = [];
-        const previousSelection: string[] = [];
-
-        recentSelection.forEach((selection: ReferenceOption) => {
-            selectedOptions.push(selection.value as string);
-        });
-
-        if (this.state.selected.length > 0) {
-            this.state.selected.forEach((selection: ReferenceOption) => {
-                previousSelection.push(selection.value as string);
+            recentSelection.forEach((selection: ReferenceOption) => {
+                selectedOptions.push(selection.value as string);
             });
-            this.props.mxObject.removeReferences(this.association, previousSelection);
+
+            if (this.state.selected.length > 0) {
+                const previousSelection = this.state.selected.map((selection: ReferenceOption) => selection.value as string);
+                this.props.mxObject.removeReferences(this.association, previousSelection);
+            }
+
+            this.props.mxObject.addReferences(this.association, selectedOptions);
+
+            if (this.state.selected.length !== selectedOptions.length) {
+                this.executeOnChangeEvent();
+            }
+
+            this.setState({ selected: recentSelection });
         }
-
-        this.props.mxObject.addReferences(this.association, selectedOptions);
-
-        if (this.state.selected.length !== selectedOptions.length) {
-            this.executeOnChangeEvent();
-        }
-
-        this.setState({ selected: recentSelection });
     }
 
     private getSelectedValues = (props: ContainerProps) => {
@@ -251,7 +246,9 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
 
                 return Promise.resolve({ options: [] });
             }
-        } else { return Promise.resolve({ options: [] }); }
+        }
+
+        return Promise.resolve({ options: [] });
     }
 }
 
