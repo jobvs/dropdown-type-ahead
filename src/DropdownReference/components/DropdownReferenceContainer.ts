@@ -113,9 +113,9 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
     }
 
     private isReadOnly = (): boolean => {
-        const { editable, mxObject, readOnly, attribute } = this.props;
+        const { editable, mxObject, readOnly } = this.props;
 
-        return editable !== "default" || (!mxObject || readOnly || !!(attribute && mxObject.isReadonlyAttr(attribute)));
+        return editable !== "default" || !mxObject || readOnly;
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {

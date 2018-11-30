@@ -12,7 +12,7 @@ export interface DropdownReferenceProps {
     styleObject?: object;
     labelWidth: number;
     data: ReferenceOption[];
-    asyncData: LoadOptionsHandler<{}>;
+    asyncData?: LoadOptionsHandler<{}>;
     value?: string;
     labelCaption: string;
     showLabel: boolean;

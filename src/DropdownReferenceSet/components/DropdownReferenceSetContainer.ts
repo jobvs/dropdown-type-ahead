@@ -46,7 +46,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
 
     private subscriptionHandles: number[] = [];
     private association: string = this.props.entityPath.split("/")[0];
-    private readonly handleOnClick: (selectedOption: ReferenceOption) => void = this.onChange.bind(this);
+    private readonly handleOnClick: (selectedOption: ReferenceOption | any) => void = this.onChange.bind(this);
 
     render() {
         return createElement(DropdownReferenceSet, {
@@ -93,9 +93,9 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
     }
 
     private isReadOnly = (): boolean => {
-        const { editable, mxObject, readOnly, attribute } = this.props;
+        const { editable, mxObject, readOnly } = this.props;
 
-        return editable !== "default" || (!mxObject || readOnly || !(attribute && mxObject.isReadonlyAttr(attribute)));
+        return editable !== "default" || !mxObject || readOnly;
     }
 
     private resetSubscriptions(mxObject?: mendix.lib.MxObject) {
@@ -127,7 +127,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
         }
     }
 
-    private onChange(recentSelection: ReferenceOption[] | any) {
+    private onChange(recentSelection: ReferenceOption[]) {
         if (this.props.mxObject) {
             const selectedOptions: string[] = [];
 
