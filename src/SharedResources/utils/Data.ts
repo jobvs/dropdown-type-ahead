@@ -1,6 +1,5 @@
 
 type MxObject = mendix.lib.MxObject;
-type SortOrder = "asc" | "desc";
 
 import { AttributeType } from "./ContainerUtils";
 export interface FetchDataOptions {
@@ -9,10 +8,9 @@ export interface FetchDataOptions {
     guid: string;
     constraint?: string;
     sortAttributes: AttributeType[];
-    sortOrder?: SortOrder;
     attributes?: string[];
     microflow?: string;
-    nanoflow?: Nanoflow;
+    nanoflow?: mx.Nanoflow;
     mxform?: mxui.lib.form._FormBase;
 }
 
@@ -21,7 +19,6 @@ export interface FetchByXPathOptions {
     entity: string;
     constraint: string;
     sortAttributes: AttributeType[];
-    sortOrder?: SortOrder;
     attributes?: string[];
     references?: any;
 }
@@ -29,7 +26,7 @@ export interface FetchByXPathOptions {
 export interface ReferencesSpec {
     attributes?: string[];
     amount?: number;
-    sort?: Array<[ string, SortOrder ]>;
+    sort?: Array<[ string ]>;
     references?: {
         [ index: string ]: ReferencesSpec;
     };
@@ -37,11 +34,6 @@ export interface ReferencesSpec {
 
 export interface FetchedData {
     mxObjects?: mendix.lib.MxObject[];
-}
-
-export interface Nanoflow {
-    nanoflow: object[];
-    paramsSpec: { Progress: string };
 }
 
 const addPathReference = (references: ReferencesSpec, path: string): ReferencesSpec =>
@@ -72,7 +64,7 @@ const addPathReference = (references: ReferencesSpec, path: string): ReferencesS
 
 export const fetchData = (options: FetchDataOptions): Promise<mendix.lib.MxObject[]> =>
     new Promise<mendix.lib.MxObject[]>((resolve, reject) => {
-        const { guid, entity, sortAttributes, sortOrder } = options;
+        const { guid, entity, sortAttributes } = options;
         if (entity && guid) {
             if (options.source === "xpath") {
                 const references = getReferences(options.attributes || []);
@@ -82,8 +74,7 @@ export const fetchData = (options: FetchDataOptions): Promise<mendix.lib.MxObjec
                     entity,
                     guid,
                     references: references.references,
-                    sortAttributes,
-                    sortOrder
+                    sortAttributes
                 })
                     .then(mxObjects => resolve(mxObjects))
                     .catch(message => reject({ message }));
@@ -121,6 +112,16 @@ export const fetchByXPath = (options: FetchByXPathOptions): Promise<MxObject[]> 
     });
 });
 
+export const createSortProps = (sortAttributes: AttributeType[]) => {
+    const combined: any = [];
+    sortAttributes.map(optionObject => {
+        const { name, sort } = optionObject;
+        combined.push([ name, sort ]);
+    });
+
+    return combined;
+};
+
 export const fetchByMicroflow = (actionname: string, guid: string): Promise<MxObject[]> =>
     new Promise((resolve, reject) => {
         const errorMessage = `An error occurred while retrieving data by microflow (${actionname}): `;
@@ -131,7 +132,7 @@ export const fetchByMicroflow = (actionname: string, guid: string): Promise<MxOb
         });
     });
 
-export const fetchByNanoflow = (actionname: Nanoflow, mxform: mxui.lib.form._FormBase): Promise<MxObject[]> =>
+export const fetchByNanoflow = (actionname: mx.Nanoflow, mxform: mxui.lib.form._FormBase): Promise<MxObject[]> =>
     new Promise((resolve, reject) => {
         const errorMessage = `An error occurred while retrieving data by nanoflow: `;
         const context = new mendix.lib.MxContext();
@@ -151,14 +152,4 @@ const getReferences = (attributePaths: string[]): ReferencesSpec => {
     });
 
     return references;
-};
-
-export const createSortProps = (sortAttributes: AttributeType[]) => {
-    const combined: any = [];
-    sortAttributes.map(optionObject => {
-        const { name, sort } = optionObject;
-        combined.push([ name, sort ]);
-    });
-
-    return combined;
 };

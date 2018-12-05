@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget id="com.mendix.widget.custom.dropdown.DropdownReferenceSet" needsEntityContext="true" offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../../../../../xsd/widget.xsd">
     <name>Dropdown reference set</name>
-    <description/>
+    <description>An input widget used to display and edit associations for reference sets</description>
     <icon></icon>
     <properties>
         <property key="entityPath" type="entity" isPath="yes" pathType="referenceSet">
@@ -36,6 +36,10 @@
             <caption>Empty caption</caption>
             <category>Appearance</category>
             <description>Text displayed when no selection is made</description>
+            <translations>
+                <translation lang="en_US">(no option selected)</translation>
+                <translation lang="nl_NL">(geen option selecteerd)</translation>
+            </translations>
         </property>
         <property key="readOnlyStyle" type="enumeration" defaultValue="control">
             <caption>Read-only style</caption>
@@ -115,7 +119,7 @@
         <property key="sortAttributes" type="object" isList="true" required="false">
             <caption>Sort order</caption>
             <category>Selectable objects</category>
-            <description/>
+            <description>Sorting only applies to source 'Database'</description>
             <properties>
                 <property key="name" type="attribute" required="false" isPath="optional" pathType="referenceSet" entityProperty="../entityPath">
                     <caption>Attribute</caption>
@@ -158,11 +162,6 @@
             <category>Selectable objects</category>
             <description>Attribute set with search text of the user, this could be used for filter results in microflow or nanoflow</description>
             <attributeTypes>
-                <attributeType name="AutoNumber"/>
-                <attributeType name="Enum"/>
-                <attributeType name="Decimal"/>
-                <attributeType name="Integer"/>
-                <attributeType name="Long"/>
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
@@ -188,6 +187,15 @@
             <caption>Minimal search characters</caption>
             <category>Selectable objects</category>
             <description>Number of characters typed before an initial search is triggered</description>
+        </property>
+        <property key="searchPromptText" type="translatableString" required="false">
+            <caption>Search prompt text</caption>
+            <category>Selectable objects</category>
+            <description>Text to display on dropdown before typing</description>
+            <translations>
+                <translation lang="en_US">Type to search</translation>
+                <translation lang="nl_NL">Type om te zoeken</translation>
+            </translations>
         </property>
         <property key="onChangeEvent" type="enumeration" defaultValue="doNothing">
             <caption>On change</caption>

@@ -34,9 +34,9 @@ export class preview extends Component<ContainerProps, {}> {
             readOnlyStyle: this.props.readOnlyStyle,
             lazyFilter: this.props.lazyFilter,
             selectedValue,
-            searchText: this.props.searchText,
             loadingText: this.props.loadingText,
             minimumCharacter: this.props.minimumCharacter,
+            searchPromptText: this.props.searchPromptText,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
         });

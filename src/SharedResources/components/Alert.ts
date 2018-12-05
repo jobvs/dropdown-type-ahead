@@ -8,7 +8,7 @@ export interface AlertProps {
 
 export const Alert: FunctionComponent<AlertProps> = ({ bootstrapStyle, className, children }) =>
     children
-        ? createElement("div", { className: classNames(`alert alert-${bootstrapStyle}`, className) }, children)
+        ? createElement("div", { className: classNames("alert", `alert-${bootstrapStyle}`, className) }, children)
         : null;
 
 Alert.displayName = "Alert";

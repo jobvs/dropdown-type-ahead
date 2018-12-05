@@ -4,7 +4,7 @@ import Select, { Async } from "react-select";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
-import { DropdownReferenceProps } from "../../SharedResources/utils/ContainerUtils";
+import { DropdownReferenceProps, hideDropDown } from "../../SharedResources/utils/ContainerUtils";
 
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
@@ -23,17 +23,18 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
     }
 
     componentDidMount() {
-        const scrollContainer = document.querySelector(".region-content .mx-scrollcontainer-wrapper");
+        const scrollContainer = document.querySelector(".mx-window-body");
         if (scrollContainer && this.props.location === "popup") {
             (document.getElementsByClassName("widget-dropdown-reference")[0] as HTMLElement).style.overflow = "hidden";
-            const dropdown = document.getElementsByClassName("Select-menu-outer");
-            scrollContainer.addEventListener("scroll", () => {
-                dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
-                const activeElement = document.activeElement;
-                if (activeElement) {
-                    (activeElement as HTMLElement).blur();
-                }
-            });
+            scrollContainer.addEventListener("scroll", () => { hideDropDown(); });
+        }
+    }
+
+    componentWillUnmount() {
+        const scrollContainer = document.querySelector(".mx-window-body");
+        if (scrollContainer && this.props.location === "popup") {
+            (document.getElementsByClassName("widget-dropdown-reference")[0] as HTMLElement).style.overflow = "hidden";
+            scrollContainer.removeEventListener("scroll", () => { hideDropDown(); });
         }
     }
 
@@ -56,9 +57,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
                         ...commonProps
                     })
                     : createElement(Async, {
-                        searchPromptText: this.props.minimumCharacter > 0
-                            ? `Type more than ${this.props.minimumCharacter} characters to search`
-                            : "Type to search",
+                        searchPromptText: this.props.searchPromptText,
                         loadOptions: this.props.asyncData,
                         ...commonProps
                     }),

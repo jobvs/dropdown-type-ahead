@@ -25,7 +25,6 @@ const widgetConfig = {
                 `!/widgets/com/mendix/widget/custom/dropdown/DropdownReferenceSet.js`
             ],
             target: mxHost,
-            ws: true,
             onError: function(err, req, res) {
                 if (res && res.writeHead) {
                     res.writeHead(500, {

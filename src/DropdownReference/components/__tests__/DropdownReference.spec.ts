@@ -27,9 +27,9 @@ describe("DropdownReference", () => {
         readOnlyStyle: "control",
         labelOrientation: "horizontal",
         alertMessage: "No text",
-        searchText: "search",
         loadingText: "loading",
-        minimumCharacter: 1
+        minimumCharacter: 1,
+        searchPromptText: "Type to search"
     };
 
     it("renders the structure correctly", () => {

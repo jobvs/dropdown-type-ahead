@@ -36,9 +36,9 @@ export class preview extends Component<ContainerProps, {}> {
             selectedValue: this.props.selectedValue,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style),
-            searchText: this.props.searchText,
             loadingText: this.props.loadingText,
-            minimumCharacter: this.props.minimumCharacter
+            minimumCharacter: this.props.minimumCharacter,
+            searchPromptText: this.props.searchPromptText
         });
     }
 
@@ -74,7 +74,6 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
 
     if (valueMap.source !== "xpath") {
         visibilityMap.sortAttributes = false;
-        visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
     }
 

@@ -26,15 +26,26 @@ export interface DropdownReferenceProps {
     selectedValue: any;
     className?: string;
     alertMessage: string;
-    searchText: string;
     loadingText: string;
     minimumCharacter: number;
+    searchPromptText: string;
     labelOrientation: "horizontal" | "vertical";
     location: "content" | "popup" | "modal" | "node";
     readOnlyStyle: "control" | "text";
     selectType: "normal" | "asynchronous";
     lazyFilter: "startWith" | "contains";
     handleOnchange?: (selectedOption: any) => void;
+}
+
+export function hideDropDown() {
+    const dropdown = document.getElementsByClassName("Select-menu-outer");
+    if (dropdown[0]) {
+        (dropdown[0] as HTMLElement).style.visibility = "hidden";
+    }
+    const activeElement = document.activeElement;
+    if (activeElement) {
+        (activeElement as HTMLElement).blur();
+    }
 }
 
 export const parseStyle = (style = ""): { [key: string]: string } => {
@@ -75,9 +86,12 @@ export const validateProps = (props: ContainerProps | ReferenceSetProps): string
         message.push("Label width should be a value between 0 and 12");
     }
 
+    if (props.selectType === "asynchronous" && props.minimumCharacter === 0) {
+        message.push("Minimal search characters must be greater than 0");
+    }
+
     if (message.length) {
-        const widgetName = props.friendlyId.split(".")[2];
-        const errorMessage = `Configuration error in widget - ${widgetName}: ${message.join(", ")}`;
+        const errorMessage = `Configuration error in widget: ${message.join(", ")}`;
 
         return errorMessage;
     }

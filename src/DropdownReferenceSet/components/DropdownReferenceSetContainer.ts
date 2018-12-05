@@ -3,11 +3,11 @@ import * as initializeReactFastclick from "react-fastclick";
 import { hot } from "react-hot-loader";
 
 import { AttributeType, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
-import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
+import { FetchDataOptions, fetchData } from "../../SharedResources/utils/Data";
 import { DropdownReferenceSet, DropdownReferenceSetProps, ReferenceOption } from "./DropdownReferenceSet";
 
 interface WrapperProps {
-    class: string;
+    "class": string;
     mxObject: mendix.lib.MxObject;
     mxform: mxui.lib.form._FormBase;
     style: string;
@@ -21,11 +21,10 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceSetProps 
     entityConstraint: string;
     searchAttribute: string;
     source: "xpath" | "microflow" | "nanoflow";
-    sortOrder: "asc" | "desc";
     sortAttributes: AttributeType[];
-    nanoflow: Nanoflow;
+    nanoflow: mx.Nanoflow;
     microflow: string;
-    onChangeNanoflow: Nanoflow;
+    onChangeNanoflow: mx.Nanoflow;
     onChangeMicroflow: string;
     onChangeEvent: "callMicroflow" | "callNanoflow";
     editable: "default" | "never";
@@ -39,7 +38,7 @@ export interface ContainerState {
 
 class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerState> {
     readonly state: ContainerState = {
-        isClearable: this.props.isClearable ? true : false,
+        isClearable: this.props.isClearable,
         options: [],
         selected: []
     };
@@ -60,23 +59,23 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             selectType: this.props.selectType,
             lazyFilter: this.props.lazyFilter,
             isReadOnly: this.isReadOnly(),
-            labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
+            labelCaption: this.props.labelCaption ? this.props.labelCaption : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             location: this.props.mxform.place,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue: this.state.selected,
-            searchText: this.props.searchText,
             loadingText: this.props.loadingText,
             minimumCharacter: this.props.minimumCharacter,
+            searchPromptText: this.props.searchPromptText,
             showLabel: this.props.showLabel,
             styleObject: parseStyle(this.props.style)
         });
     }
 
     componentWillReceiveProps(newProps: ContainerProps) {
-        if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
-            const selected = newProps.mxObject.get(this.association) as string;
+        if (newProps.mxObject !== this.props.mxObject) {
+            const selected = newProps.mxObject.get(this.association);
             this.getSelectedValues(newProps);
             this.resetSubscriptions(newProps.mxObject);
             if (this.props.selectType === "normal") {
@@ -179,33 +178,33 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
         });
     }
 
-    private executeOnChangeEvent = () => {
+    private executeOnChangeEvent() {
         const { mxform, mxObject, onChangeEvent, onChangeMicroflow, onChangeNanoflow } = this.props;
         const context = new mendix.lib.MxContext();
 
         context.setContext(mxObject.getEntity(), mxObject.getGuid());
         if (onChangeEvent === "callMicroflow" && onChangeMicroflow) {
             window.mx.ui.action(onChangeMicroflow, {
-                error: error => window.mx.ui.error(`Error while executing microflow ${onChangeMicroflow}: ${error.message}`), // tslint:disable-line max-line-length
-                origin: mxform,
                 params: {
                     applyto: "selection",
                     guids: [ mxObject.getGuid() ]
-                }
+                },
+                origin: mxform,
+                error: error => window.mx.ui.error(`Error while executing microflow ${onChangeMicroflow}: ${error.message}`)
             });
         } else if (onChangeEvent === "callNanoflow" && onChangeNanoflow.nanoflow) {
             window.mx.data.callNanoflow({
-                context,
-                error: error => window.mx.ui.error(`Error while executing the onchange nanoflow: ${error.message}`),
                 nanoflow: onChangeNanoflow,
-                origin: mxform
+                origin: mxform,
+                context,
+                error: error => window.mx.ui.error(`Error while executing the onchange nanoflow: ${error.message}`)
             });
         }
     }
 
     private retrieveOptions(props: ContainerProps, input?: string) {
         const entity = this.props.entityPath.split("/")[1];
-        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, selectType, lazyFilter, mxObject, nanoflow } = props;
+        const { sortAttributes, attribute, entityConstraint, source, microflow, selectType, lazyFilter, mxObject, nanoflow } = props;
         let lazyConstraint = "";
         if (selectType === "asynchronous" && input) {
             lazyConstraint = lazyFilter === "contains" ? `[contains(${attribute}, '${input}')]` : `[starts-with(${attribute}, '${input}')]`;
@@ -221,7 +220,6 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             sortAttributes: !sortAttributes.length ?
                 [ { name: attribute , sort: "asc" } ] :
                 sortAttributes,
-            sortOrder,
             source
         };
 

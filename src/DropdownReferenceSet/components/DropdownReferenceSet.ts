@@ -4,6 +4,7 @@ import * as classNames from "classnames";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
+import { hideDropDown } from "../../SharedResources/utils/ContainerUtils";
 
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
@@ -27,9 +28,9 @@ export interface DropdownReferenceSetProps {
     labelOrientation: "horizontal" | "vertical";
     location: "content" | "popup" | "modal" | "node";
     alertMessage: string;
-    searchText: string;
     loadingText: string;
     minimumCharacter: number;
+    searchPromptText: string;
 }
 
 export interface ReferenceOption {
@@ -51,17 +52,18 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
     }
 
     componentDidMount() {
-        const scrollContainer = document.querySelector(".region-content .mx-scrollcontainer-wrapper");
+        const scrollContainer = document.querySelector(".mx-window-body");
         if (scrollContainer && this.props.location === "popup") {
-            const dropdown = document.getElementsByClassName("Select-menu-outer");
             (document.getElementsByClassName("widget-dropdown-reference-set")[0] as HTMLElement).style.overflow = "hidden";
-            scrollContainer.addEventListener("scroll", () => {
-                dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
-                const activeElement = document.activeElement;
-                if (activeElement) {
-                    (activeElement as HTMLElement).blur();
-                }
-            });
+            scrollContainer.addEventListener("scroll", () => { hideDropDown(); });
+        }
+    }
+
+    componentWillUnmount() {
+        const scrollContainer = document.querySelector(".mx-window-body");
+        if (scrollContainer && this.props.location === "popup") {
+            (document.getElementsByClassName("widget-dropdown-reference-set")[0] as HTMLElement).style.overflow = "hidden";
+            scrollContainer.removeEventListener("scroll", () => { hideDropDown(); });
         }
     }
 
@@ -77,7 +79,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
         if (this.props.readOnlyStyle === "control" || (this.props.readOnlyStyle === "text" && !this.props.isReadOnly)) {
             return createElement("div", {
-                className: classNames("widget-dropdown-reference-set"),
+                className: "widget-dropdown-reference-set",
                 onClick: this.setDropdownSize
             },
                 this.props.selectType === "normal"
@@ -97,9 +99,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                         autoload: false,
                         autoFocus: true,
                         loadOptions: this.props.asyncData,
-                        searchPromptText: this.props.minimumCharacter > 0
-                            ? `Type more than ${this.props.minimumCharacter} character(s) to search`
-                            : "Type to search",
+                        searchPromptText: this.props.searchPromptText,
                         ...commonProps
                     }),
                 createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
