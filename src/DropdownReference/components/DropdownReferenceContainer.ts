@@ -76,7 +76,9 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
         if (newProps.mxObject && (newProps.mxObject !== this.props.mxObject)) {
             this.getSelectedValue(newProps);
             this.resetSubscriptions(newProps.mxObject);
+            if (this.props.selectType === "normal") {
             this.retrieveOptions(newProps);
+            }
         } else {
             this.setState({ selectedObject: {} });
         }

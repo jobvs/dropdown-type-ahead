@@ -78,7 +78,9 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             const selected = newProps.mxObject.get(this.association) as string;
             this.getSelectedValues(newProps);
             this.resetSubscriptions(newProps.mxObject);
+            if (this.props.selectType === "normal") {
             this.retrieveOptions(newProps);
+            }
             this.setState({ selected });
         } else {
             this.setState({ selected: [] });
