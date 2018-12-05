@@ -19,6 +19,7 @@ export interface DropdownReferenceSetProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
+    lazyFilter: "startWith" | "contains";
     selectedValue: ReferenceOption[];
     handleOnchange?: (selectedOption: any) => void;
     className?: string;

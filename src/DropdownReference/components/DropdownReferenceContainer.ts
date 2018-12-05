@@ -21,7 +21,7 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
     entityConstraint: string;
     searchAttribute: string;
     source: "xpath" | "microflow" | "nanoflow";
-    sortOrder: "asc" | "desc";
+    // sortOrder: "asc" | "desc";
     sortAttributes: AttributeType[];
     nanoflow: Nanoflow;
     microflow: string;
@@ -57,13 +57,14 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             handleOnchange: this.onChange,
             isClearable: this.state.isClearable,
             selectType: this.props.selectType,
+            lazyFilter: this.props.lazyFilter,
             isReadOnly: this.isReadOnly(),
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
             location: this.props.mxform.place,
             readOnlyStyle: this.props.readOnlyStyle,
-            searchText: this.props.searchText,
+            searchText: this.props.searchText, // unused???
             loadingText: this.props.loadingText,
             minimumCharacter: this.props.minimumCharacter,
             selectedValue: this.state.selectedObject,
@@ -77,7 +78,7 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             this.getSelectedValue(newProps);
             this.resetSubscriptions(newProps.mxObject);
             if (this.props.selectType === "normal") {
-            this.retrieveOptions(newProps);
+                this.retrieveOptions(newProps);
             }
         } else {
             this.setState({ selectedObject: {} });
@@ -93,11 +94,11 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
     }
 
     private getSelectedValue = (props: ContainerProps) => {
-        new Promise(resolve => props.mxObject.fetch(props.entityPath, resolve))
+        return new Promise(resolve => props.mxObject.fetch(props.entityPath, resolve))
         .then((newValue: any) => {
             if (newValue) {
                 this.setState({
-                    isClearable: this.props.isClearable ? true : false,
+                    isClearable: this.props.isClearable,
                     selectedObject: {
                         value: newValue.getGuid(),
                         label: mx.parser.formatAttribute(newValue, props.attribute)
@@ -172,7 +173,7 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
         this.setState({ selectedObject: selection ? selection : null });
     }
 
-    private executeOnChangeEvent = () => {
+    private executeOnChangeEvent() {
         const { mxform, mxObject, onChangeEvent, onChangeMicroflow, onChangeNanoflow } = this.props;
         const context = new mendix.lib.MxContext();
 
@@ -196,13 +197,16 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
         }
     }
 
-    private retrieveOptions(props: ContainerProps) {
+    private retrieveOptions(props: ContainerProps, input?: string) {
         const entity = this.props.entityPath.split("/")[1];
-        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
-        const attributeReference = `${props.entityPath}${attribute}`;
+        const { sortAttributes, attribute, entityConstraint, source, microflow, mxObject, nanoflow, selectType, lazyFilter } = props;
+        let lazyConstraint = "";
+        if (selectType === "asynchronous") {
+            lazyConstraint = lazyFilter === "contains" ? `[contains(${attribute}, '${input}')]` : `[starts-with(${attribute}, '${input}')]`;
+        }
         const options: FetchDataOptions = {
-            attributes: [ attributeReference ],
-            constraint: entityConstraint,
+            attributes: [ attribute ],
+            constraint: entityConstraint + lazyConstraint,
             entity,
             guid: mxObject.getGuid(),
             microflow,
@@ -211,11 +215,10 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             sortAttributes: !sortAttributes.length
                 ? [ { name: attribute, sort: "asc" } ]
                 : sortAttributes,
-            sortOrder,
             source
         };
 
-        fetchData(options)
+        return fetchData(options)
             .then(optionObjects => this.setOptions(optionObjects))
             .catch(errorMessage => window.mx.ui.error(errorMessage.message));
     }
@@ -237,13 +240,11 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
         if (this.props.mxObject) {
             this.props.mxObject.set(this.props.searchAttribute, input);
             if (input.length >= this.props.minimumCharacter) {
-                this.retrieveOptions(this.props);
-
-                return Promise.resolve({ options: this.state.options });
+                return this.retrieveOptions(this.props, input)
+                    .then(() => Promise.resolve({ options: this.state.options }));
             } else {
-                this.getSelectedValue(this.props);
-
-                return Promise.resolve({ options: [] });
+                return this.getSelectedValue(this.props)
+                    .then(() => Promise.resolve({ options: [] }));
             }
         }
 

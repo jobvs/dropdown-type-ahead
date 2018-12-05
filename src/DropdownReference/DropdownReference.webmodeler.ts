@@ -32,6 +32,7 @@ export class preview extends Component<ContainerProps, {}> {
             labelWidth: this.props.labelWidth,
             location: this.props.location,
             readOnlyStyle: this.props.readOnlyStyle,
+            lazyFilter: this.props.lazyFilter,
             selectedValue,
             searchText: this.props.searchText,
             loadingText: this.props.loadingText,
@@ -67,9 +68,12 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
     visibilityMap.onChangeMicroflow = valueMap.onChangeEvent === "callMicroflow";
     visibilityMap.onChangeNanoflow = valueMap.onChangeEvent === "callNanoflow";
 
+    visibilityMap.minimumCharacter = valueMap.selectType === "asynchronous";
+    visibilityMap.searchAttribute = valueMap.selectType === "asynchronous" && valueMap.source !== "xpath";
+    visibilityMap.lazyFilter = valueMap.selectType === "asynchronous" && valueMap.source === "xpath";
+
     if (valueMap.source !== "xpath") {
         visibilityMap.sortAttributes = false;
-        visibilityMap.sortOrder = false;
         visibilityMap.entityConstraint = false;
     }
 
@@ -77,10 +81,6 @@ export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: Vi
         visibilityMap.labelOrientation = true;
         visibilityMap.labelWidth = true;
         visibilityMap.labelCaption = true;
-    }
-
-    if (valueMap.selectType !== "asynchronous") {
-        visibilityMap.searchAttribute = false;
     }
 
     return visibilityMap;

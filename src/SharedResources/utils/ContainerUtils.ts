@@ -33,6 +33,7 @@ export interface DropdownReferenceProps {
     location: "content" | "popup" | "modal" | "node";
     readOnlyStyle: "control" | "text";
     selectType: "normal" | "asynchronous";
+    lazyFilter: "startWith" | "contains";
     handleOnchange?: (selectedOption: any) => void;
 }
 

@@ -58,6 +58,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             handleOnchange: this.handleOnClick,
             isClearable: this.props.isClearable,
             selectType: this.props.selectType,
+            lazyFilter: this.props.lazyFilter,
             isReadOnly: this.isReadOnly(),
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
@@ -79,7 +80,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             this.getSelectedValues(newProps);
             this.resetSubscriptions(newProps.mxObject);
             if (this.props.selectType === "normal") {
-            this.retrieveOptions(newProps);
+                this.retrieveOptions(newProps);
             }
             this.setState({ selected });
         } else {
@@ -154,7 +155,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
     }
 
     private getSelectedValues = (props: ContainerProps) => {
-        new Promise(resolve => props.mxObject.fetch(props.entityPath, resolve))
+        return new Promise(resolve => props.mxObject.fetch(props.entityPath, resolve))
         .then((values: any) => {
             if (values) {
                 const newSelectedObject = values.map((mxObject: mendix.lib.MxObject) => {
@@ -202,13 +203,16 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
         }
     }
 
-    private retrieveOptions(props: ContainerProps) {
+    private retrieveOptions(props: ContainerProps, input?: string) {
         const entity = this.props.entityPath.split("/")[1];
-        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, mxObject, nanoflow } = props;
-        const attributeReference = `${props.entityPath}${attribute}`;
+        const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, selectType, lazyFilter, mxObject, nanoflow } = props;
+        let lazyConstraint = "";
+        if (selectType === "asynchronous") {
+            lazyConstraint = lazyFilter === "contains" ? `[contains(${attribute}, '${input}')]` : `[starts-with(${attribute}, '${input}')]`;
+        }
         const options: FetchDataOptions = {
-            attributes: [ attributeReference ],
-            constraint: entityConstraint,
+            attributes: [ attribute ],
+            constraint: entityConstraint + lazyConstraint,
             entity,
             guid: mxObject.getGuid(),
             microflow,
@@ -221,7 +225,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             source
         };
 
-        fetchData(options)
+        return fetchData(options)
             .then(optionObjects => this.setOptions(optionObjects))
             .catch(errorMessage => window.mx.ui.error(errorMessage.message));
     }
@@ -241,13 +245,11 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
         if (this.props.mxObject) {
             this.props.mxObject.set(this.props.searchAttribute, input);
             if (input.length >= this.props.minimumCharacter) {
-                this.retrieveOptions(this.props);
-
-                return Promise.resolve({ options: this.state.options });
+                return this.retrieveOptions(this.props, input)
+                    .then(() => Promise.resolve({ options: this.state.options }));
             } else {
-                this.getSelectedValues(this.props);
-
-                return Promise.resolve({ options: [] });
+                return this.getSelectedValues(this.props)
+                    .then(() => Promise.resolve({ options: [] }));
             }
         }
 

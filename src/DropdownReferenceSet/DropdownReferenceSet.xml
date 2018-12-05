@@ -175,7 +175,16 @@
                 <enumerationValue key="normal">False</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="minimumCharacter" type="integer" defaultValue="3">
+        <property key="lazyFilter" type="enumeration" defaultValue="startWith">
+            <caption>Lazy loading filter</caption>
+            <category>Selectable objects</category>
+            <description>For source database, lazy data is could be filtered server side. "Start width" best performing option</description>
+            <enumerationValues>
+                <enumerationValue key="startWith">Starts with</enumerationValue>
+                <enumerationValue key="contains">Contains</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="minimumCharacter" type="integer" defaultValue="1">
             <caption>Minimal search characters</caption>
             <category>Selectable objects</category>
             <description>Number of characters typed before an initial search is triggered</description>

@@ -21,6 +21,7 @@ describe("DropdownReference", () => {
         isClearable: true,
         isReadOnly: false,
         selectType: "normal",
+        lazyFilter: "startWith",
         selectedValue: { value: "Kampala" , label: "kampalaId" } || null,
         handleOnchange: jasmine.createSpy("onClick"),
         readOnlyStyle: "control",
