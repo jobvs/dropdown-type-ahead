@@ -207,7 +207,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
         const entity = this.props.entityPath.split("/")[1];
         const { sortAttributes, attribute, entityConstraint, source, sortOrder, microflow, selectType, lazyFilter, mxObject, nanoflow } = props;
         let lazyConstraint = "";
-        if (selectType === "asynchronous") {
+        if (selectType === "asynchronous" && input) {
             lazyConstraint = lazyFilter === "contains" ? `[contains(${attribute}, '${input}')]` : `[starts-with(${attribute}, '${input}')]`;
         }
         const options: FetchDataOptions = {
