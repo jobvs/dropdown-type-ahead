@@ -3,17 +3,20 @@ import { createElement } from "react";
 
 import Select from "react-select";
 import { Label } from "../../../SharedResources/components/Label";
-import { DropdownReference, DropdownReferenceProps } from "../DropdownReference";
+import { DropdownReference } from "../DropdownReference";
+import { DropdownReferenceProps } from "../../../SharedResources/utils/ContainerUtils";
 import { Alert } from "../../../SharedResources/components/Alert";
 
 describe("DropdownReference", () => {
     const render = (props: DropdownReferenceProps) => shallow(createElement(DropdownReference, props));
     const ReferenceProps: DropdownReferenceProps = {
+        asyncData: jasmine.any(Function),
         emptyOptionCaption: "Select city",
         labelWidth: 3,
         data: [ { value: "KampalaId" , label: "kampala" }, { value: "AmsterdamId" , label: "Amsterdam" } ],
         value: "Kampala",
         labelCaption: "City",
+        location: "content",
         showLabel: true,
         isClearable: true,
         isReadOnly: false,
@@ -30,7 +33,6 @@ describe("DropdownReference", () => {
 
     it("renders the structure correctly", () => {
         const DropdownReferenceComponent = render(ReferenceProps);
-        DropdownReferenceComponent.setProps({ loaded: true });
 
         expect(DropdownReferenceComponent).toBeElement(
             createElement(Label, { label: "City" , orientation: "horizontal" , weight: 3 },
@@ -51,7 +53,6 @@ describe("DropdownReference", () => {
 
     it("with no label caption renders the structure correctly", () => {
         const DropdownReferenceComponent = render(ReferenceProps);
-        DropdownReferenceComponent.setProps({ loaded: true });
 
         DropdownReferenceComponent.setProps({ labelCaption: "", showLabel: false });
         expect(DropdownReferenceComponent).toBeElement(

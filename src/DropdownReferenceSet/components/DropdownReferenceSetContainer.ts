@@ -62,6 +62,7 @@ class DropdownReferenceSetContainer extends Component<ContainerProps, ContainerS
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
+            location: this.props.mxform.place,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue: this.state.selected,
             searchText: this.props.searchText,

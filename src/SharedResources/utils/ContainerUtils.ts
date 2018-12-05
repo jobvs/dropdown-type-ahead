@@ -1,9 +1,39 @@
 import { ContainerProps } from "../../DropdownReference/components/DropdownReferenceContainer";
 import { ContainerProps as ReferenceSetProps } from "../../DropdownReferenceSet/components/DropdownReferenceSetContainer";
+import { LoadOptionsHandler } from "react-select";
 
 export interface AttributeType {
     name: string;
     sort: string;
+}
+
+export interface ReferenceOption {
+    value?: string | boolean;
+    label?: string;
+}
+
+export interface DropdownReferenceProps {
+    styleObject?: object;
+    labelWidth: number;
+    data: ReferenceOption[];
+    asyncData: LoadOptionsHandler<{}>;
+    value?: string;
+    labelCaption: string;
+    showLabel: boolean;
+    emptyOptionCaption: string;
+    isClearable: boolean;
+    isReadOnly: boolean;
+    selectedValue: any;
+    className?: string;
+    alertMessage: string;
+    searchText: string;
+    loadingText: string;
+    minimumCharacter: number;
+    labelOrientation: "horizontal" | "vertical";
+    location: "content" | "popup" | "modal" | "node";
+    readOnlyStyle: "control" | "text";
+    selectType: "normal" | "asynchronous";
+    handleOnchange?: (selectedOption: any) => void;
 }
 
 export const parseStyle = (style = ""): { [key: string]: string } => {

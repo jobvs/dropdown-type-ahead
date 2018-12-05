@@ -1,40 +1,13 @@
 import { Component, createElement } from "react";
 import * as classNames from "classnames";
-import Select, { Async, LoadOptionsHandler } from "react-select";
+import Select, { Async } from "react-select";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
+import { DropdownReferenceProps } from "../../SharedResources/utils/ContainerUtils";
 
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
-
-export interface DropdownReferenceProps {
-    styleObject?: object;
-    labelWidth: number;
-    data: ReferenceOption[];
-    asyncData?: LoadOptionsHandler<{}>;
-    value?: string;
-    labelCaption: string;
-    showLabel: boolean;
-    emptyOptionCaption: string;
-    isClearable: boolean;
-    isReadOnly: boolean;
-    selectedValue: any;
-    className?: string;
-    alertMessage: string;
-    searchText: string;
-    loadingText: string;
-    minimumCharacter: number;
-    labelOrientation: "horizontal" | "vertical";
-    readOnlyStyle: "control" | "text";
-    selectType: "normal" | "asynchronous";
-    handleOnchange?: (selectedOption: any) => void;
-}
-
-export interface ReferenceOption {
-    value?: string | boolean;
-    label?: string;
-}
 
 export class DropdownReference extends Component<DropdownReferenceProps> {
     render() {
@@ -51,7 +24,8 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
 
     componentDidMount() {
         const scrollContainer = document.querySelector(".region-content .mx-scrollcontainer-wrapper");
-        if (scrollContainer) {
+        if (scrollContainer && this.props.location === "popup") {
+            (document.getElementsByClassName("widget-dropdown-reference")[0] as HTMLElement).style.overflow = "hidden";
             const dropdown = document.getElementsByClassName("Select-menu-outer");
             scrollContainer.addEventListener("scroll", () => {
                 dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
@@ -99,9 +73,10 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
         const dropdownElement = dropdown[0] as HTMLElement;
-        if (dropdownElement && dropdownElement.style.visibility !== "visible") {
+        if (dropdownElement && dropdownElement.style.visibility !== "visible" && this.props.location === "popup") {
+            dropdownElement.style.visibility = "hidden";
             const dropdownDimensions = dropdown[0].getBoundingClientRect();
-            if (dropdownElement && dropdownDimensions) {
+            if (dropdownDimensions) {
                 dropdownElement.style.width = dropdownDimensions.width - .08 + "px";
                 dropdownElement.style.left = dropdownDimensions.left + "px";
                 dropdownElement.style.top = dropdownDimensions.top + "px";

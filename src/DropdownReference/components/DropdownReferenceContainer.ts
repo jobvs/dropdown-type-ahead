@@ -2,9 +2,9 @@ import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 import { hot } from "react-hot-loader";
 
-import { AttributeType, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
+import { AttributeType, DropdownReferenceProps, ReferenceOption, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, Nanoflow, fetchData } from "../../SharedResources/utils/Data";
-import { DropdownReference, DropdownReferenceProps, ReferenceOption } from "./DropdownReference";
+import { DropdownReference } from "./DropdownReference";
 
 interface WrapperProps {
     class: string;
@@ -61,6 +61,7 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
+            location: this.props.mxform.place,
             readOnlyStyle: this.props.readOnlyStyle,
             searchText: this.props.searchText,
             loadingText: this.props.loadingText,

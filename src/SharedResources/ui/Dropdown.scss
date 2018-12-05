@@ -1,20 +1,16 @@
 .widget-dropdown-reference, .widget-dropdown-reference-set {
-  overflow: hidden;
-
   .Select.is-focused:not(.is-open) > .Select-control {
-    border-color: #0595DB;
+    border-color: #0595db;
     box-shadow: unset;
   }
 
-  .Select.has-value.is-focused.is-open > .Select-control {
-    border-color: #0595DB;
+  select.has-value.is-focused.is-open > .Select-control {
+    border-color: #0595db;
     box-shadow: unset;
   }
 
   .Select-menu-outer {
-    border-color: #0595DB;
+    border-color: #0595db;
     box-shadow: none;
-    top: auto;
-    visibility: hidden;
   }
 }

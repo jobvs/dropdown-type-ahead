@@ -30,6 +30,7 @@ export class preview extends Component<ContainerProps, {}> {
             labelCaption: this.props.labelCaption ? this.props.labelCaption.trim() : "",
             labelOrientation: this.props.labelOrientation,
             labelWidth: this.props.labelWidth,
+            location: this.props.location,
             readOnlyStyle: this.props.readOnlyStyle,
             selectedValue,
             searchText: this.props.searchText,

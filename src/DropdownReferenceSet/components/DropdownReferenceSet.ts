@@ -19,11 +19,12 @@ export interface DropdownReferenceSetProps {
     isClearable: boolean;
     isReadOnly: boolean;
     selectType: "normal" | "asynchronous";
-    selectedValue: any;
+    selectedValue: ReferenceOption[];
     handleOnchange?: (selectedOption: any) => void;
     className?: string;
     readOnlyStyle: "control" | "text";
     labelOrientation: "horizontal" | "vertical";
+    location: "content" | "popup" | "modal" | "node";
     alertMessage: string;
     searchText: string;
     loadingText: string;
@@ -31,8 +32,8 @@ export interface DropdownReferenceSetProps {
 }
 
 export interface ReferenceOption {
-    value?: string | boolean;
-    label?: string;
+    value: string | boolean;
+    label: string;
 }
 
 export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
@@ -50,8 +51,9 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     componentDidMount() {
         const scrollContainer = document.querySelector(".region-content .mx-scrollcontainer-wrapper");
-        if (scrollContainer) {
+        if (scrollContainer && this.props.location === "popup") {
             const dropdown = document.getElementsByClassName("Select-menu-outer");
+            (document.getElementsByClassName("widget-dropdown-reference-set")[0] as HTMLElement).style.overflow = "hidden";
             scrollContainer.addEventListener("scroll", () => {
                 dropdown[0] ? (dropdown[0] as HTMLElement).style.visibility = "hidden" : window.logger.warn("Dropdown not available");
                 const activeElement = document.activeElement;
@@ -64,13 +66,11 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private renderSelector() {
         const commonProps = {
-            autoload: false,
             clearable: this.props.isClearable,
             multi: true,
             removeSelected: true,
             disabled: this.props.isReadOnly,
             onChange: this.props.handleOnchange,
-            onCloseResetsInput: false,
             ...this.createSelectorProp()
         };
 
@@ -90,19 +90,18 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                         })
                         : createElement(Select, {
                             options: this.props.data,
-                            noResultsText: "",
                             ...commonProps
                         })
                     : createElement(Async, {
                         autoload: false,
-                        onCloseResetsInput: false,
-                        searchPromptText: this.props.minimumCharacter > 0
-                            ? `Type more than ${this.props.minimumCharacter} characters to search`
-                            : "Type to search",
+                        autoFocus: true,
                         loadOptions: this.props.asyncData,
+                        searchPromptText: this.props.minimumCharacter > 0
+                            ? `Type more than ${this.props.minimumCharacter} character(s) to search`
+                            : "Type to search",
                         ...commonProps
                     }),
-                createElement(Alert, { className: "widget-dropdown-reference-set-alert" }, this.props.alertMessage)
+                createElement(Alert, { className: "widget-dropdown-type-ahead-alert" }, this.props.alertMessage)
             );
         } else {
             return createElement("p", { className: classNames("form-control-static", "read-only-text") },
@@ -114,9 +113,10 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
     private setDropdownSize = () => {
         const dropdown = document.getElementsByClassName("Select-menu-outer");
         const dropdownElement = dropdown[0] as HTMLElement;
-        if (dropdownElement && dropdownElement.style.visibility !== "visible") {
-            const dropdownDimensions = dropdownElement.getBoundingClientRect();
-            if (dropdownElement && dropdownDimensions) {
+        if (dropdownElement && dropdownElement.style.visibility !== "visible" && this.props.location === "popup") {
+            dropdownElement.style.visibility = "hidden";
+            const dropdownDimensions = dropdown[0].getBoundingClientRect();
+            if (dropdownDimensions) {
                 dropdownElement.style.width = dropdownDimensions.width - .08 + "px";
                 dropdownElement.style.left = dropdownDimensions.left + "px";
                 dropdownElement.style.top = dropdownDimensions.top + "px";
@@ -136,12 +136,12 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
 
     private processOptions() {
         let selectedLabel = "";
-        let formatedOptions = [] as any;
+        let formatedOptions: string[] = [];
 
         if (this.props.selectedValue.length > 0) {
-            formatedOptions = this.props.selectedValue.map((selectedGuid: any) => {
+            formatedOptions = this.props.selectedValue.map((selectedGuid: ReferenceOption) => {
                 if (this.props.selectedValue) {
-                    this.props.selectedValue.forEach((dataObject: any) => {
+                    this.props.selectedValue.forEach((dataObject: ReferenceOption) => {
                         const value = dataObject.value;
                         if (value === selectedGuid.value) {
                             selectedLabel = dataObject.label;
