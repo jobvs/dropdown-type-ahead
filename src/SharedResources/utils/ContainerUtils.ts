@@ -1,6 +1,5 @@
 import { ContainerProps } from "../../DropdownReference/components/DropdownReferenceContainer";
 import { ContainerProps as ReferenceSetProps } from "../../DropdownReferenceSet/components/DropdownReferenceSetContainer";
-import { LoadOptionsHandler } from "react-select";
 
 export interface AttributeType {
     name: string;
@@ -12,12 +11,10 @@ export interface ReferenceOption {
     label?: string;
 }
 
-export interface DropdownReferenceProps {
+export interface DropdownProps {
     styleObject?: object;
     labelWidth: number;
     data: ReferenceOption[];
-    asyncData: LoadOptionsHandler<{}>;
-    value?: string;
     labelCaption: string;
     showLabel: boolean;
     emptyOptionCaption: string;
@@ -29,12 +26,13 @@ export interface DropdownReferenceProps {
     loadingText: string;
     minimumCharacter: number;
     searchPromptText: string;
+    selectType: "normal" | "asynchronous";
+    lazyFilter: "startWith" | "contains";
     labelOrientation: "horizontal" | "vertical";
     location: "content" | "popup" | "modal" | "node";
     readOnlyStyle: "control" | "text";
-    selectType: "normal" | "asynchronous";
-    lazyFilter: "startWith" | "contains";
-    handleOnchange?: (selectedOption: any) => void;
+    asyncData: (input?: string) => Promise<{}>;
+    handleOnchange?: (selectedOption: ReferenceOption) => void;
 }
 
 export function hideDropDown() {
@@ -46,6 +44,21 @@ export function hideDropDown() {
     if (activeElement) {
         (activeElement as HTMLElement).blur();
     }
+}
+
+export function debounce(input: (input?: string) => Promise<{}>, wait = 0) {
+    let timeout: any = null;
+    let resolves: any = null;
+
+    return (...args: []) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            resolves(input(...args));
+            resolves = null;
+        }, wait);
+
+        return new Promise(resolve => resolves = resolve);
+    };
 }
 
 export const parseStyle = (style = ""): { [key: string]: string } => {

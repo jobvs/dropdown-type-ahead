@@ -4,17 +4,16 @@ import { createElement } from "react";
 import Select from "react-select";
 import { Label } from "../../../SharedResources/components/Label";
 import { DropdownReference } from "../DropdownReference";
-import { DropdownReferenceProps } from "../../../SharedResources/utils/ContainerUtils";
+import { DropdownProps } from "../../../SharedResources/utils/ContainerUtils";
 import { Alert } from "../../../SharedResources/components/Alert";
 
 describe("DropdownReference", () => {
-    const render = (props: DropdownReferenceProps) => shallow(createElement(DropdownReference, props));
-    const ReferenceProps: DropdownReferenceProps = {
+    const render = (props: DropdownProps) => shallow(createElement(DropdownReference, props));
+    const ReferenceProps: DropdownProps = {
         asyncData: jasmine.any(Function),
         emptyOptionCaption: "Select city",
         labelWidth: 3,
         data: [ { value: "KampalaId" , label: "kampala" }, { value: "AmsterdamId" , label: "Amsterdam" } ],
-        value: "Kampala",
         labelCaption: "City",
         location: "content",
         showLabel: true,

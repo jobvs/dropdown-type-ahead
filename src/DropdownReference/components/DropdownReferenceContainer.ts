@@ -2,7 +2,7 @@ import { Component, createElement } from "react";
 import * as initializeReactFastclick from "react-fastclick";
 import { hot } from "react-hot-loader";
 
-import { AttributeType, DropdownReferenceProps, ReferenceOption, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
+import { AttributeType, DropdownProps, ReferenceOption, parseStyle, validateProps } from "../../SharedResources/utils/ContainerUtils";
 import { FetchDataOptions, fetchData } from "../../SharedResources/utils/Data";
 import { DropdownReference } from "./DropdownReference";
 
@@ -15,7 +15,7 @@ interface WrapperProps {
     friendlyId: string;
 }
 
-export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
+export interface ContainerProps extends WrapperProps, DropdownProps {
     attribute: string;
     entityPath: string;
     entityConstraint: string;
@@ -33,7 +33,7 @@ export interface ContainerProps extends WrapperProps, DropdownReferenceProps {
 export interface ContainerState {
     isClearable: boolean;
     options: ReferenceOption[];
-    selectedObject: any;
+    selectedObject: ReferenceOption;
 }
 
 class DropdownReferenceContainer extends Component<ContainerProps, ContainerState> {
@@ -143,7 +143,7 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             this.subscriptionHandles.push(window.mx.data.subscribe({
                 entity: this.props.entityPath.split("/")[1],
                 callback: () => {
-                    this.setState({ selectedObject: null });
+                    this.setState({ selectedObject: {} });
                     this.getSelectedValue(this.props);
                     this.retrieveOptions(this.props);
                 }
@@ -163,15 +163,15 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
             } else {
                 this.props.mxObject.set(this.association, selection.value);
                 if (!this.state.selectedObject || (this.state.selectedObject.value !== selection.value)) {
-                    this.executeOnChangeEvent();
+                    this.executeOnChangeAction();
                 }
             }
         }
 
-        this.setState({ selectedObject: selection ? selection : null });
+        this.setState({ selectedObject: selection ? selection : {} });
     }
 
-    private executeOnChangeEvent() {
+    private executeOnChangeAction() {
         const { mxform, mxObject, onChangeEvent, onChangeMicroflow, onChangeNanoflow } = this.props;
         const context = new mendix.lib.MxContext();
 
@@ -232,10 +232,10 @@ class DropdownReferenceContainer extends Component<ContainerProps, ContainerStat
         this.setState({ options });
     }
 
-    private setAsyncOptions = (input: string): Promise<{ options: ReferenceOption[] }> => {
+    private setAsyncOptions = (input?: string): Promise<{ options: ReferenceOption[] }> => {
         if (this.props.mxObject) {
             this.props.mxObject.set(this.props.searchAttribute, input);
-            if (input.length >= this.props.minimumCharacter) {
+            if (input && input.length >= this.props.minimumCharacter) {
                 return this.retrieveOptions(this.props, input)
                     .then(() => Promise.resolve({ options: this.state.options }));
             } else {

@@ -4,12 +4,12 @@ import Select, { Async } from "react-select";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
-import { DropdownReferenceProps, hideDropDown } from "../../SharedResources/utils/ContainerUtils";
+import { DropdownProps, debounce, hideDropDown } from "../../SharedResources/utils/ContainerUtils";
 
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
 
-export class DropdownReference extends Component<DropdownReferenceProps> {
+export class DropdownReference extends Component<DropdownProps> {
     render() {
         return this.props.showLabel
             ? createElement(Label, {
@@ -42,7 +42,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
         const commonProps = {
             clearable: this.props.isClearable,
             disabled: this.props.isReadOnly,
-            onChange: this.props.handleOnchange,
+            onChange: this.props.handleOnchange as () => void,
             ...this.createSelectorProp()
         };
 
@@ -58,7 +58,7 @@ export class DropdownReference extends Component<DropdownReferenceProps> {
                     })
                     : createElement(Async, {
                         searchPromptText: this.props.searchPromptText,
-                        loadOptions: this.props.asyncData,
+                        loadOptions: debounce(this.props.asyncData, 200),
                         ...commonProps
                     }),
                 createElement(Alert, { className: "widget-dropdown-reference-alert" }, this.props.alertMessage)

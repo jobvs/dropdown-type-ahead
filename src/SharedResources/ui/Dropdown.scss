@@ -3,6 +3,11 @@
   .Select-arrow {
     display: none;
   }
+
+  .Select-clear {
+    color: $gray-dark;
+  }
+
   .Select.is-focused:not(.is-open) > .Select-control,
   select.has-value.is-focused.is-open > .Select-control {
     border-color: $brand-primary;
@@ -14,8 +19,12 @@
     box-shadow: none;
   }
 
-  .Select.is-disabled.is-searchable > .Select-control {
+  .Select.is-disabled.is-searchable > .Select-control, .Select.is-disabled.Select--single .Select-value {
     background-color: $gray-lighter;
+    cursor: not-allowed;
+    .Select-arrow-zone {
+      opacity: 1.35;
+    }
   }
 
   .Select-control {

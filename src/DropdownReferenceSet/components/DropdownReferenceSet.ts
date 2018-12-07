@@ -1,44 +1,20 @@
 import { Component, createElement } from "react";
-import Select, { Async, LoadOptionsHandler } from "react-select";
+import Select, { Async } from "react-select";
 import * as classNames from "classnames";
 
 import { Alert } from "../../SharedResources/components/Alert";
 import { Label } from "../../SharedResources/components/Label";
-import { hideDropDown } from "../../SharedResources/utils/ContainerUtils";
+import { DropdownProps, debounce, hideDropDown } from "../../SharedResources/utils/ContainerUtils";
 
 import "react-select/dist/react-select.css";
 import "../../SharedResources/ui/Dropdown.scss";
-
-export interface DropdownReferenceSetProps {
-    styleObject?: object;
-    labelWidth: number;
-    data?: ReferenceOption[];
-    asyncData: LoadOptionsHandler<{}>;
-    labelCaption: string;
-    showLabel: boolean;
-    emptyOptionCaption: string;
-    isClearable: boolean;
-    isReadOnly: boolean;
-    selectType: "normal" | "asynchronous";
-    lazyFilter: "startWith" | "contains";
-    selectedValue: ReferenceOption[];
-    handleOnchange?: (selectedOption: any) => void;
-    className?: string;
-    readOnlyStyle: "control" | "text";
-    labelOrientation: "horizontal" | "vertical";
-    location: "content" | "popup" | "modal" | "node";
-    alertMessage: string;
-    loadingText: string;
-    minimumCharacter: number;
-    searchPromptText: string;
-}
 
 export interface ReferenceOption {
     value: string | boolean;
     label: string;
 }
 
-export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
+export class DropdownReferenceSet extends Component<DropdownProps> {
     render() {
         return this.props.showLabel
             ? createElement(Label, {
@@ -73,7 +49,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
             multi: true,
             removeSelected: true,
             disabled: this.props.isReadOnly,
-            onChange: this.props.handleOnchange,
+            onChange: this.props.handleOnchange as () => void,
             ...this.createSelectorProp()
         };
 
@@ -98,7 +74,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                     : createElement(Async, {
                         autoload: false,
                         autoFocus: true,
-                        loadOptions: this.props.asyncData,
+                        loadOptions: debounce(this.props.asyncData, 200),
                         searchPromptText: this.props.searchPromptText,
                         ...commonProps
                     }),
@@ -145,7 +121,7 @@ export class DropdownReferenceSet extends Component<DropdownReferenceSetProps> {
                     this.props.selectedValue.forEach((dataObject: ReferenceOption) => {
                         const value = dataObject.value;
                         if (value === selectedGuid.value) {
-                            selectedLabel = dataObject.label;
+                            selectedLabel = dataObject.label as string;
                         }
                     });
                 }

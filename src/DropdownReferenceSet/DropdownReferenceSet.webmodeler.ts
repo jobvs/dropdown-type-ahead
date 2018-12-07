@@ -46,12 +46,8 @@ export class preview extends Component<ContainerProps, {}> {
         return (this.props.editable !== "default") || this.props.readOnly;
     }
 
-    private setAsyncSampleData(input: string): Promise<{}> | undefined {
-        if (!input) {
-            return Promise.resolve({ options: [ ] });
-        }
-
-        return;
+    private setAsyncSampleData(): Promise<{}> {
+        return Promise.resolve({ options: [ ] });
     }
 }
 
