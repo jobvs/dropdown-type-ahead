@@ -29,7 +29,7 @@ export interface DropdownProps {
     selectType: "normal" | "asynchronous";
     lazyFilter: "startWith" | "contains";
     labelOrientation: "horizontal" | "vertical";
-    location: "content" | "popup" | "modal" | "node";
+    location: string;
     readOnlyStyle: "control" | "text";
     asyncData: (input?: string) => Promise<{}>;
     handleOnchange?: (selectedOption: ReferenceOption) => void;
